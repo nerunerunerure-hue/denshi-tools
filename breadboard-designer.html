@@ -32,7 +32,7 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { background: #ffffff; min-height: 100vh; padding: 18px 0 60px; }
+  html { background: #ffffff; min-height: 100vh; padding: 16px 80px 56px; }
 
   body {
     background: var(--bg);
@@ -40,8 +40,9 @@
     font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
-    width: 1180px;
-    min-width: 1180px;
+    width: 100%;
+    min-width: 1120px;
+    max-width: 2400px;
     margin: 0 auto;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -79,7 +80,8 @@
     padding: 14px;
     display: flex; flex-direction: column; gap: 16px;
   }
-  .content { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
+  .sidebar-right { border-right: none; border-left: 1px solid var(--border); }
+  .content { flex: 1; min-width: 0; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
 
   .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
   .panel > h2 {
@@ -132,6 +134,9 @@
   /* ── キャンバス ── */
   .canvas-wrap { width: 100%; overflow-x: auto; }
   svg.board, svg.schem { display: block; background: var(--surface); border-radius: 6px; }
+  /* ボードはビューポート高さに収め、下に回路図が少し覗くようにする */
+  svg.board { height: 56vh; width: auto; max-width: 100%; margin: 0 auto; }
+  svg.schem { width: 100%; height: auto; max-width: 1320px; }
   .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .72rem; color: var(--text-dim); margin-top: 8px; }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
   .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
@@ -164,13 +169,6 @@
       <div class="body">
         <div class="palette" id="palette"></div>
         <div class="status" id="status">部品を選んで、ブレッドボードの穴を2か所クリックすると配置できます。</div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h2>部品リスト <span id="bomCount" style="color:var(--text-dim);font-weight:400"></span></h2>
-      <div class="body">
-        <ul class="bom" id="bom"><li class="empty">まだ部品がありません</li></ul>
       </div>
     </div>
 
@@ -227,6 +225,15 @@
       </div>
     </div>
   </section>
+
+  <aside class="sidebar sidebar-right">
+    <div class="panel">
+      <h2>部品リスト <span id="bomCount" style="color:var(--text-dim);font-weight:400"></span></h2>
+      <div class="body">
+        <ul class="bom" id="bom"><li class="empty">まだ部品がありません</li></ul>
+      </div>
+    </div>
+  </aside>
 </main>
 
 <footer>
@@ -522,6 +529,36 @@ const TEMPLATES = {
       { type:'led',           pins:['R8C','R10C'],         value:'黄' },
     ],
     wires:[ {a:'PTP4', b:'R4A'}, {a:'R6A', b:'PTN6'}, {a:'R10A', b:'PTN10'} ]
+  },
+  transistor_switch: {
+    label:'⑤ トランジスタでブザーを鳴らす（スイッチング）',
+    parts:[
+      { type:'power',      pins:['PTP2','PTN2'],      value:'5V' },
+      { type:'transistor', pins:['R6C','R7C','R8C'],  value:'2N2222' },
+      { type:'resistor',   pins:['R7A','R10A'],       value:'10kΩ' },
+      { type:'switch',     pins:['R10C','R13C'],      value:'タクト' },
+      { type:'buzzer',     pins:['R11E','R8E'],       value:'圧電' },
+    ],
+    wires:[ {a:'R6A', b:'PTN6'}, {a:'PTP11', b:'R11A'}, {a:'PTP13', b:'R13A'} ]
+  },
+  diode_dir: {
+    label:'⑥ ダイオードの向き（逆流防止）',
+    parts:[
+      { type:'power',    pins:['PTP2','PTN2'], value:'5V' },
+      { type:'diode',    pins:['R4C','R6C'],   value:'1N4148' },
+      { type:'resistor', pins:['R6E','R9E'],   value:'330Ω' },
+      { type:'led',      pins:['R9C','R11C'],  value:'赤' },
+    ],
+    wires:[ {a:'PTP4', b:'R4A'}, {a:'R11A', b:'PTN11'} ]
+  },
+  light_sensor: {
+    label:'⑦ 光センサー（明るさで電圧が変わる分圧）',
+    parts:[
+      { type:'power',         pins:['PTP2','PTN2'], value:'5V' },
+      { type:'photoresistor', pins:['R4C','R6C'],   value:'CdS' },
+      { type:'resistor',      pins:['R6E','R9E'],   value:'10kΩ' },
+    ],
+    wires:[ {a:'PTP4', b:'R4A'}, {a:'R9A', b:'PTN9'} ]
   }
 };
 
