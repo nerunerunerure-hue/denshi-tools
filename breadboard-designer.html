@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ブレッドボード配置デザイナー</title>
+<style>
+  :root {
+    --bg: #eef0fa;
+    --surface: #ffffff;
+    --surface2: #e4e8f8;
+    --surface3: #d4d8f0;
+    --accent: #4a52cc;
+    --accent-dim: #7880dc;
+    --text: #1a1c32;
+    --text-dim: #5a6080;
+    --text-bright: #080a18;
+    --success: #1b6b3a;
+    --warning: #a04800;
+    --error: #c02020;
+    --border: #c8ccec;
+    --header-bg: #1a1e42;
+    --header-text: #b8c0ff;
+    --board: #ffffe0;       /* ブレッドボード(クリーム色) */
+    --board-edge: #c9a93f;
+    --hole: #2b2b2b;
+    --rail-pos: #d84141;
+    --rail-neg: #3f63d8;
+    --hl: #ffd23f;          /* ハイライト(同じ列=導通) */
+    --pending: #ff8a3d;     /* 配置の1ピン目 */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { background: #ffffff; min-height: 100vh; padding: 18px 0 60px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    width: 1180px;
+    min-width: 1180px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  /* ── ヘッダー ── */
+  header {
+    background: var(--header-bg);
+    border-bottom: 2px solid #2e3460;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-radius: 8px 8px 0 0;
+  }
+  header h1 { font-size: 1.05rem; color: var(--header-text); letter-spacing: .04em; }
+  header h1 span { color: #6a72a0; font-size: .78rem; margin-left: 10px; font-weight: normal; }
+
+  .toolbar { display: flex; gap: 8px; align-items: center; }
+  .toolbar select, .toolbar button {
+    font: inherit; font-size: .82rem;
+    background: #2a2f56; color: var(--header-text);
+    border: 1px solid #3e4680; border-radius: 6px;
+    padding: 6px 11px; cursor: pointer;
+  }
+  .toolbar select:hover, .toolbar button:hover { background: #343a68; }
+
+  /* ── 本体 2カラム ── */
+  main { display: flex; gap: 0; }
+  .sidebar {
+    width: 270px; flex-shrink: 0;
+    background: var(--surface2);
+    border-right: 1px solid var(--border);
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .content { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .panel > h2 {
+    font-size: .82rem; color: var(--text-dim); font-weight: 700;
+    padding: 9px 12px; border-bottom: 1px solid var(--border);
+    letter-spacing: .03em; display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel .body { padding: 12px; }
+
+  /* ── 部品パレット ── */
+  .palette { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .part-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 9px 4px; cursor: pointer; transition: .12s;
+  }
+  .part-btn:hover { border-color: var(--accent-dim); background: var(--surface2); }
+  .part-btn.active { border-color: var(--accent); background: #dfe3ff; box-shadow: 0 0 0 2px #c3c9ff; }
+  .part-btn svg { width: 50px; height: 40px; }
+  .part-btn .lbl { font-size: .74rem; color: var(--text); font-weight: 600; }
+  .tool-btn { grid-column: span 1; }
+  .tool-btn.wide { grid-column: span 2; }
+
+  /* ── 部品リスト ── */
+  .bom { list-style: none; font-size: .78rem; display: flex; flex-direction: column; gap: 5px; }
+  .bom li {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 7px; background: var(--surface2); border-radius: 6px; border: 1px solid transparent;
+  }
+  .bom li.sel { border-color: var(--accent); background: #dfe3ff; }
+  .bom .swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .bom .nm { font-weight: 600; }
+  .bom .val { color: var(--accent); cursor: pointer; text-decoration: underline dotted; }
+  .bom .pins { color: var(--text-dim); margin-left: auto; font-size: .7rem; }
+  .bom .del { cursor: pointer; color: var(--error); font-weight: 700; padding: 0 3px; }
+  .bom .empty { color: var(--text-dim); font-style: italic; }
+
+  .hint { font-size: .73rem; color: var(--text-dim); line-height: 1.6; }
+  .hint b { color: var(--text); }
+  .hint code { background: var(--surface3); padding: 1px 5px; border-radius: 4px; font-size: .72rem; }
+  .status {
+    font-size: .8rem; color: var(--accent); min-height: 1.3em; font-weight: 600;
+    background: #e8ebff; border: 1px solid #c3c9ff; border-radius: 6px; padding: 7px 10px;
+  }
+
+  details { font-size: .74rem; }
+  details summary { cursor: pointer; font-weight: 700; color: var(--accent); padding: 4px 0; }
+  details .hint { margin-top: 6px; }
+
+  /* ── キャンバス ── */
+  .canvas-wrap { width: 100%; overflow-x: auto; }
+  svg.board, svg.schem { display: block; background: var(--surface); border-radius: 6px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .72rem; color: var(--text-dim); margin-top: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  .hole { fill: var(--hole); cursor: pointer; }
+  .hole:hover { fill: var(--accent); }
+  .hole.hl { fill: var(--hl); stroke: #b07d00; stroke-width: 1; }
+  .hole.pending { fill: var(--pending); stroke: #b54a00; stroke-width: 1.5; }
+  .placed { cursor: pointer; }
+  .placed.sel .body { stroke: var(--accent); stroke-width: 2.5; }
+
+  footer { font-size: .72rem; color: var(--text-dim); text-align: center; padding: 12px; border-top: 1px solid var(--border); border-radius: 0 0 8px 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🔌 ブレッドボード配置デザイナー <span>回路図 ↔ ブレッドボードで電子工作を学ぶ</span></h1>
+  <div class="toolbar">
+    <select id="templateSel" title="テンプレート回路を読み込む">
+      <option value="">テンプレートを選択…</option>
+    </select>
+    <button id="clearBtn">🗑 全消去</button>
+  </div>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <div class="panel">
+      <h2>部品パレット</h2>
+      <div class="body">
+        <div class="palette" id="palette"></div>
+        <div class="status" id="status">部品を選んで、ブレッドボードの穴を2か所クリックすると配置できます。</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>部品リスト <span id="bomCount" style="color:var(--text-dim);font-weight:400"></span></h2>
+      <div class="body">
+        <ul class="bom" id="bom"><li class="empty">まだ部品がありません</li></ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>使い方 / 拡張</h2>
+      <div class="body" style="display:flex;flex-direction:column;gap:8px;">
+        <div class="hint">
+          <b>① 部品を選ぶ</b> → <b>② 穴を2回クリック</b>で配置。<br>
+          <b>ジャンパーワイヤ</b>で穴どうしをつなぎます。<br>
+          穴にカーソルを乗せると<b style="color:#b07d00">同じ列(導通する穴)</b>が黄色く光ります。
+        </div>
+        <details>
+          <summary>⚡ 導通のルール</summary>
+          <div class="hint">
+            ・縦5穴(A〜E / F〜J)は内部でつながっています。<br>
+            ・中央の溝をまたぐと切れます(上下は別)。<br>
+            ・赤(+)/青(−)の<b>電源レール</b>は横一列ぜんぶつながっています。
+          </div>
+        </details>
+        <details>
+          <summary>🧩 部品を追加するには</summary>
+          <div class="hint">
+            HTML内の <code>PARTS</code> に1項目足すだけです。<br>
+            <code>bb()</code>=ブレッドボード見た目、<code>schem()</code>=回路図記号 の2つを書けば、パレット・回路図・配置すべてに自動で出ます。<br>
+            3本足の部品は <code>np:3</code> と <code>bb3()</code> を書けばOK(回路図は自動でブロック表示)。
+          </div>
+        </details>
+      </div>
+    </div>
+  </aside>
+
+  <section class="content">
+    <div class="panel">
+      <h2>ブレッドボード配置図 <span style="color:var(--text-dim);font-weight:400">— 実際の差し込み位置</span></h2>
+      <div class="body">
+        <div class="canvas-wrap">
+          <svg class="board" id="board" viewBox="0 0 900 512" width="900" height="512"></svg>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--rail-pos)"></i>+ 電源レール</span>
+          <span><i style="background:var(--rail-neg)"></i>− (GND) レール</span>
+          <span><i style="background:var(--hl)"></i>導通する穴</span>
+          <span><i style="background:var(--pending)"></i>配置の1ピン目</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>回路図 <span style="color:var(--text-dim);font-weight:400">— 配置から自動生成</span></h2>
+      <div class="body">
+        <div class="canvas-wrap">
+          <svg class="schem" id="schem" viewBox="0 0 900 240" width="900" height="240"></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  学習用ツール — 配線(差し込み位置)のガイドです。電流計算や動作シミュレーションは行いません。実機では抵抗値や極性を必ず確認してください。
+</footer>
+
+<script>
+/* =========================================================================
+   ブレッドボード配置デザイナー
+   - PARTS    : 使える部品の定義(ここに追加すれば部品が増える)
+   - TEMPLATES: お手本回路(回路図テンプレート)
+   - circuit  : 現在の回路 { parts:[...], wires:[...] } が唯一の正データ
+                → ブレッドボード図と回路図は両方ともこれから生成される
+   ========================================================================= */
+
+/* ---- ブレッドボードの寸法 ---- */
+const COLS = 30;              // 列(縦)の数
+const ROWS = ['A','B','C','D','E','F','G','H','I','J'];
+const S = 26;                 // 穴の間隔(px)
+const OX = 64, OY = 50;       // 左上オフセット
+const RAILGAP = 22, CENTERGAP = 30;
+
+/* 各行のY座標を計算 */
+const yTP = OY, yTN = OY + S;                         // 上の電源レール +/-
+const rowY = {};
+let y = yTN + S + RAILGAP;
+ROWS.forEach((r,i) => { if (i===5) y += CENTERGAP; rowY[r] = y; y += S; });
+const yBP = y + RAILGAP - S + RAILGAP;                // 下の電源レール
+const yBN = yBP + S;
+const colX = c => OX + (c-1)*S;
+
+/* ---- 穴(ホール)一覧を構築 ----
+   key 形式:
+     端子穴   "R{列}{行}"   例 R12C
+     電源レール "P{線}{列}"  線=TP/TN/BP/BN  例 PTP12          */
+const HOLES = {};
+for (let c=1;c<=COLS;c++){
+  for (const r of ROWS) HOLES['R'+c+r] = { x: colX(c), y: rowY[r], col:c, row:r };
+  HOLES['PTP'+c] = { x: colX(c), y: yTP, rail:'TP' };
+  HOLES['PTN'+c] = { x: colX(c), y: yTN, rail:'TN' };
+  HOLES['PBP'+c] = { x: colX(c), y: yBP, rail:'BP' };
+  HOLES['PBN'+c] = { x: colX(c), y: yBN, rail:'BN' };
+}
+
+/* ある穴が属する「基本ネット(電気的グループ)」を返す */
+function baseNet(key){
+  if (key[0] === 'P'){                 // 電源レール → 線ぜんぶで1ネット
+    return 'L' + key.slice(1,3);       // LTP / LTN / LBP / LBN
+  }
+  const m = key.match(/^R(\d+)([A-J])$/);
+  const half = 'ABCDE'.includes(m[2]) ? 'U' : 'D';
+  return 'S' + m[1] + half;            // 例 S12U
+}
+
+/* =========================================================================
+   PARTS : 使える部品の定義 ★ここに足せば部品が増える★
+   - label/color/icon : 表示用
+   - polar            : 極性あり(true なら pins[0] が +)
+   - def              : 既定値
+   - pinLbl           : ピンの呼び名
+   - bb(g,a,b,p)      : ブレッドボード上の絵 (a,b=ピン座標{x,y}, p=部品)
+   - schem(x,y,w,o,p) : 回路図記号 (中心x,y / 幅w / o=向き(+1右,-1左) / p=部品)
+                        左リード端は x-w/2、右リード端は x+w/2 に置くこと
+   - np               : ピン数(省略時は2)。3本足は np:3 とし、bb の代わりに
+                        bb3(g,pts,p) を定義する(pts=ピン座標の配列)。
+                        回路図は自動でブロック表示されるので schem は不要。
+   ========================================================================= */
+const PARTS = {
+  power: {
+    label:'電源', color:'#d84141', polar:true, def:'5V', pinLbl:['+','−'],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      lead(g,a,{x:mx,y:my}); lead(g,b,{x:mx,y:my});
+      g.push(`<rect class="body" x="${mx-22}" y="${my-13}" width="44" height="26" rx="4" fill="#c0392b" stroke="#7d2018"/>`);
+      g.push(txt(mx,my+1,p.value,'#fff',9,700));
+      polLabel(g,a,mx,my,'+','#d84141');
+      polLabel(g,b,mx,my,'−','#1f3fb0');
+    },
+    schem(x,y,w,o,p){
+      // 電池記号(長線=+ / 短線=−)
+      const l=x-w/2, r=x+w/2, c1=x-5, c2=x+5;
+      return `<line x1="${l}" y1="${y}" x2="${c1}" y2="${y}" class="wire"/>
+        <line x1="${c2}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <line x1="${c1}" y1="${y-13}" x2="${c1}" y2="${y+13}" class="sym"/>
+        <line x1="${c2}" y1="${y-7}" x2="${c2}" y2="${y+7}" class="sym" stroke-width="3.5"/>
+        ${txt(x,y-20,p.value,'#1a1c32',10,700)}`;
+    }
+  },
+  resistor: {
+    label:'抵抗', color:'#caa15a', polar:false, def:'330Ω', pinLbl:['',''],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2, len=Math.hypot(b.x-a.x,b.y-a.y);
+      const bw=Math.min(36,Math.max(20,len-26));
+      lead(g,a,{x:mx-bw/2,y:my}); lead(g,b,{x:mx+bw/2,y:my});
+      g.push(`<rect class="body" x="${mx-bw/2}" y="${my-7}" width="${bw}" height="14" rx="3" fill="#d8b878" stroke="#9a7b3e"/>`);
+      [-bw/6, bw/12, bw/3.5].forEach((d,i)=>{
+        const cols=['#7a3b10','#d83','#c22'];
+        g.push(`<rect x="${mx+d-1.5}" y="${my-7}" width="2.4" height="14" fill="${cols[i]}"/>`);
+      });
+      g.push(txt(mx,my-13,p.value,'#6a5224',8.5,700));
+    },
+    schem(x,y,w,o,p){
+      const l=x-w/2, r=x+w/2;
+      return `<line x1="${l}" y1="${y}" x2="${x-16}" y2="${y}" class="wire"/>
+        <line x1="${x+16}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <rect x="${x-16}" y="${y-7}" width="32" height="14" fill="none" class="sym"/>
+        ${txt(x,y-15,p.value,'#1a1c32',10,700)}`;
+    }
+  },
+  led: {
+    label:'LED', color:'#e8453c', polar:true, def:'赤', pinLbl:['A(+)','K(−)'],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      lead(g,a,{x:mx-8,y:my}); lead(g,b,{x:mx+8,y:my});
+      const col = ledColor(p.value);
+      g.push(`<circle class="body" cx="${mx}" cy="${my}" r="10.5" fill="${col}" stroke="#7a1a16"/>`);
+      g.push(`<line x1="${mx+8.5}" y1="${my-9}" x2="${mx+8.5}" y2="${my+9}" stroke="#444" stroke-width="2.5"/>`); // カソード平面
+      polLabel(g,a,mx,my,'+','#d84141');
+    },
+    schem(x,y,w,o,p){
+      const l=x-w/2, r=x+w/2, d=10*o;
+      const tri = o>0 ? `${x-9},${y-9} ${x-9},${y+9} ${x+9},${y}` : `${x+9},${y-9} ${x+9},${y+9} ${x-9},${y}`;
+      const barX = x+9*o;
+      return `<line x1="${l}" y1="${y}" x2="${x-9*o}" y2="${y}" class="wire"/>
+        <line x1="${barX}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <polygon points="${tri}" fill="none" class="sym"/>
+        <line x1="${barX}" y1="${y-9}" x2="${barX}" y2="${y+9}" class="sym"/>
+        <line x1="${x+2}" y1="${y-13}" x2="${x+9}" y2="${y-19}" class="sym"/>
+        <line x1="${x+8}" y1="${y-15}" x2="${x+12}" y2="${y-22}" class="sym"/>
+        ${txt(x,y+19,'LED '+p.value,'#1a1c32',9,700)}`;
+    }
+  },
+  switch: {
+    label:'スイッチ', color:'#555', polar:false, def:'タクト', pinLbl:['',''],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      lead(g,a,{x:mx-11,y:my}); lead(g,b,{x:mx+11,y:my});
+      g.push(`<rect class="body" x="${mx-12}" y="${my-12}" width="24" height="24" rx="4" fill="#454a55" stroke="#23262d"/>`);
+      g.push(`<circle cx="${mx}" cy="${my}" r="6" fill="#6a707c" stroke="#23262d"/>`);
+    },
+    schem(x,y,w,o,p){
+      const l=x-w/2, r=x+w/2;
+      return `<line x1="${l}" y1="${y}" x2="${x-12}" y2="${y}" class="wire"/>
+        <line x1="${x+12}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <circle cx="${x-12}" cy="${y}" r="2.5" class="dot"/>
+        <circle cx="${x+12}" cy="${y}" r="2.5" class="dot"/>
+        <line x1="${x-12}" y1="${y}" x2="${x+10}" y2="${y-11}" class="sym"/>
+        ${txt(x,y-17,'SW',"#1a1c32",9,700)}`;
+    }
+  },
+  capacitor: {
+    label:'コンデンサ', color:'#2a86d8', polar:false, def:'0.1µF', pinLbl:['',''],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      lead(g,a,{x:mx-7,y:my}); lead(g,b,{x:mx+7,y:my});
+      g.push(`<circle class="body" cx="${mx}" cy="${my-2}" r="11" fill="#2f86d8" stroke="#1a5a96"/>`);
+      g.push(txt(mx,my,p.value,'#fff',7.5,700));
+    },
+    schem(x,y,w,o,p){
+      const l=x-w/2, r=x+w/2;
+      return `<line x1="${l}" y1="${y}" x2="${x-4}" y2="${y}" class="wire"/>
+        <line x1="${x+4}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <line x1="${x-4}" y1="${y-11}" x2="${x-4}" y2="${y+11}" class="sym"/>
+        <line x1="${x+4}" y1="${y-11}" x2="${x+4}" y2="${y+11}" class="sym"/>
+        ${txt(x,y-17,p.value,'#1a1c32',9.5,700)}`;
+    }
+  },
+
+  /* ── ここから追加部品 ── */
+  potentiometer: {
+    label:'可変抵抗', color:'#2a6fd8', polar:false, np:3, def:'10kΩ', pinLbl:['1','W','3'],
+    bb3(g,pts,p){
+      const cx=(pts[0].x+pts[1].x+pts[2].x)/3, cy=(pts[0].y+pts[1].y+pts[2].y)/3;
+      pts.forEach(pt=>lead(g,pt,{x:cx,y:cy}));
+      g.push(`<rect class="body" x="${cx-16}" y="${cy-16}" width="32" height="32" rx="4" fill="#2a6fd8" stroke="#16407e"/>`);
+      g.push(`<circle cx="${cx}" cy="${cy-2}" r="9" fill="#dcdcb4" stroke="#8a8a60"/>`);
+      g.push(`<line x1="${cx-6}" y1="${cy-2}" x2="${cx+6}" y2="${cy-2}" stroke="#555" stroke-width="2"/>`);
+      g.push(txt(cx,cy+11,p.value,'#fff',7,700));
+    }
+  },
+  diode: {
+    label:'ダイオード', color:'#2b2b2b', polar:true, def:'1N4148', pinLbl:['A(+)','K(−)'],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2, len=Math.hypot(b.x-a.x,b.y-a.y);
+      const bw=Math.min(28,Math.max(16,len-20));
+      lead(g,a,{x:mx-bw/2,y:my}); lead(g,b,{x:mx+bw/2,y:my});
+      g.push(`<rect class="body" x="${mx-bw/2}" y="${my-6}" width="${bw}" height="12" rx="2" fill="#222" stroke="#000"/>`);
+      g.push(`<rect x="${mx+bw/2-4}" y="${my-6}" width="2.6" height="12" fill="#eaeaea"/>`); // カソードの帯
+      g.push(txt(mx,my-12,p.value,'#444',7,700));
+    },
+    schem(x,y,w,o,p){
+      const l=x-w/2, r=x+w/2, barX=x+8*o;
+      const tri = o>0 ? `${x-8},${y-8} ${x-8},${y+8} ${x+8},${y}` : `${x+8},${y-8} ${x+8},${y+8} ${x-8},${y}`;
+      return `<line x1="${l}" y1="${y}" x2="${x-8*o}" y2="${y}" class="wire"/>
+        <line x1="${barX}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <polygon points="${tri}" fill="none" class="sym"/>
+        <line x1="${barX}" y1="${y-8}" x2="${barX}" y2="${y+8}" class="sym"/>
+        ${txt(x,y-14,p.value,'#1a1c32',8.5,700)}`;
+    }
+  },
+  transistor: {
+    label:'トランジスタ', schemTitle:'NPN', color:'#444', polar:false, np:3, def:'2N2222', pinLbl:['E','B','C'],
+    bb3(g,pts,p){
+      const cx=(pts[0].x+pts[1].x+pts[2].x)/3, cy=(pts[0].y+pts[1].y+pts[2].y)/3, by=cy-3;
+      pts.forEach(pt=>lead(g,pt,{x:cx,y:by}));
+      g.push(`<path class="body" d="M${cx-15},${by} A15,15 0 1,1 ${cx+15},${by} Z" fill="#2b2b2b" stroke="#000"/>`);
+      g.push(txt(cx,by-8,'NPN','#fff',6.5,700));
+    }
+  },
+  buzzer: {
+    label:'ブザー', color:'#1b1b1b', polar:true, def:'圧電', pinLbl:['+','−'],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      lead(g,a,{x:mx-7,y:my}); lead(g,b,{x:mx+7,y:my});
+      g.push(`<circle class="body" cx="${mx}" cy="${my}" r="13" fill="#1b1b1b" stroke="#000"/>`);
+      g.push(`<circle cx="${mx}" cy="${my}" r="3.5" fill="#3a3a3a" stroke="#555"/>`); // 音孔
+      polLabel(g,a,mx,my,'+','#d84141');
+    },
+    schem(x,y,w,o,p){
+      const l=x-w/2, r=x+w/2;
+      return `<line x1="${l}" y1="${y}" x2="${x-10}" y2="${y}" class="wire"/>
+        <line x1="${x+10}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <path d="M${x-10},${y-9} L${x-10},${y+1} A10,10 0 0,0 ${x+10},${y+1} L${x+10},${y-9} Z" fill="none" class="sym"/>
+        ${txt(x,y-15,'BZ','#1a1c32',9,700)}`;
+    }
+  },
+  photoresistor: {
+    label:'光センサー', color:'#caa15a', polar:false, def:'CdS', pinLbl:['',''],
+    bb(g,a,b,p){
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      lead(g,a,{x:mx-9,y:my}); lead(g,b,{x:mx+9,y:my});
+      g.push(`<circle class="body" cx="${mx}" cy="${my}" r="11" fill="#e2c264" stroke="#8a6a20"/>`);
+      g.push(`<path d="M${mx-7},${my+4} Q${mx-3},${my-7} ${mx},${my+4} Q${mx+3},${my-7} ${mx+7},${my+4}" fill="none" stroke="#6a9a2a" stroke-width="1.4"/>`);
+      g.push(txt(mx,my-14,'CdS','#6a5224',7,700));
+    },
+    schem(x,y,w,o,p){
+      const l=x-w/2, r=x+w/2;
+      return `<line x1="${l}" y1="${y}" x2="${x-16}" y2="${y}" class="wire"/>
+        <line x1="${x+16}" y1="${y}" x2="${r}" y2="${y}" class="wire"/>
+        <rect x="${x-16}" y="${y-7}" width="32" height="14" fill="none" class="sym"/>
+        <circle cx="${x}" cy="${y}" r="14" fill="none" class="sym"/>
+        <line x1="${x-22}" y1="${y-20}" x2="${x-13}" y2="${y-11}" class="sym"/>
+        <line x1="${x-13}" y1="${y-23}" x2="${x-7}" y2="${y-16}" class="sym"/>
+        ${txt(x,y-26,'LDR','#1a1c32',8,700)}`;
+    }
+  }
+};
+
+/* LEDの色名 → 表示色 */
+function ledColor(v){
+  const map={ '赤':'#e8453c','青':'#3a7be8','緑':'#27c24c','黄':'#f5c518','白':'#f0f0f0','橙':'#f08a18' };
+  return map[v] || '#e8453c';
+}
+
+/* =========================================================================
+   TEMPLATES : お手本回路(回路図テンプレート)
+   ========================================================================= */
+const TEMPLATES = {
+  led_basic: {
+    label:'① Lチカ基本回路 (電源→抵抗→LED)',
+    parts:[
+      { type:'power',    pins:['PTP2','PTN2'], value:'5V' },
+      { type:'resistor', pins:['R3C','R6C'],   value:'330Ω' },
+      { type:'led',      pins:['R6E','R8E'],   value:'赤' },
+    ],
+    wires:[ {a:'PTP3', b:'R3A'}, {a:'R8A', b:'PTN8'} ]
+  },
+  led_switch: {
+    label:'② スイッチでLEDを点ける',
+    parts:[
+      { type:'power',    pins:['PTP2','PTN2'],  value:'5V' },
+      { type:'switch',   pins:['R3C','R6C'],    value:'タクト' },
+      { type:'resistor', pins:['R6E','R9E'],    value:'330Ω' },
+      { type:'led',      pins:['R9C','R11C'],   value:'青' },
+    ],
+    wires:[ {a:'PTP3', b:'R3A'}, {a:'R11A', b:'PTN11'} ]
+  },
+  rc: {
+    label:'③ RC回路 (抵抗+コンデンサ)',
+    parts:[
+      { type:'power',     pins:['PTP2','PTN2'], value:'5V' },
+      { type:'resistor',  pins:['R3C','R6C'],   value:'1kΩ' },
+      { type:'capacitor', pins:['R6E','R8E'],   value:'10µF' },
+    ],
+    wires:[ {a:'PTP3', b:'R3A'}, {a:'R8A', b:'PTN8'} ]
+  },
+  pot_dimmer: {
+    label:'④ 可変抵抗でLEDの明るさ調整 (分圧)',
+    parts:[
+      { type:'power',         pins:['PTP2','PTN2'],        value:'5V' },
+      { type:'potentiometer', pins:['R4C','R5C','R6C'],    value:'10kΩ' },
+      { type:'resistor',      pins:['R5E','R8E'],          value:'330Ω' },
+      { type:'led',           pins:['R8C','R10C'],         value:'黄' },
+    ],
+    wires:[ {a:'PTP4', b:'R4A'}, {a:'R6A', b:'PTN6'}, {a:'R10A', b:'PTN10'} ]
+  }
+};
+
+/* =========================================================================
+   状態
+   ========================================================================= */
+let circuit = { parts:[], wires:[] };
+let tool = null;          // 選択中の部品タイプ / 'wire'
+let pendingPins = [];     // 配置中に選んだ穴(部品のピン数だけ集める)
+let selId = null;         // 選択中の部品ID
+let uid = 1;
+
+const $board = document.getElementById('board');
+const $schem = document.getElementById('schem');
+const $status = document.getElementById('status');
+const $bom = document.getElementById('bom');
+
+/* ---- SVG小物ヘルパ ---- */
+function txt(x,y,s,fill,size,weight){
+  return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="${fill}" font-size="${size}" font-weight="${weight||400}" font-family="sans-serif">${esc(s)}</text>`;
+}
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function lead(g,from,to){ g.push(`<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="#9098a8" stroke-width="2.5" stroke-linecap="round"/>`); }
+/* 極性ラベル(+/−)を、ピンから外側へ少しずらして描く(縦置き/横置きどちらでも各ピンの真横に出る) */
+function polLabel(g, pin, cx, cy, ch, col){
+  let dx=pin.x-cx, dy=pin.y-cy; const L=Math.hypot(dx,dy)||1;
+  const ox=pin.x + dx/L*11, oy=pin.y + dy/L*11;
+  g.push(`<text x="${ox}" y="${oy}" text-anchor="middle" dominant-baseline="middle" fill="${col}" stroke="#fffdf0" stroke-width="3" paint-order="stroke" font-size="13" font-weight="800" font-family="sans-serif">${ch}</text>`);
+}
+
+/* =========================================================================
+   ブレッドボードの土台を1回だけ描く
+   ========================================================================= */
+function buildBoardBase(){
+  const g = [];
+  // 基板の緑
+  g.push(`<rect x="20" y="30" width="860" height="462" rx="10" fill="var(--board)" stroke="var(--board-edge)" stroke-width="2"/>`);
+  // 電源レールのライン(赤青)
+  const railLine=(yy,col)=>`<line x1="${colX(1)-6}" y1="${yy}" x2="${colX(COLS)+6}" y2="${yy}" stroke="${col}" stroke-width="2"/>`;
+  g.push(railLine(yTP-11,'var(--rail-pos)')); g.push(railLine(yTN+11,'var(--rail-neg)'));
+  g.push(railLine(yBP-11,'var(--rail-pos)')); g.push(railLine(yBN+11,'var(--rail-neg)'));
+  g.push(txt(colX(1)-30,yTP,'+','#c62828',15,800)); g.push(txt(colX(1)-30,yTN,'−','#1f3fb0',16,800));
+  g.push(txt(colX(1)-30,yBP,'+','#c62828',15,800)); g.push(txt(colX(1)-30,yBN,'−','#1f3fb0',16,800));
+  // 中央の溝
+  const trenchY=(rowY['E']+rowY['F'])/2;
+  g.push(`<rect x="20" y="${trenchY-7}" width="860" height="14" fill="#cdc77f"/>`);
+  // 列番号
+  for (let c=1;c<=COLS;c++){
+    if (c%5===0 || c===1){
+      g.push(txt(colX(c), rowY['A']-18, c, '#6b6b3a', 9, 600));
+      g.push(txt(colX(c), rowY['J']+18, c, '#6b6b3a', 9, 600));
+    }
+  }
+  // 行ラベル
+  ROWS.forEach(r=>{
+    g.push(txt(colX(1)-22, rowY[r], r, '#6b6b3a', 9, 600));
+    g.push(txt(colX(COLS)+22, rowY[r], r, '#6b6b3a', 9, 600));
+  });
+  // 穴
+  for (const key in HOLES){
+    const h = HOLES[key];
+    g.push(`<rect class="hole" data-hole="${key}" x="${h.x-5}" y="${h.y-5}" width="10" height="10" rx="2"/>`);
+  }
+  // 部品とワイヤ用の動的レイヤ
+  g.push(`<g id="bb-wires"></g><g id="bb-parts"></g>`);
+  $board.innerHTML = g.join('');
+}
+
+/* =========================================================================
+   導通(ネット)を計算 : union-find
+   ========================================================================= */
+function computeUF(){
+  const parent = {};
+  const find = a => { if (parent[a]===undefined) parent[a]=a; if (parent[a]!==a) parent[a]=find(parent[a]); return parent[a]; };
+  const union = (a,b) => { parent[find(a)] = find(b); };
+  for (const w of circuit.wires) union(baseNet(w.a), baseNet(w.b));
+  return { find };
+}
+
+/* =========================================================================
+   描画
+   ========================================================================= */
+function render(){
+  const uf = computeUF();
+  renderBoardParts(uf);
+  renderSchematic(uf);
+  renderBOM();
+  // テンプレ選択肢の番号も更新済み
+}
+
+function renderBoardParts(uf){
+  // ワイヤ
+  const wg = [];
+  circuit.wires.forEach((w,i)=>{
+    const a=HOLES[w.a], b=HOLES[w.b];
+    if(!a||!b) return;
+    // 直線だと穴や部品に重なって見にくいので、垂直方向に弧を描いて浮かせる
+    const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy)||1;
+    const px=-dy/len, py=dx/len;                 // 配線方向に対して垂直
+    const bow=Math.min(34, 8+len*0.16);          // 長いワイヤほど大きく弧を描く
+    const cx=(a.x+b.x)/2 + px*bow, cy=(a.y+b.y)/2 + py*bow;
+    const d=`M${a.x},${a.y} Q${cx},${cy} ${b.x},${b.y}`;
+    wg.push(`<g class="placed" data-wire="${i}">
+      <path d="${d}" fill="none" stroke="#fffdf0" stroke-width="6.5" stroke-linecap="round" opacity="0.85"/>
+      <path class="body" d="${d}" fill="none" stroke="#3a7d3a" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="${a.x}" cy="${a.y}" r="3.6" fill="#2a5d2a"/><circle cx="${b.x}" cy="${b.y}" r="3.6" fill="#2a5d2a"/>
+    </g>`);
+  });
+  document.getElementById('bb-wires').innerHTML = wg.join('');
+
+  // 部品
+  const pg = [];
+  for (const p of circuit.parts){
+    const def = PARTS[p.type];
+    const pts = p.pins.map(k=>HOLES[k]);
+    if (pts.some(x=>!x)) continue;
+    const inner=[];
+    if ((def.np||2) >= 3) def.bb3(inner, pts, p);
+    else def.bb(inner, pts[0], pts[1], p);
+    pg.push(`<g class="placed ${selId===p.id?'sel':''}" data-part="${p.id}">${inner.join('')}</g>`);
+  }
+  document.getElementById('bb-parts').innerHTML = pg.join('');
+}
+
+/* 回路図 : ネットを縦バスにして、部品をその間に渡す自動レイアウト(N端子対応) */
+function renderSchematic(uf){
+  const parts = circuit.parts.filter(p=>p.pins.every(k=>HOLES[k])).map(p=>({
+    ...p, nets: p.pins.map(k=>uf.find(baseNet(k)))
+  }));
+  if (parts.length===0){
+    $schem.setAttribute('viewBox','0 0 900 240');
+    $schem.innerHTML = txt(450,120,'部品を配置すると、ここに回路図が出ます','#8088a8',13,600);
+    return;
+  }
+  // ネット集合
+  const nets = new Set(); parts.forEach(p=>p.nets.forEach(n=>nets.add(n)));
+  // 隣接(1つの部品が結ぶネット同士をつなぐ)
+  const adj = {}; nets.forEach(n=>adj[n]=new Set());
+  parts.forEach(p=>{ for(let i=0;i<p.nets.length;i++) for(let j=i+1;j<p.nets.length;j++){ if(p.nets[i]!==p.nets[j]){ adj[p.nets[i]].add(p.nets[j]); adj[p.nets[j]].add(p.nets[i]); } } });
+  // 電源を基準に並べる
+  const power = parts.find(p=>p.type==='power');
+  const vplus = power ? power.nets[0] : null;
+  const gnd   = power ? power.nets[1] : null;
+  const order = []; const seen = new Set(); const q = [];
+  if (vplus){ q.push(vplus); seen.add(vplus); }
+  while(q.length){ const n=q.shift(); order.push(n); [...adj[n]].forEach(m=>{ if(!seen.has(m)){seen.add(m);q.push(m);} }); }
+  nets.forEach(n=>{ if(!seen.has(n)){ order.push(n); seen.add(n);} });
+  if (gnd){ const i=order.indexOf(gnd); if(i>=0){ order.splice(i,1); order.push(gnd);} }
+
+  const colSpace = 155, left = 110, top = 64, rowH = 66;
+  const xOf = n => left + order.indexOf(n)*colSpace;
+  const W = Math.max(900, left + (order.length-1)*colSpace + 120);
+  const H = Math.max(190, top + parts.length*rowH + 30);
+
+  const POFF = {2:[0,0], 3:[-11,0,11]};            // 3本足は接続点を上下にずらす
+  const pinY = (np,i,yy)=> yy + (POFF[np] ? POFF[np][i] : 0);
+
+  // ネットごとに使うYの範囲を記録
+  const netY = {}; order.forEach(n=>netY[n]={min:1e9,max:-1e9});
+  parts.forEach((p,idx)=>{ const yy=top+idx*rowH, np=p.nets.length;
+    p.nets.forEach((n,i)=>{ const py=pinY(np,i,yy); netY[n].min=Math.min(netY[n].min,py); netY[n].max=Math.max(netY[n].max,py); });
+  });
+
+  const out = [];
+  out.push(`<style>
+    .wire{stroke:#3a4060;stroke-width:2;}
+    .bus{stroke:#3a4060;stroke-width:2;}
+    .sym{stroke:#1a1c32;stroke-width:2;fill:none;}
+    .dot{fill:#1a1c32;}
+  </style>`);
+
+  // バス(縦線) + ラベル
+  let nn = 1;
+  order.forEach(n=>{
+    const x = xOf(n);
+    let ymin = netY[n].min, ymax = netY[n].max;
+    if (ymax-ymin < 6){ ymin-=6; ymax+=6; }
+    out.push(`<line class="bus" x1="${x}" y1="${ymin}" x2="${x}" y2="${ymax}"/>`);
+    const label = n===vplus ? 'V+' : (n===gnd ? 'GND' : 'N'+(nn++));
+    const color = n===vplus ? '#d84141' : (n===gnd ? '#3f63d8' : '#5a6080');
+    out.push(txt(x, ymin-22, label, color, 11, 800));
+    out.push(`<circle class="dot" cx="${x}" cy="${ymin-10}" r="2.5"/>`);
+  });
+
+  // 部品
+  parts.forEach((p,idx)=>{
+    const yy = top + idx*rowH, def = PARTS[p.type], np = p.nets.length;
+    if (np === 2){
+      let xa = xOf(p.nets[0]), xb = xOf(p.nets[1]), o = 1;
+      if (xa > xb){ [xa,xb]=[xb,xa]; o = -1; }
+      if (xa === xb){ out.push(txt(xa+50, yy, '['+def.label+'] 両足が同じ列', '#a04800', 10, 600)); return; }
+      const cx = (xa+xb)/2, w = xb-xa;
+      out.push(def.schem(cx, yy, w, o, p));
+      out.push(`<circle class="dot" cx="${xa}" cy="${yy}" r="2.5"/><circle class="dot" cx="${xb}" cy="${yy}" r="2.5"/>`);
+    } else {
+      out.push(schemBlock(yy, p.nets.map(xOf), p));
+    }
+  });
+
+  $schem.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  $schem.setAttribute('width', W); $schem.setAttribute('height', H);
+  $schem.innerHTML = out.join('');
+}
+
+/* 3本足以上の部品を「ブロック」として描く(各ピンを対応バスへ接続) */
+function schemBlock(y, xs, p){
+  const def = PARTS[p.type];
+  const minX = Math.min.apply(null, xs);
+  const bw = 40, bh = 40, off = [-11,0,11];
+  const bx = minX - 34, right = bx + bw/2;          // バス群の左にブロックを置く
+  let s = `<rect x="${bx-bw/2}" y="${y-bh/2}" width="${bw}" height="${bh}" rx="5" fill="#fffdf0" class="sym"/>`;
+  s += txt(bx, y-bh/2-9, def.schemTitle||def.label, '#1a1c32', 9, 700);
+  s += txt(bx, y+bh/2+10, p.value, '#1a1c32', 8.5, 700);
+  xs.forEach((nx,i)=>{
+    const py = y + (off[i]||0);
+    s += `<line x1="${right}" y1="${py}" x2="${nx}" y2="${py}" class="wire"/>`;
+    s += `<circle cx="${nx}" cy="${py}" r="2.6" class="dot"/>`;
+    const lbl = (def.pinLbl && def.pinLbl[i]) || String(i+1);
+    s += txt(bx, py, lbl, '#3a4060', 7.5, 700);
+  });
+  return s;
+}
+
+/* 部品リスト */
+function renderBOM(){
+  document.getElementById('bomCount').textContent = circuit.parts.length ? `(${circuit.parts.length})` : '';
+  if (circuit.parts.length===0 && circuit.wires.length===0){
+    $bom.innerHTML = '<li class="empty">まだ部品がありません</li>'; return;
+  }
+  const rows = circuit.parts.map(p=>{
+    const def = PARTS[p.type];
+    return `<li class="${selId===p.id?'sel':''}" data-bom="${p.id}">
+      <span class="swatch" style="background:${def.color}"></span>
+      <span class="nm">${def.label}</span>
+      <span class="val" data-edit="${p.id}">${esc(p.value)}</span>
+      <span class="pins">${p.pins.join('–')}</span>
+      <span class="del" data-del="${p.id}">✕</span>
+    </li>`;
+  });
+  if (circuit.wires.length){
+    rows.push(`<li><span class="swatch" style="background:#3a7d3a"></span><span class="nm">ワイヤ ×${circuit.wires.length}</span></li>`);
+  }
+  $bom.innerHTML = rows.join('');
+}
+
+/* =========================================================================
+   操作
+   ========================================================================= */
+function setStatus(msg){ $status.textContent = msg; }
+
+function selectTool(t){
+  tool = t; pendingPins = []; selId = null;
+  document.querySelectorAll('.part-btn').forEach(b=>b.classList.toggle('active', b.dataset.tool===t));
+  clearHoleStates();
+  if (t==='wire') setStatus('ジャンパーワイヤ: つなぎたい穴を2か所クリック。');
+  else if (t){ const n=PARTS[t].np||2; setStatus(`「${PARTS[t].label}」を配置: 穴を${n}か所クリック。${PARTS[t].polar?'(1か所目が+側)':''}`); }
+  else setStatus('部品を選んで、穴をクリックすると配置できます。');
+  render();
+}
+
+function clearHoleStates(){ document.querySelectorAll('.hole').forEach(h=>h.classList.remove('pending')); }
+
+function onHoleClick(key){
+  if (!tool){ return; }
+  if (pendingPins.includes(key)){ setStatus('別の穴を選んでください。'); return; }
+  pendingPins.push(key);
+  document.querySelector(`[data-hole="${key}"]`).classList.add('pending');
+  const need = (tool==='wire') ? 2 : (PARTS[tool].np||2);
+  if (pendingPins.length < need){ setStatus(`あと ${need-pendingPins.length} か所クリックしてください。`); return; }
+
+  if (tool === 'wire'){
+    circuit.wires.push({ a: pendingPins[0], b: pendingPins[1] });
+  } else {
+    circuit.parts.push({ id: uid++, type: tool, pins:[...pendingPins], value: PARTS[tool].def });
+  }
+  const label = tool==='wire' ? 'ワイヤ' : PARTS[tool].label;
+  pendingPins = []; clearHoleStates();
+  setStatus(`${label}を配置しました。続けて配置できます。`);
+  render();
+}
+
+/* ホバーで導通する穴をハイライト */
+function onHoleHover(key){
+  const uf = computeUF();
+  const target = key ? uf.find(baseNet(key)) : null;
+  document.querySelectorAll('.hole').forEach(h=>{
+    const k = h.dataset.hole;
+    h.classList.toggle('hl', target!==null && uf.find(baseNet(k))===target);
+  });
+}
+
+function deletePart(id){
+  circuit.parts = circuit.parts.filter(p=>p.id!==id);
+  if (selId===id) selId=null;
+  render();
+}
+function deleteWire(i){ circuit.wires.splice(i,1); render(); }
+
+/* ---- イベント ---- */
+$board.addEventListener('click', e=>{
+  const hole = e.target.closest('[data-hole]');
+  if (hole){ onHoleClick(hole.dataset.hole); return; }
+  const part = e.target.closest('[data-part]');
+  if (part){
+    const id = +part.dataset.part;
+    if (tool===null){ selId = (selId===id?null:id); render(); }
+    return;
+  }
+  const wire = e.target.closest('[data-wire]');
+  if (wire && tool===null){ if(confirm('このワイヤを削除しますか?')) deleteWire(+wire.dataset.wire); }
+});
+$board.addEventListener('mouseover', e=>{ const h=e.target.closest('[data-hole]'); if(h) onHoleHover(h.dataset.hole); });
+$board.addEventListener('mouseleave', ()=> onHoleHover(null));
+
+$bom.addEventListener('click', e=>{
+  const del = e.target.closest('[data-del]'); if (del){ deletePart(+del.dataset.del); return; }
+  const ed = e.target.closest('[data-edit]');
+  if (ed){
+    const id=+ed.dataset.edit; const p=circuit.parts.find(x=>x.id===id);
+    const nv = prompt(`${PARTS[p.type].label} の値:`, p.value);
+    if (nv!==null && nv.trim()!==''){ p.value=nv.trim(); render(); }
+    return;
+  }
+  const li = e.target.closest('[data-bom]'); if (li){ const id=+li.dataset.bom; selId=(selId===id?null:id); render(); }
+});
+
+document.addEventListener('keydown', e=>{
+  if ((e.key==='Delete'||e.key==='Backspace') && selId!=null){ deletePart(selId); }
+  if (e.key==='Escape'){ pendingPins=[]; clearHoleStates(); setStatus('キャンセルしました。'); }
+});
+
+/* テンプレート */
+function loadTemplate(key){
+  const t = TEMPLATES[key];
+  if (!t) return;
+  circuit = { parts:[], wires:[] };
+  t.parts.forEach(p=> circuit.parts.push({ id: uid++, type:p.type, pins:[...p.pins], value:p.value }));
+  t.wires.forEach(w=> circuit.wires.push({ a:w.a, b:w.b }));
+  selId=null; pendingPins=[]; tool=null;
+  document.querySelectorAll('.part-btn').forEach(b=>b.classList.remove('active'));
+  clearHoleStates();
+  setStatus(`テンプレート「${t.label}」を読み込みました。`);
+  render();
+}
+
+document.getElementById('templateSel').addEventListener('change', e=>{ if(e.target.value) loadTemplate(e.target.value); });
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  if (circuit.parts.length||circuit.wires.length){ if(!confirm('すべて消去しますか?')) return; }
+  circuit={parts:[],wires:[]}; selId=null; pendingPins=[]; clearHoleStates();
+  document.getElementById('templateSel').value='';
+  setStatus('消去しました。'); render();
+});
+
+/* =========================================================================
+   初期化 : パレットとテンプレ一覧を生成
+   ========================================================================= */
+function paletteIcon(type){
+  const def = PARTS[type];
+  const g=[];
+  if ((def.np||2) >= 3) def.bb3(g, [{x:7,y:15},{x:23,y:15},{x:39,y:15}], {value:def.def, type});
+  else def.bb(g, {x:14,y:15}, {x:32,y:15}, {value:def.def, type});
+  return `<svg viewBox="-4 -12 54 50">${g.join('')}</svg>`;
+}
+function buildPalette(){
+  const pal = document.getElementById('palette');
+  let html = '';
+  for (const type in PARTS){
+    html += `<div class="part-btn tool-btn" data-tool="${type}">${paletteIcon(type)}<span class="lbl">${PARTS[type].label}</span></div>`;
+  }
+  html += `<div class="part-btn tool-btn wide" data-tool="wire">
+    <svg viewBox="-4 -12 54 50"><line x1="8" y1="15" x2="38" y2="15" stroke="#3a7d3a" stroke-width="3.5" stroke-linecap="round"/><circle cx="8" cy="15" r="3.5" fill="#2a5d2a"/><circle cx="38" cy="15" r="3.5" fill="#2a5d2a"/></svg>
+    <span class="lbl">ジャンパーワイヤ</span></div>`;
+  pal.innerHTML = html;
+  pal.querySelectorAll('.part-btn').forEach(b=>{
+    b.addEventListener('click', ()=> selectTool(tool===b.dataset.tool ? null : b.dataset.tool));
+  });
+}
+function buildTemplateList(){
+  const sel = document.getElementById('templateSel');
+  for (const k in TEMPLATES){
+    const o=document.createElement('option'); o.value=k; o.textContent=TEMPLATES[k].label; sel.appendChild(o);
+  }
+}
+
+buildBoardBase();
+buildPalette();
+buildTemplateList();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抵抗値カラーコード計算機</title>
+<style>
+  :root {
+    --bg: #eef0fa;
+    --surface: #ffffff;
+    --surface2: #e4e8f8;
+    --surface3: #d4d8f0;
+    --accent: #4a52cc;
+    --accent-dim: #7880dc;
+    --text: #1a1c32;
+    --text-dim: #5a6080;
+    --text-bright: #080a18;
+    --success: #1b6b3a;
+    --warning: #a04800;
+    --error: #c02020;
+    --border: #c8ccec;
+    --header-bg: #1a1e42;
+    --header-text: #b8c0ff;
+    --resistor-lead: #707080;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    background: #ffffff;
+    min-height: 100vh;
+    padding: 20px 0 60px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier New', 'Consolas', monospace;
+    display: flex;
+    flex-direction: column;
+    width: 820px;
+    min-width: 820px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: clip;
+  }
+
+  /* ── ヘッダー ── */
+  header {
+    background: var(--header-bg);
+    border-bottom: 2px solid #2e3460;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-radius: 8px 8px 0 0;
+  }
+
+  header h1 {
+    font-size: 1rem;
+    color: var(--header-text);
+    letter-spacing: 0.05em;
+  }
+
+  header h1 span {
+    color: #5a6488;
+    font-size: 0.8rem;
+    margin-left: 8px;
+  }
+
+  .band-toggle {
+    display: flex;
+    background: #0e1028;
+    border: 1px solid #3a3e68;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .band-toggle button {
+    background: none;
+    border: none;
+    color: #6870a8;
+    cursor: pointer;
+    padding: 6px 18px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .band-toggle button.active {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  .band-toggle button:hover:not(.active) {
+    background: #252850;
+    color: #9098c8;
+  }
+
+  /* ── メインエリア ── */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 20px 54px;
+    gap: 24px;
+  }
+
+  /* ── 抵抗SVGエリア ── */
+  .resistor-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 4px rgba(60,70,140,0.08);
+  }
+
+  #resistor-svg {
+    overflow: visible;
+  }
+
+  .band-label-row {
+    position: relative;
+  }
+
+  /* ── 中段 ── */
+  .middle-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .hint-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hint-panel, .result-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(60,70,140,0.08);
+  }
+
+  .hint-panel h2, .result-panel h2 {
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+
+  .hint-panel ol {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding-left: 1.3em;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.4;
+  }
+
+  .hint-panel ol li span {
+    color: var(--accent);
+    font-weight: bold;
+  }
+
+  .result-value {
+    font-size: 2.4rem;
+    color: var(--text-bright);
+    font-weight: bold;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-top: 4px;
+  }
+
+  .result-value.placeholder {
+    color: var(--text-dim);
+    font-size: 2rem;
+  }
+
+  .result-tolerance {
+    margin-top: 8px;
+    font-size: 1.05rem;
+    color: var(--warning);
+    font-weight: bold;
+    min-height: 1.6rem;
+  }
+
+  .result-range {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    background: var(--surface2);
+    border-radius: 5px;
+    padding: 6px 10px;
+    min-height: 52px;
+  }
+
+  .result-range span {
+    color: var(--text);
+    font-weight: bold;
+  }
+
+  .reset-btn {
+    margin-top: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.82rem;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .reset-btn:hover {
+    background: var(--surface3);
+    color: var(--text);
+    border-color: var(--accent);
+  }
+
+  /* 単位トグル */
+  .unit-toggle {
+    display: inline-flex;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .unit-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 4px 16px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: bold;
+    transition: background 0.15s, color 0.15s;
+  }
+  .unit-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+  .unit-btn:hover:not(.active) {
+    background: var(--surface3);
+    color: var(--text);
+  }
+
+  /* ── 色パレット ── */
+  .palette-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(60,70,140,0.08);
+  }
+
+  .palette-area h2 {
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 7px;
+  }
+
+  .palette-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: var(--border);
+    margin: 5px 0;
+  }
+
+  .color-chip {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    cursor: grab;
+    transition: background 0.12s, transform 0.12s, box-shadow 0.12s;
+    user-select: none;
+  }
+
+  .color-chip:hover {
+    background: var(--surface3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(60,70,140,0.18);
+  }
+
+  .color-chip:active { cursor: grabbing; }
+
+  .color-chip.dragging {
+    opacity: 0.4;
+    transform: scale(0.93);
+  }
+
+
+  .chip-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+
+  .chip-swatch.is-gold {
+    background: linear-gradient(160deg, #ffe566 0%, #cfb53b 35%, #ffd700 55%, #b8860b 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 1px 3px rgba(120,90,0,0.4);
+    border-color: #b8860b;
+  }
+
+  .chip-swatch.is-silver {
+    background: linear-gradient(160deg, #f0f0f0 0%, #b0b0b8 35%, #e0e0e8 55%, #686870 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 1px 3px rgba(80,80,100,0.3);
+    border-color: #909098;
+  }
+
+  .chip-name {
+    font-size: 0.88rem;
+    color: var(--text);
+    font-weight: bold;
+    min-width: 1.8em;
+  }
+
+  .chip-val {
+    font-size: 0.94rem;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+
+  .band-drop { cursor: crosshair; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⬡ 抵抗値カラーコード計算機 <span>// resistor color code</span></h1>
+  <div class="band-toggle">
+    <button id="btn4" class="active" onclick="setBandMode(4)">4本帯</button>
+    <button id="btn5" onclick="setBandMode(5)">5本帯</button>
+  </div>
+</header>
+
+<main>
+  <div class="resistor-area">
+    <svg id="resistor-svg" width="500" height="120" viewBox="0 0 500 120"></svg>
+    <div id="band-labels" class="band-label-row"></div>
+  </div>
+
+  <div class="middle-row">
+    <div class="hint-panel">
+      <h2>使い方</h2>
+      <ol>
+        <li>下のパレットから<span>色チップをドラッグ</span></li>
+        <li>抵抗の帯ゾーンに<span>ドロップ</span></li>
+        <li>全帯を埋めると<span>抵抗値を表示</span></li>
+        <li>金・銀は<span>乗数帯・許容差帯専用</span></li>
+      </ol>
+    </div>
+    <div class="result-panel">
+      <h2>計算結果</h2>
+      <div class="unit-toggle">
+        <button id="btn-ko" class="unit-btn active" onclick="setUnit('kΩ')">kΩ</button>
+        <button id="btn-o"  class="unit-btn"        onclick="setUnit('Ω')">Ω</button>
+      </div>
+      <div id="result-value" class="result-value placeholder">— Ω</div>
+      <div id="result-tolerance" class="result-tolerance"></div>
+      <div id="result-range" class="result-range"></div>
+      <button class="reset-btn" onclick="resetAll()">⟳ リセット</button>
+    </div>
+  </div>
+
+  <div class="palette-area">
+    <h2>カラーパレット — ドラッグして帯へ</h2>
+    <div id="palette-grid" class="palette-grid"></div>
+  </div>
+</main>
+
+<script>
+const COLORS = [
+  { name:'黒', hex:'#1a1a1a', digit:0,    multiplier:1,       tolerance:null },
+  { name:'茶', hex:'#8B4513', digit:1,    multiplier:10,      tolerance:1    },
+  { name:'赤', hex:'#CC0000', digit:2,    multiplier:100,     tolerance:2    },
+  { name:'橙', hex:'#DD7700', digit:3,    multiplier:1000,    tolerance:null },
+  { name:'黄', hex:'#EEC900', digit:4,    multiplier:10000,   tolerance:null },
+  { name:'緑', hex:'#228B22', digit:5,    multiplier:100000,  tolerance:0.5  },
+  { name:'青', hex:'#1155DD', digit:6,    multiplier:1e6,     tolerance:0.25 },
+  { name:'紫', hex:'#8800CC', digit:7,    multiplier:1e7,     tolerance:0.1  },
+  { name:'灰', hex:'#909098', digit:8,    multiplier:1e8,     tolerance:0.05 },
+  { name:'白', hex:'#e8e8ec', digit:9,    multiplier:1e9,     tolerance:null },
+  { name:'金', hex:'#CFB53B', digit:null, multiplier:0.1,     tolerance:5    },
+  { name:'銀', hex:'#A8A8B8', digit:null, multiplier:0.01,    tolerance:10   },
+];
+
+const COLOR_MAP = Object.fromEntries(COLORS.map(c => [c.name, c]));
+
+let bandMode = 4;
+let displayUnit = 'kΩ';
+let bands = [];
+let draggingColor = null;
+
+// SVG定数
+const SVG_W = 500, SVG_H = 120;
+const CX = SVG_W / 2;           // 250
+const CY = SVG_H / 2;           // 60
+const BW     = 255;              // 胴体幅（1.5倍）
+const BX     = CX - BW / 2;     // 122.5
+const BX_END = CX + BW / 2;     // 377.5
+const END_HH = 40;               // 端の半高さ（1.5倍）
+const CONCAV = 30;               // くびれの深さ（1.5倍）
+const LCX    = BX  + END_HH;    // 左円中心X = 162.5
+const RCX    = BX_END - END_HH; // 右円中心X = 337.5
+const BY     = CY - END_HH;     // 本体上端Y = 20
+const BAND_W = 24;               // 帯幅
+
+function getBandMeta(mode) {
+  if (mode === 4) return [
+    { label:'第1桁',  type:'digit'      },
+    { label:'第2桁',  type:'digit'      },
+    { label:'乗数',   type:'multiplier' },
+    { label:'許容差', type:'tolerance'  },
+  ];
+  return [
+    { label:'第1桁',  type:'digit'      },
+    { label:'第2桁',  type:'digit'      },
+    { label:'第3桁',  type:'digit'      },
+    { label:'乗数',   type:'multiplier' },
+    { label:'許容差', type:'tolerance'  },
+  ];
+}
+
+function getBandX(i, total) {
+  const innerLeft  = LCX + 4;
+  const innerRight = RCX - 4;
+  const usable = innerRight - innerLeft;
+  const step = total > 1 ? usable / (total - 1) : 0;
+  return innerLeft + step * i - BAND_W / 2;
+}
+
+function renderSVG() {
+  const svg = document.getElementById('resistor-svg');
+  const meta = getBandMeta(bandMode);
+  const total = meta.length;
+
+  // ∞ 型パス: 両端が丸く、中央がくびれた形
+  // M LCX,BY  → 上端左円頂点
+  // Q CX,(BY+CONCAV)  RCX,BY  → 上辺を凹に（中央がくぼむ）
+  // A END_HH,END_HH 0 0,1 RCX,(BY+END_HH*2)  → 右の半円
+  // Q CX,(BY+END_HH*2-CONCAV)  LCX,(BY+END_HH*2)  → 下辺を凹に
+  // A END_HH,END_HH 0 0,1 LCX,BY  → 左の半円
+  const BYB   = BY + END_HH * 2;        // 77（本体下端）
+  const shape = `M ${LCX},${BY} Q ${CX},${BY+CONCAV} ${RCX},${BY} A ${END_HH},${END_HH} 0 0,1 ${RCX},${BYB} Q ${CX},${BYB-CONCAV} ${LCX},${BYB} A ${END_HH},${END_HH} 0 0,1 ${LCX},${BY} Z`;
+
+  let html = `<defs>
+    <clipPath id="body-clip"><path d="${shape}"/></clipPath>
+    <linearGradient id="body-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ecdcb8"/>
+      <stop offset="28%"  stop-color="#d4c4a0"/>
+      <stop offset="68%"  stop-color="#bcaa88"/>
+      <stop offset="100%" stop-color="#a89470"/>
+    </linearGradient>
+    <linearGradient id="body-shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="rgba(255,255,255,0.50)"/>
+      <stop offset="38%"  stop-color="rgba(255,255,255,0.0)"/>
+    </linearGradient>
+    <linearGradient id="gold-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffe880"/>
+      <stop offset="22%"  stop-color="#f0c030"/>
+      <stop offset="46%"  stop-color="#c88800"/>
+      <stop offset="54%"  stop-color="#e8c428"/>
+      <stop offset="78%"  stop-color="#b07800"/>
+      <stop offset="100%" stop-color="#7a5000"/>
+    </linearGradient>
+    <linearGradient id="silver-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#f4f4f8"/>
+      <stop offset="22%"  stop-color="#c0c0d0"/>
+      <stop offset="46%"  stop-color="#888898"/>
+      <stop offset="54%"  stop-color="#d0d0e0"/>
+      <stop offset="78%"  stop-color="#9898a8"/>
+      <stop offset="100%" stop-color="#505060"/>
+    </linearGradient>
+  </defs>`;
+
+  // リード線（胴体左右端から外へ）
+  html += `<line x1="0" y1="${CY}" x2="${BX}" y2="${CY}" stroke="#909098" stroke-width="2.5" stroke-linecap="round"/>`;
+  html += `<line x1="${BX_END}" y1="${CY}" x2="${SVG_W}" y2="${CY}" stroke="#909098" stroke-width="2.5" stroke-linecap="round"/>`;
+
+  // 胴体（∞型、グラデーション）
+  html += `<path d="${shape}" fill="url(#body-grad)" stroke="#a09070" stroke-width="1.2"/>`;
+
+  // 帯（clipPathで胴体内にクリップ）
+  html += `<g clip-path="url(#body-clip)">`;
+  for (let i = 0; i < total; i++) {
+    const bx = getBandX(i, total);
+    const name = bands[i];
+    const id = `band-${i}`;
+    let fillAttr, strokeAttr;
+    if (name) {
+      if (name === '金')      fillAttr = `fill="url(#gold-grad)"`;
+      else if (name === '銀') fillAttr = `fill="url(#silver-grad)"`;
+      else                    fillAttr = `fill="${COLOR_MAP[name].hex}"`;
+      strokeAttr = `stroke="rgba(0,0,0,0.22)" stroke-width="0.8"`;
+    } else {
+      fillAttr   = `fill="rgba(74,82,204,0.14)"`;
+      strokeAttr = `stroke="rgba(74,82,204,0.55)" stroke-width="1.5" stroke-dasharray="3 2.5"`;
+    }
+    html += `<rect id="${id}" x="${bx}" y="${BY-4}" width="${BAND_W}" height="${END_HH*2+8}" ${fillAttr} ${strokeAttr} class="band-drop" data-index="${i}"/>`;
+  }
+  html += `</g>`;
+
+  // 胴体ハイライト
+  html += `<path d="${shape}" fill="url(#body-shine)" pointer-events="none"/>`;
+
+  svg.innerHTML = html;
+
+  for (let i = 0; i < total; i++) {
+    const el = document.getElementById(`band-${i}`);
+    const idx = i;
+    el.addEventListener('dragover', e => {
+      e.preventDefault();
+      el.setAttribute('stroke', '#4a52cc');
+      el.setAttribute('stroke-width', '2.5');
+      el.removeAttribute('stroke-dasharray');
+      el.setAttribute('fill', bands[idx] ? el.getAttribute('fill') : 'rgba(74,82,204,0.30)');
+    });
+    el.addEventListener('dragleave', () => restoreBandStyle(el, idx));
+    el.addEventListener('drop', e => {
+      e.preventDefault();
+      restoreBandStyle(el, idx);
+      if (!draggingColor) return;
+      if (tryDropBand(idx, draggingColor)) {
+        renderSVG(); renderLabels(); calculate();
+      } else {
+        flashError(el, idx);
+      }
+    });
+  }
+
+  renderLabels();
+}
+
+function restoreBandStyle(el, idx) {
+  if (bands[idx]) {
+    el.setAttribute('stroke', 'rgba(0,0,0,0.22)');
+    el.setAttribute('stroke-width', '0.8');
+    el.removeAttribute('stroke-dasharray');
+  } else {
+    el.setAttribute('fill', 'rgba(74,82,204,0.14)');
+    el.setAttribute('stroke', 'rgba(74,82,204,0.55)');
+    el.setAttribute('stroke-width', '1.5');
+    el.setAttribute('stroke-dasharray', '3 2.5');
+  }
+}
+
+function flashError(el, idx) {
+  const orig = el.getAttribute('fill');
+  el.setAttribute('fill', '#f04040');
+  setTimeout(() => { el.setAttribute('fill', '#c02020'); }, 150);
+  setTimeout(() => { el.setAttribute('fill', orig); }, 320);
+}
+
+function renderLabels() {
+  const meta = getBandMeta(bandMode);
+  const total = meta.length;
+  const container = document.getElementById('band-labels');
+  const svgEl = document.getElementById('resistor-svg');
+  const svgRect = svgEl.getBoundingClientRect();
+  const scaleX = svgRect.width / SVG_W;
+
+  container.innerHTML = '';
+  container.style.width = svgRect.width + 'px';
+  container.style.height = '20px';
+
+  for (let i = 0; i < total; i++) {
+    const bx = getBandX(i, total);
+    const cx = (bx + BAND_W / 2) * scaleX;
+    const span = document.createElement('span');
+    span.textContent = meta[i].label;
+    span.style.cssText = `
+      position: absolute;
+      left: ${cx}px;
+      transform: translateX(-50%);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    `;
+    container.appendChild(span);
+  }
+}
+
+function tryDropBand(index, colorName) {
+  const meta = getBandMeta(bandMode);
+  const type = meta[index].type;
+  const color = COLOR_MAP[colorName];
+  if (type === 'digit'     && color.digit     === null) return false;
+  if (type === 'tolerance' && color.tolerance === null) return false;
+  bands[index] = colorName;
+  return true;
+}
+
+function calculate() {
+  const meta = getBandMeta(bandMode);
+  if (bands.some(b => !b)) { showPlaceholder(); return; }
+
+  let value, tolerancePct;
+  if (bandMode === 4) {
+    value = (COLOR_MAP[bands[0]].digit * 10 + COLOR_MAP[bands[1]].digit) * COLOR_MAP[bands[2]].multiplier;
+    tolerancePct = COLOR_MAP[bands[3]].tolerance;
+  } else {
+    value = (COLOR_MAP[bands[0]].digit * 100 + COLOR_MAP[bands[1]].digit * 10 + COLOR_MAP[bands[2]].digit) * COLOR_MAP[bands[3]].multiplier;
+    tolerancePct = COLOR_MAP[bands[4]].tolerance;
+  }
+  showResult(value, tolerancePct);
+}
+
+function formatOhm(v) {
+  if (displayUnit === 'kΩ') {
+    const n = v / 1000;
+    return (Number.isInteger(n) ? n : +n.toPrecision(4)) + ' kΩ';
+  }
+  return (Number.isInteger(v) ? v : +v.toPrecision(4)) + ' Ω';
+}
+
+function setUnit(u) {
+  displayUnit = u;
+  document.getElementById('btn-ko').classList.toggle('active', u === 'kΩ');
+  document.getElementById('btn-o').classList.toggle('active', u === 'Ω');
+  if (!bands.some(b => !b)) calculate();
+}
+
+function showResult(value, tolerancePct) {
+  const elVal = document.getElementById('result-value');
+  const elTol = document.getElementById('result-tolerance');
+  const elRange = document.getElementById('result-range');
+  elVal.classList.remove('placeholder');
+  elVal.textContent = formatOhm(value);
+  if (tolerancePct !== null) {
+    elTol.textContent = `±${tolerancePct}%`;
+    const lo = value * (1 - tolerancePct/100);
+    const hi = value * (1 + tolerancePct/100);
+    elRange.innerHTML = `範囲: <span>${formatOhm(lo)}</span> 〜 <span>${formatOhm(hi)}</span>`;
+  } else {
+    elTol.textContent = ''; elRange.textContent = '';
+  }
+}
+
+function showPlaceholder() {
+  const elVal = document.getElementById('result-value');
+  elVal.classList.add('placeholder');
+  elVal.textContent = '— Ω';
+  document.getElementById('result-tolerance').textContent = '';
+  document.getElementById('result-range').textContent = '';
+}
+
+function buildPalette() {
+  const grid = document.getElementById('palette-grid');
+  grid.innerHTML = '';
+  COLORS.filter(c => c.digit !== null).forEach(c => grid.appendChild(makeChip(c, `${c.digit}`)));
+  const div = document.createElement('div');
+  div.className = 'palette-divider';
+  grid.appendChild(div);
+  COLORS.filter(c => c.digit === null).forEach(c => {
+    grid.appendChild(makeChip(c, `±${c.tolerance}%`));
+  });
+}
+
+function makeChip(color, valText) {
+  const isGold   = color.name === '金';
+  const isSilver = color.name === '銀';
+
+  const div = document.createElement('div');
+  div.className = 'color-chip' + (isGold?' is-gold':isSilver?' is-silver':'');
+  div.draggable = true;
+  div.dataset.colorName = color.name;
+
+  const swatch = document.createElement('div');
+  swatch.className = 'chip-swatch' + (isGold?' is-gold':isSilver?' is-silver':'');
+  if (!isGold && !isSilver) {
+    swatch.style.background = color.hex;
+    if (color.name === '白') swatch.style.borderColor = '#aaa';
+    if (color.name === '黒') swatch.style.borderColor = '#555';
+  }
+
+  const name = document.createElement('span');
+  name.className = 'chip-name';
+  name.textContent = color.name;
+
+  const val = document.createElement('span');
+  val.className = 'chip-val';
+  val.textContent = valText;
+
+  div.appendChild(swatch);
+  div.appendChild(name);
+  div.appendChild(val);
+
+  div.addEventListener('dragstart', e => {
+    draggingColor = color.name;
+    div.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'copy';
+  });
+  div.addEventListener('dragend', () => {
+    div.classList.remove('dragging');
+    draggingColor = null;
+  });
+  return div;
+}
+
+function setBandMode(n) {
+  bandMode = n;
+  bands = new Array(n).fill(null);
+  document.getElementById('btn4').classList.toggle('active', n === 4);
+  document.getElementById('btn5').classList.toggle('active', n === 5);
+  renderSVG();
+  showPlaceholder();
+}
+
+function resetAll() {
+  bands = new Array(bandMode).fill(null);
+  renderSVG();
+  showPlaceholder();
+}
+
+function init() {
+  setBandMode(4);
+  buildPalette();
+  window.addEventListener('resize', renderLabels);
+}
+
+init();
+</script>
+</body>
+</html>

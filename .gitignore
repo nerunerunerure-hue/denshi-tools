@@ -1,0 +1,11 @@
+# ── 公開リポジトリ用 ──
+# 既定ですべて無視し、公開してよいものだけを明示的に許可する。
+# (職務経歴書・ニュース・各種レポートなどの個人ファイルが誤って公開されるのを防ぐ)
+/*
+
+# 公開するもの
+!/.gitignore
+!/index.html
+!/breadboard-designer.html
+!/resistor-calculator.html
+!/shooting-game

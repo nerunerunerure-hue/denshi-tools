@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電子工作ツール置き場</title>
+<meta name="description" content="自作の電子工作・学習ツール集。スマホからいつでもどうぞ。">
+<meta name="theme-color" content="#1a1e42">
+<style>
+  :root{
+    --bg:#eef0fa; --card:#ffffff; --ink:#1a1c32; --ink-dim:#5a6080;
+    --accent:#4a52cc; --accent2:#7880dc; --border:#d4d8f0; --head:#1a1e42;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html{background:var(--bg);}
+  body{
+    font-family:-apple-system,'Segoe UI','Hiragino Kaku Gothic ProN','Meiryo',system-ui,sans-serif;
+    color:var(--ink); background:var(--bg);
+    min-height:100vh; line-height:1.6;
+    padding:0 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:680px;margin:0 auto;}
+
+  header{
+    background:linear-gradient(135deg,#1a1e42 0%,#2e3470 60%,#4a52cc 100%);
+    color:#fff; border-radius:0 0 22px 22px;
+    padding:calc(28px + env(safe-area-inset-top)) 22px 26px;
+    margin:0 -16px 22px; text-align:center;
+  }
+  header h1{font-size:1.5rem;letter-spacing:.02em;}
+  header p{color:#c3c9ff;font-size:.86rem;margin-top:6px;}
+
+  .grid{display:grid;gap:14px;}
+  @media(min-width:560px){ .grid{grid-template-columns:1fr 1fr;} }
+
+  .card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:16px 18px; text-decoration:none; color:inherit;
+    box-shadow:0 1px 3px rgba(26,30,66,.06);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .card:active{ transform:scale(.98); border-color:var(--accent2); box-shadow:0 3px 12px rgba(74,82,204,.18); }
+  .ico{
+    flex-shrink:0; width:52px; height:52px; border-radius:14px;
+    display:grid; place-items:center; font-size:1.7rem;
+    background:var(--accent-bg,#e8ebff);
+  }
+  .meta{min-width:0;}
+  .meta .t{font-weight:700;font-size:1.02rem;}
+  .meta .d{color:var(--ink-dim);font-size:.8rem;margin-top:2px;}
+  .arrow{margin-left:auto;color:var(--accent2);font-size:1.3rem;flex-shrink:0;}
+
+  .note{
+    margin-top:22px; font-size:.76rem; color:var(--ink-dim);
+    background:#e4e8f8; border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+  }
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🛠️ 電子工作ツール置き場</h1>
+    <p>自作の学習ツール集 ― スマホからいつでもどうぞ</p>
+  </header>
+
+  <nav class="grid">
+    <a class="card" href="breadboard-designer.html">
+      <span class="ico" style="--accent-bg:#dff0e6">🔌</span>
+      <span class="meta">
+        <span class="t">ブレッドボード配置デザイナー</span>
+        <span class="d">回路図 ↔ ブレッドボード配置を学ぶ</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+
+    <a class="card" href="resistor-calculator.html">
+      <span class="ico" style="--accent-bg:#fbeede">🎨</span>
+      <span class="meta">
+        <span class="t">抵抗値カラーコード計算機</span>
+        <span class="d">カラーバンドから抵抗値を計算</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+
+    <a class="card" href="shooting-game/index.html">
+      <span class="ico" style="--accent-bg:#f3e2f5">🚀</span>
+      <span class="meta">
+        <span class="t">シューティングゲーム</span>
+        <span class="d">息抜きに</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+  </nav>
+
+  <p class="note">
+    📱 このページをスマホのホーム画面に追加しておくと、アプリのように一発で開けます。<br>
+    （Safari/Chrome の「共有」→「ホーム画面に追加」）
+  </p>
+
+  <footer>made by nerun</footer>
+</div>
+</body>
+</html>
