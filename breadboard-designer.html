@@ -4,23 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ブレッドボード配置デザイナー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #eef0fa;
-    --surface: #ffffff;
-    --surface2: #e4e8f8;
-    --surface3: #d4d8f0;
-    --accent: #4a52cc;
-    --accent-dim: #7880dc;
-    --text: #1a1c32;
-    --text-dim: #5a6080;
-    --text-bright: #080a18;
-    --success: #1b6b3a;
-    --warning: #a04800;
-    --error: #c02020;
-    --border: #c8ccec;
-    --header-bg: #1a1e42;
-    --header-text: #b8c0ff;
+    /* — Anthropic調 ウォーム・ニュートラル — */
+    --bg: #F1EEE5;          /* アプリ本体(温かいアイボリー) */
+    --ground: #E6E1D4;      /* 外側の地 */
+    --surface: #FCFBF7;     /* カード */
+    --surface2: #F2EFE6;    /* 沈んだ面(サイドバー/リスト) */
+    --surface3: #EAE4D5;    /* コード等 */
+    --accent: #BE5A38;      /* クレイ/コーラル(署名色) */
+    --accent-dim: #D69B81;  /* 薄いクレイ */
+    --accent-soft: #F3E5DA; /* コーラルの淡い面 */
+    --accent-line: #E6C3B0; /* コーラルのリング */
+    --text: #211F1A;        /* ウォーム近黒 */
+    --text-dim: #716C61;    /* ミュート */
+    --text-bright: #100F0B;
+    --success: #4f6b3a;
+    --warning: #8f5a22;
+    --error: #b23a2e;
+    --border: #E2DCCD;      /* ウォーム・ヘアライン */
+    --header-text: #211F1A;
+    /* — タイポグラフィ — */
+    --serif: 'Newsreader','Hiragino Mincho ProN','Yu Mincho','YuMincho',Georgia,serif;
+    --sans: 'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono: 'JetBrains Mono','SFMono-Regular','Consolas','Courier New',monospace;
+    /* — 機能色(変更しない) — */
     --board: #ffffe0;       /* ブレッドボード(クリーム色) */
     --board-edge: #c9a93f;
     --hole: #2b2b2b;
@@ -32,12 +43,14 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { background: #ffffff; min-height: 100vh; padding: 16px 80px 56px; }
+  html { background: var(--ground); min-height: 100vh; padding: 22px 80px 60px; }
 
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', system-ui, sans-serif;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -45,51 +58,59 @@
     max-width: 2400px;
     margin: 0 auto;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(50,38,24,.04), 0 22px 48px -30px rgba(50,38,24,.30);
   }
 
   /* ── ヘッダー ── */
   header {
-    background: var(--header-bg);
-    border-bottom: 2px solid #2e3460;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 26px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
     flex-shrink: 0;
-    border-radius: 8px 8px 0 0;
+    border-radius: 13px 13px 0 0;
   }
-  header h1 { font-size: 1.05rem; color: var(--header-text); letter-spacing: .04em; }
-  header h1 span { color: #6a72a0; font-size: .78rem; margin-left: 10px; font-weight: normal; }
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .brand .mark { flex-shrink: 0; }
+  header h1 {
+    font-family: var(--sans); font-weight: 700; font-size: 1.4rem;
+    color: var(--text); letter-spacing: .005em; line-height: 1.14;
+  }
+  .tagline { font-size: .8rem; color: var(--text-dim); margin-top: 3px; }
 
-  .toolbar { display: flex; gap: 8px; align-items: center; }
+  .toolbar { display: flex; gap: 9px; align-items: center; flex-shrink: 0; }
   .toolbar select, .toolbar button {
-    font: inherit; font-size: .82rem;
-    background: #2a2f56; color: var(--header-text);
-    border: 1px solid #3e4680; border-radius: 6px;
-    padding: 6px 11px; cursor: pointer;
+    font-family: var(--sans); font-size: .83rem; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 13px; cursor: pointer; transition: .14s;
   }
-  .toolbar select:hover, .toolbar button:hover { background: #343a68; }
+  .toolbar select:hover { border-color: var(--accent-dim); }
+  #clearBtn { color: var(--text-dim); }
+  #clearBtn:hover { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent); }
+  .toolbar select:focus-visible, .toolbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-  /* ── 本体 2カラム ── */
+  /* ── 本体 3カラム ── */
   main { display: flex; gap: 0; }
   .sidebar {
-    width: 270px; flex-shrink: 0;
+    width: 272px; flex-shrink: 0;
     background: var(--surface2);
     border-right: 1px solid var(--border);
-    padding: 14px;
+    padding: 16px;
     display: flex; flex-direction: column; gap: 16px;
   }
   .sidebar-right { border-right: none; border-left: 1px solid var(--border); }
-  .content { flex: 1; min-width: 0; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
+  .content { flex: 1; min-width: 0; padding: 18px; display: flex; flex-direction: column; gap: 16px; overflow: auto; }
 
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; overflow: clip; }
   .panel > h2 {
-    font-size: .82rem; color: var(--text-dim); font-weight: 700;
-    padding: 9px 12px; border-bottom: 1px solid var(--border);
-    letter-spacing: .03em; display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--sans); font-weight: 600; font-size: .9rem; color: var(--text);
+    padding: 12px 15px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    letter-spacing: .01em;
   }
-  .panel .body { padding: 12px; }
+  .panel > h2 span { font-family: var(--sans); font-weight: 400; font-size: .72rem; color: var(--text-dim); }
+  .panel .body { padding: 14px; }
 
   /* ── 部品パレット ── */
   .palette { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -99,66 +120,83 @@
     border-radius: 8px; padding: 9px 4px; cursor: pointer; transition: .12s;
   }
   .part-btn:hover { border-color: var(--accent-dim); background: var(--surface2); }
-  .part-btn.active { border-color: var(--accent); background: #dfe3ff; box-shadow: 0 0 0 2px #c3c9ff; }
+  .part-btn.active { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-line); }
+  .part-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .part-btn svg { width: 50px; height: 40px; }
-  .part-btn .lbl { font-size: .74rem; color: var(--text); font-weight: 600; }
+  .part-btn .lbl { font-size: .74rem; color: var(--text); font-weight: 500; }
   .tool-btn { grid-column: span 1; }
   .tool-btn.wide { grid-column: span 2; }
 
   /* ── 部品リスト ── */
-  .bom { list-style: none; font-size: .78rem; display: flex; flex-direction: column; gap: 5px; }
+  .bom { list-style: none; font-size: .79rem; display: flex; flex-direction: column; gap: 5px; }
   .bom li {
-    display: flex; align-items: center; gap: 7px;
-    padding: 5px 7px; background: var(--surface2); border-radius: 6px; border: 1px solid transparent;
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 9px; background: var(--surface2); border-radius: 8px; border: 1px solid transparent; transition: .12s;
   }
-  .bom li.sel { border-color: var(--accent); background: #dfe3ff; }
-  .bom .swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .bom li.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .bom .swatch { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.07); }
   .bom .nm { font-weight: 600; }
-  .bom .val { color: var(--accent); cursor: pointer; text-decoration: underline dotted; }
-  .bom .pins { color: var(--text-dim); margin-left: auto; font-size: .7rem; }
-  .bom .del { cursor: pointer; color: var(--error); font-weight: 700; padding: 0 3px; }
+  .bom .val { font-family: var(--mono); font-size: .74rem; color: var(--accent); cursor: pointer; text-decoration: underline dotted var(--accent-dim); text-underline-offset: 2px; }
+  .bom .pins { font-family: var(--mono); color: var(--text-dim); margin-left: auto; font-size: .68rem; }
+  .bom .del { cursor: pointer; color: var(--text-dim); font-weight: 700; padding: 0 3px; }
+  .bom .del:hover { color: var(--error); }
   .bom .empty { color: var(--text-dim); font-style: italic; }
 
-  .hint { font-size: .73rem; color: var(--text-dim); line-height: 1.6; }
-  .hint b { color: var(--text); }
-  .hint code { background: var(--surface3); padding: 1px 5px; border-radius: 4px; font-size: .72rem; }
+  .hint { font-size: .74rem; color: var(--text-dim); line-height: 1.65; }
+  .hint b { color: var(--text); font-weight: 600; }
+  .hint code { font-family: var(--mono); background: var(--surface3); padding: 1px 5px; border-radius: 4px; font-size: .72rem; color: var(--text); }
   .status {
-    font-size: .8rem; color: var(--accent); min-height: 1.3em; font-weight: 600;
-    background: #e8ebff; border: 1px solid #c3c9ff; border-radius: 6px; padding: 7px 10px;
+    font-size: .8rem; color: var(--accent); min-height: 1.3em; font-weight: 500; line-height: 1.5;
+    background: var(--accent-soft); border: 1px solid var(--accent-line); border-radius: 8px; padding: 9px 11px;
   }
 
-  details { font-size: .74rem; }
-  details summary { cursor: pointer; font-weight: 700; color: var(--accent); padding: 4px 0; }
+  details { font-size: .75rem; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 4px 0; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before { content: '▸'; color: var(--accent-dim); margin-right: 5px; font-size: .7em; }
+  details[open] summary::before { content: '▾'; }
   details .hint { margin-top: 6px; }
 
   /* ── キャンバス ── */
   .canvas-wrap { width: 100%; overflow-x: auto; }
-  svg.board, svg.schem { display: block; background: var(--surface); border-radius: 6px; }
+  svg.board, svg.schem { display: block; background: var(--surface); border-radius: 8px; }
   /* ボードはビューポート高さに収め、下に回路図が少し覗くようにする */
-  svg.board { height: 56vh; width: auto; max-width: 100%; margin: 0 auto; }
+  svg.board { height: 56vh; width: auto; max-width: 100%; margin: 0 auto; box-shadow: 0 2px 16px -5px rgba(60,45,28,.20); }
   svg.schem { width: 100%; height: auto; max-width: 1320px; }
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .72rem; color: var(--text-dim); margin-top: 8px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .72rem; color: var(--text-dim); margin-top: 12px; }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
-  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; box-shadow: 0 0 0 1px rgba(0,0,0,.07); }
 
-  .hole { fill: var(--hole); cursor: pointer; }
+  .hole { fill: url(#socket); cursor: pointer; }
   .hole:hover { fill: var(--accent); }
   .hole.hl { fill: var(--hl); stroke: #b07d00; stroke-width: 1; }
   .hole.pending { fill: var(--pending); stroke: #b54a00; stroke-width: 1.5; }
   .placed { cursor: pointer; }
+  #bb-parts .body { filter: drop-shadow(0 1.4px 1.1px rgba(58,44,20,.34)); }
   .placed.sel .body { stroke: var(--accent); stroke-width: 2.5; }
 
-  footer { font-size: .72rem; color: var(--text-dim); text-align: center; padding: 12px; border-top: 1px solid var(--border); border-radius: 0 0 8px 8px; }
+  footer { font-size: .72rem; color: var(--text-dim); text-align: center; padding: 14px; border-top: 1px solid var(--border); border-radius: 0 0 13px 13px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>🔌 ブレッドボード配置デザイナー <span>回路図 ↔ ブレッドボードで電子工作を学ぶ</span></h1>
+  <div class="brand">
+    <svg class="mark" width="38" height="22" viewBox="0 0 46 24" aria-hidden="true">
+      <line x1="7" y1="12" x2="39" y2="12" stroke="var(--accent)" stroke-width="2.2"/>
+      <circle cx="7" cy="12" r="4.3" fill="var(--accent)"/>
+      <circle cx="23" cy="12" r="4.7" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.2"/>
+      <circle cx="39" cy="12" r="4.3" fill="var(--accent)"/>
+    </svg>
+    <div>
+      <h1>ブレッドボード配置デザイナー</h1>
+      <p class="tagline">回路図とブレッドボードを、見比べながら学ぶ</p>
+    </div>
+  </div>
   <div class="toolbar">
     <select id="templateSel" title="テンプレート回路を読み込む">
       <option value="">テンプレートを選択…</option>
     </select>
-    <button id="clearBtn">🗑 全消去</button>
+    <button id="clearBtn">全消去</button>
   </div>
 </header>
 
@@ -205,7 +243,7 @@
       <h2>ブレッドボード配置図 <span style="color:var(--text-dim);font-weight:400">— 実際の差し込み位置</span></h2>
       <div class="body">
         <div class="canvas-wrap">
-          <svg class="board" id="board" viewBox="0 0 900 512" width="900" height="512"></svg>
+          <svg class="board" id="board" viewBox="16 28 838 452" width="838" height="452"></svg>
         </div>
         <div class="legend">
           <span><i style="background:var(--rail-pos)"></i>+ 電源レール</span>
@@ -308,6 +346,7 @@ const PARTS = {
       const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
       lead(g,a,{x:mx,y:my}); lead(g,b,{x:mx,y:my});
       g.push(`<rect class="body" x="${mx-22}" y="${my-13}" width="44" height="26" rx="4" fill="#c0392b" stroke="#7d2018"/>`);
+      g.push(`<rect x="${mx-20}" y="${my-11}" width="40" height="7" rx="3" fill="#ffffff" fill-opacity="0.16"/>`);
       g.push(txt(mx,my+1,p.value,'#fff',9,700));
       polLabel(g,a,mx,my,'+','#d84141');
       polLabel(g,b,mx,my,'−','#1f3fb0');
@@ -333,6 +372,7 @@ const PARTS = {
         const cols=['#7a3b10','#d83','#c22'];
         g.push(`<rect x="${mx+d-1.5}" y="${my-7}" width="2.4" height="14" fill="${cols[i]}"/>`);
       });
+      g.push(`<rect x="${mx-bw/2+2}" y="${my-6}" width="${bw-4}" height="3" rx="1.5" fill="#ffffff" fill-opacity="0.3"/>`);
       g.push(txt(mx,my-13,p.value,'#6a5224',8.5,700));
     },
     schem(x,y,w,o,p){
@@ -350,6 +390,7 @@ const PARTS = {
       lead(g,a,{x:mx-8,y:my}); lead(g,b,{x:mx+8,y:my});
       const col = ledColor(p.value);
       g.push(`<circle class="body" cx="${mx}" cy="${my}" r="10.5" fill="${col}" stroke="#7a1a16"/>`);
+      g.push(`<ellipse cx="${mx-3.2}" cy="${my-3.6}" rx="3.6" ry="2.3" fill="#ffffff" fill-opacity="0.6"/>`);
       g.push(`<line x1="${mx+8.5}" y1="${my-9}" x2="${mx+8.5}" y2="${my+9}" stroke="#444" stroke-width="2.5"/>`); // カソード平面
       polLabel(g,a,mx,my,'+','#d84141');
     },
@@ -372,7 +413,9 @@ const PARTS = {
       const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
       lead(g,a,{x:mx-11,y:my}); lead(g,b,{x:mx+11,y:my});
       g.push(`<rect class="body" x="${mx-12}" y="${my-12}" width="24" height="24" rx="4" fill="#454a55" stroke="#23262d"/>`);
+      g.push(`<rect x="${mx-10}" y="${my-10}" width="20" height="5" rx="2.5" fill="#ffffff" fill-opacity="0.12"/>`);
       g.push(`<circle cx="${mx}" cy="${my}" r="6" fill="#6a707c" stroke="#23262d"/>`);
+      g.push(`<ellipse cx="${mx-1.8}" cy="${my-2}" rx="2.2" ry="1.5" fill="#ffffff" fill-opacity="0.4"/>`);
     },
     schem(x,y,w,o,p){
       const l=x-w/2, r=x+w/2;
@@ -390,6 +433,7 @@ const PARTS = {
       const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
       lead(g,a,{x:mx-7,y:my}); lead(g,b,{x:mx+7,y:my});
       g.push(`<circle class="body" cx="${mx}" cy="${my-2}" r="11" fill="#2f86d8" stroke="#1a5a96"/>`);
+      g.push(`<ellipse cx="${mx-3.4}" cy="${my-6}" rx="3.4" ry="2.2" fill="#ffffff" fill-opacity="0.45"/>`);
       g.push(txt(mx,my,p.value,'#fff',7.5,700));
     },
     schem(x,y,w,o,p){
@@ -409,7 +453,9 @@ const PARTS = {
       const cx=(pts[0].x+pts[1].x+pts[2].x)/3, cy=(pts[0].y+pts[1].y+pts[2].y)/3;
       pts.forEach(pt=>lead(g,pt,{x:cx,y:cy}));
       g.push(`<rect class="body" x="${cx-16}" y="${cy-16}" width="32" height="32" rx="4" fill="#2a6fd8" stroke="#16407e"/>`);
+      g.push(`<rect x="${cx-14}" y="${cy-14}" width="28" height="6" rx="3" fill="#ffffff" fill-opacity="0.18"/>`);
       g.push(`<circle cx="${cx}" cy="${cy-2}" r="9" fill="#dcdcb4" stroke="#8a8a60"/>`);
+      g.push(`<ellipse cx="${cx-3}" cy="${cy-5}" rx="2.6" ry="1.7" fill="#ffffff" fill-opacity="0.5"/>`);
       g.push(`<line x1="${cx-6}" y1="${cy-2}" x2="${cx+6}" y2="${cy-2}" stroke="#555" stroke-width="2"/>`);
       g.push(txt(cx,cy+11,p.value,'#fff',7,700));
     }
@@ -594,33 +640,44 @@ function polLabel(g, pin, cx, cy, ch, col){
    ========================================================================= */
 function buildBoardBase(){
   const g = [];
-  // 基板の緑
-  g.push(`<rect x="20" y="30" width="860" height="462" rx="10" fill="var(--board)" stroke="var(--board-edge)" stroke-width="2"/>`);
-  // 電源レールのライン(赤青)
-  const railLine=(yy,col)=>`<line x1="${colX(1)-6}" y1="${yy}" x2="${colX(COLS)+6}" y2="${yy}" stroke="${col}" stroke-width="2"/>`;
+  // 定義: 穴のソケット / 要所の影(全体グラデは廃止)
+  g.push(`<defs>
+    <radialGradient id="socket" cx="0.5" cy="0.4" r="0.62">
+      <stop offset="0" stop-color="#151515"/><stop offset="0.6" stop-color="#2b2b2b"/><stop offset="1" stop-color="#4c4c4c"/>
+    </radialGradient>
+    <linearGradient id="shadeDown" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a4a22" stop-opacity="0.2"/><stop offset="1" stop-color="#5a4a22" stop-opacity="0"/>
+    </linearGradient>
+  </defs>`);
+  // 基板(単色クリーム)
+  g.push(`<rect x="16" y="28" width="838" height="452" rx="8" fill="#f7f0cd"/>`);
+  // 電源レール: 赤/青の指示ライン(半透明の帯は廃止)
+  const railLine=(yy,col)=>`<line x1="${colX(1)-9}" y1="${yy}" x2="${colX(COLS)+9}" y2="${yy}" stroke="${col}" stroke-width="2.5"/>`;
   g.push(railLine(yTP-11,'var(--rail-pos)')); g.push(railLine(yTN+11,'var(--rail-neg)'));
   g.push(railLine(yBP-11,'var(--rail-pos)')); g.push(railLine(yBN+11,'var(--rail-neg)'));
   g.push(txt(colX(1)-30,yTP,'+','#c62828',15,800)); g.push(txt(colX(1)-30,yTN,'−','#1f3fb0',16,800));
   g.push(txt(colX(1)-30,yBP,'+','#c62828',15,800)); g.push(txt(colX(1)-30,yBN,'−','#1f3fb0',16,800));
-  // 中央の溝
+  // 中央の溝(ベベルで凹んで見せる)
   const trenchY=(rowY['E']+rowY['F'])/2;
-  g.push(`<rect x="20" y="${trenchY-7}" width="860" height="14" fill="#cdc77f"/>`);
-  // 列番号
+  g.push(`<rect x="16" y="${trenchY-8}" width="838" height="16" fill="#e8dfb8"/>`);
+  g.push(`<rect x="16" y="${trenchY-8}" width="838" height="7" fill="url(#shadeDown)"/>`);   // 溝の上内壁=影
+  g.push(`<line x1="16" y1="${trenchY-7.4}" x2="854" y2="${trenchY-7.4}" stroke="#bcae72" stroke-width="1"/>`);
+  g.push(`<line x1="16" y1="${trenchY+7.4}" x2="854" y2="${trenchY+7.4}" stroke="#fffdf2" stroke-width="1.2"/>`);
+  // 列番号・行ラベル
   for (let c=1;c<=COLS;c++){
     if (c%5===0 || c===1){
-      g.push(txt(colX(c), rowY['A']-18, c, '#6b6b3a', 9, 600));
-      g.push(txt(colX(c), rowY['J']+18, c, '#6b6b3a', 9, 600));
+      g.push(txt(colX(c), rowY['A']-18, c, '#8a8366', 9, 600));
+      g.push(txt(colX(c), rowY['J']+18, c, '#8a8366', 9, 600));
     }
   }
-  // 行ラベル
   ROWS.forEach(r=>{
-    g.push(txt(colX(1)-22, rowY[r], r, '#6b6b3a', 9, 600));
-    g.push(txt(colX(COLS)+22, rowY[r], r, '#6b6b3a', 9, 600));
+    g.push(txt(colX(1)-22, rowY[r], r, '#8a8366', 9, 600));
+    g.push(txt(colX(COLS)+22, rowY[r], r, '#8a8366', 9, 600));
   });
-  // 穴
+  // 穴(ソケット風 = fillはCSSの url(#socket))
   for (const key in HOLES){
     const h = HOLES[key];
-    g.push(`<rect class="hole" data-hole="${key}" x="${h.x-5}" y="${h.y-5}" width="10" height="10" rx="2"/>`);
+    g.push(`<rect class="hole" data-hole="${key}" x="${h.x-5}" y="${h.y-5}" width="10" height="10" rx="2.5"/>`);
   }
   // 部品とワイヤ用の動的レイヤ
   g.push(`<g id="bb-wires"></g><g id="bb-parts"></g>`);
