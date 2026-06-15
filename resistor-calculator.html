@@ -4,364 +4,198 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>抵抗値カラーコード計算機</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #eef0fa;
-    --surface: #ffffff;
-    --surface2: #e4e8f8;
-    --surface3: #d4d8f0;
-    --accent: #4a52cc;
-    --accent-dim: #7880dc;
-    --text: #1a1c32;
-    --text-dim: #5a6080;
-    --text-bright: #080a18;
-    --success: #1b6b3a;
-    --warning: #a04800;
-    --error: #c02020;
-    --border: #c8ccec;
-    --header-bg: #1a1e42;
-    --header-text: #b8c0ff;
-    --resistor-lead: #707080;
+    /* — Anthropic調 ウォーム・ニュートラル — */
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --text:#211F1A; --text-dim:#716C61; --text-bright:#100F0B;
+    --success:#4f6b3a; --warning:#9a5a22; --error:#b23a2e;
+    --border:#E2DCCD;
+    --serif:'Newsreader','Hiragino Mincho ProN','Yu Mincho','YuMincho',Georgia,serif;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas','Courier New',monospace;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html {
-    background: #ffffff;
-    min-height: 100vh;
-    padding: 20px 0 60px;
-  }
+  html { background: var(--ground); min-height: 100vh; padding: 26px 0 60px; }
 
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Courier New', 'Consolas', monospace;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     display: flex;
     flex-direction: column;
-    width: 820px;
-    min-width: 820px;
+    width: 840px;
+    min-width: 840px;
     margin: 0 auto;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: clip;
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(50,38,24,.04), 0 22px 48px -30px rgba(50,38,24,.30);
   }
 
   /* ── ヘッダー ── */
   header {
-    background: var(--header-bg);
-    border-bottom: 2px solid #2e3460;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 26px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
     flex-shrink: 0;
-    border-radius: 8px 8px 0 0;
+    border-radius: 13px 13px 0 0;
   }
-
+  .brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+  .brand .mark { flex-shrink: 0; }
   header h1 {
-    font-size: 1rem;
-    color: var(--header-text);
-    letter-spacing: 0.05em;
+    font-family: var(--sans); font-weight: 700; font-size: 1.32rem;
+    color: var(--text); letter-spacing: .005em; line-height: 1.15;
   }
+  .tagline { font-size: .78rem; color: var(--text-dim); margin-top: 3px; }
 
-  header h1 span {
-    color: #5a6488;
-    font-size: 0.8rem;
-    margin-left: 8px;
-  }
-
+  /* 帯数トグル */
   .band-toggle {
-    display: flex;
-    background: #0e1028;
-    border: 1px solid #3a3e68;
-    border-radius: 6px;
-    overflow: hidden;
+    display: flex; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 9px; padding: 2px; gap: 2px; flex-shrink: 0;
   }
-
   .band-toggle button {
-    background: none;
-    border: none;
-    color: #6870a8;
-    cursor: pointer;
-    padding: 6px 18px;
-    font-family: inherit;
-    font-size: 0.85rem;
-    transition: background 0.15s, color 0.15s;
+    background: none; border: none; color: var(--text-dim); cursor: pointer;
+    padding: 6px 16px; font-family: var(--sans); font-size: .82rem; font-weight: 600;
+    border-radius: 7px; transition: .14s;
   }
-
-  .band-toggle button.active {
-    background: var(--accent);
-    color: #ffffff;
-  }
-
-  .band-toggle button:hover:not(.active) {
-    background: #252850;
-    color: #9098c8;
-  }
+  .band-toggle button.active { background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-line); }
+  .band-toggle button:hover:not(.active) { color: var(--text); }
 
   /* ── メインエリア ── */
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 40px 20px 54px;
-    gap: 24px;
-  }
+  main { flex: 1; display: flex; flex-direction: column; padding: 30px 26px 36px; gap: 18px; }
 
   /* ── 抵抗SVGエリア ── */
   .resistor-area {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 28px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 1px 4px rgba(60,70,140,0.08);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 11px;
+    padding: 30px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px;
   }
-
-  #resistor-svg {
-    overflow: visible;
-  }
-
-  .band-label-row {
-    position: relative;
-  }
+  #resistor-svg { overflow: visible; }
+  .band-label-row { position: relative; }
 
   /* ── 中段 ── */
-  .middle-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  .hint-panel {
-    display: flex;
-    flex-direction: column;
-  }
-
+  .middle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .hint-panel { display: flex; flex-direction: column; }
   .hint-panel, .result-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 1px 4px rgba(60,70,140,0.08);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 20px;
   }
 
-  .hint-panel h2, .result-panel h2 {
-    font-size: 0.72rem;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 8px;
+  .hint-panel h2, .result-panel h2, .palette-area h2 {
+    font-family: var(--sans); font-weight: 600; font-size: .9rem; color: var(--text);
+    letter-spacing: .01em; margin-bottom: 13px; border-bottom: 1px solid var(--border); padding-bottom: 9px;
   }
 
   .hint-panel ol {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    padding-left: 1.3em;
-    color: var(--text-dim);
-    font-size: 0.88rem;
-    line-height: 1.4;
+    flex: 1; display: flex; flex-direction: column; justify-content: space-evenly;
+    padding-left: 1.3em; color: var(--text-dim); font-size: .86rem; line-height: 1.5;
   }
-
-  .hint-panel ol li span {
-    color: var(--accent);
-    font-weight: bold;
-  }
+  .hint-panel ol li { padding: 3px 0; }
+  .hint-panel ol li span { color: var(--accent); font-weight: 600; }
 
   .result-value {
-    font-size: 2.4rem;
-    color: var(--text-bright);
-    font-weight: bold;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin-top: 4px;
+    font-family: var(--mono); font-size: 2.3rem; color: var(--text-bright); font-weight: 700;
+    letter-spacing: -.01em; line-height: 1.1; margin-top: 4px;
   }
-
-  .result-value.placeholder {
-    color: var(--text-dim);
-    font-size: 2rem;
-  }
+  .result-value.placeholder { color: var(--text-dim); font-size: 1.9rem; }
 
   .result-tolerance {
-    margin-top: 8px;
-    font-size: 1.05rem;
-    color: var(--warning);
-    font-weight: bold;
-    min-height: 1.6rem;
+    margin-top: 8px; font-family: var(--mono); font-size: 1.02rem; color: var(--accent);
+    font-weight: 700; min-height: 1.6rem;
   }
-
   .result-range {
-    margin-top: 8px;
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    line-height: 1.8;
-    background: var(--surface2);
-    border-radius: 5px;
-    padding: 6px 10px;
-    min-height: 52px;
+    margin-top: 8px; font-size: .8rem; color: var(--text-dim); line-height: 1.8;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 7px 11px; min-height: 52px;
   }
-
-  .result-range span {
-    color: var(--text);
-    font-weight: bold;
-  }
+  .result-range span { font-family: var(--mono); color: var(--text); font-weight: 700; }
 
   .reset-btn {
-    margin-top: 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    padding: 6px 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.82rem;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    margin-top: 14px; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
+    padding: 7px 18px; border-radius: 8px; cursor: pointer; font-family: var(--sans); font-size: .82rem;
+    font-weight: 500; transition: .14s;
   }
-
-  .reset-btn:hover {
-    background: var(--surface3);
-    color: var(--text);
-    border-color: var(--accent);
-  }
+  .reset-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
 
   /* 単位トグル */
   .unit-toggle {
-    display: inline-flex;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 10px;
+    display: inline-flex; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 2px; gap: 2px; margin-bottom: 10px;
   }
   .unit-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    padding: 4px 16px;
-    font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: bold;
-    transition: background 0.15s, color 0.15s;
+    background: none; border: none; color: var(--text-dim); cursor: pointer;
+    padding: 5px 15px; font-family: var(--sans); font-size: .8rem; font-weight: 600;
+    border-radius: 6px; transition: .14s;
   }
-  .unit-btn.active {
-    background: var(--accent);
-    color: #fff;
-  }
-  .unit-btn:hover:not(.active) {
-    background: var(--surface3);
-    color: var(--text);
-  }
+  .unit-btn.active { background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-line); }
+  .unit-btn:hover:not(.active) { color: var(--text); }
 
   /* ── 色パレット ── */
   .palette-area {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    flex-shrink: 0;
-    box-shadow: 0 1px 4px rgba(60,70,140,0.08);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 11px;
+    padding: 16px 20px; flex-shrink: 0;
   }
-
-  .palette-area h2 {
-    font-size: 0.72rem;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 8px;
-  }
-
-  .palette-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 7px;
-  }
-
-  .palette-divider {
-    grid-column: 1 / -1;
-    height: 1px;
-    background: var(--border);
-    margin: 5px 0;
-  }
+  .palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+  .palette-divider { grid-column: 1 / -1; height: 1px; background: var(--border); margin: 5px 0; }
 
   .color-chip {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 9px 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    cursor: grab;
-    transition: background 0.12s, transform 0.12s, box-shadow 0.12s;
-    user-select: none;
+    display: flex; align-items: center; gap: 9px; padding: 9px 12px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    cursor: grab; transition: .12s; user-select: none;
   }
-
-  .color-chip:hover {
-    background: var(--surface3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(60,70,140,0.18);
-  }
-
+  .color-chip:hover { border-color: var(--accent-dim); transform: translateY(-2px); box-shadow: 0 5px 12px -4px rgba(60,45,28,.22); }
   .color-chip:active { cursor: grabbing; }
-
-  .color-chip.dragging {
-    opacity: 0.4;
-    transform: scale(0.93);
-  }
-
+  .color-chip.dragging { opacity: .4; transform: scale(.93); }
 
   .chip-swatch {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    flex-shrink: 0;
-    border: 1px solid rgba(0,0,0,0.15);
+    width: 24px; height: 24px; border-radius: 5px; flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,.15); box-shadow: inset 0 1px 1px rgba(255,255,255,.3);
   }
-
   .chip-swatch.is-gold {
     background: linear-gradient(160deg, #ffe566 0%, #cfb53b 35%, #ffd700 55%, #b8860b 100%);
     box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 1px 3px rgba(120,90,0,0.4);
     border-color: #b8860b;
   }
-
   .chip-swatch.is-silver {
     background: linear-gradient(160deg, #f0f0f0 0%, #b0b0b8 35%, #e0e0e8 55%, #686870 100%);
     box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 1px 3px rgba(80,80,100,0.3);
     border-color: #909098;
   }
 
-  .chip-name {
-    font-size: 0.88rem;
-    color: var(--text);
-    font-weight: bold;
-    min-width: 1.8em;
-  }
-
-  .chip-val {
-    font-size: 0.94rem;
-    color: var(--text-dim);
-    margin-left: auto;
-  }
-
+  .chip-name { font-size: .86rem; color: var(--text); font-weight: 600; min-width: 1.8em; }
+  .chip-val { font-family: var(--mono); font-size: .82rem; color: var(--text-dim); margin-left: auto; }
 
   .band-drop { cursor: crosshair; }
+
+  footer {
+    font-size: .72rem; color: var(--text-dim); text-align: center;
+    padding: 14px; border-top: 1px solid var(--border); border-radius: 0 0 13px 13px;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>⬡ 抵抗値カラーコード計算機 <span>// resistor color code</span></h1>
+  <div class="brand">
+    <svg class="mark" width="42" height="20" viewBox="0 0 48 22" aria-hidden="true">
+      <line x1="2" y1="11" x2="13" y2="11" stroke="#9aa0a8" stroke-width="2"/>
+      <line x1="35" y1="11" x2="46" y2="11" stroke="#9aa0a8" stroke-width="2"/>
+      <rect x="13" y="4" width="22" height="14" rx="3" fill="#dcc7a0" stroke="#b09a6e" stroke-width="1"/>
+      <rect x="17.5" y="4" width="2.6" height="14" fill="#8B4513"/>
+      <rect x="22.7" y="4" width="2.6" height="14" fill="#BE5A38"/>
+      <rect x="27.9" y="4" width="2.6" height="14" fill="#CC0000"/>
+    </svg>
+    <div>
+      <h1>抵抗値カラーコード計算機</h1>
+      <p class="tagline">カラーバンドから抵抗値を読み解く</p>
+    </div>
+  </div>
   <div class="band-toggle">
     <button id="btn4" class="active" onclick="setBandMode(4)">4本帯</button>
     <button id="btn5" onclick="setBandMode(5)">5本帯</button>
@@ -402,6 +236,8 @@
     <div id="palette-grid" class="palette-grid"></div>
   </div>
 </main>
+
+<footer>カラーコードは JIS C 5062 / IEC 60062 準拠。実機では必ずテスターでも確認してください。</footer>
 
 <script>
 const COLORS = [
@@ -470,11 +306,6 @@ function renderSVG() {
   const total = meta.length;
 
   // ∞ 型パス: 両端が丸く、中央がくびれた形
-  // M LCX,BY  → 上端左円頂点
-  // Q CX,(BY+CONCAV)  RCX,BY  → 上辺を凹に（中央がくぼむ）
-  // A END_HH,END_HH 0 0,1 RCX,(BY+END_HH*2)  → 右の半円
-  // Q CX,(BY+END_HH*2-CONCAV)  LCX,(BY+END_HH*2)  → 下辺を凹に
-  // A END_HH,END_HH 0 0,1 LCX,BY  → 左の半円
   const BYB   = BY + END_HH * 2;        // 77（本体下端）
   const shape = `M ${LCX},${BY} Q ${CX},${BY+CONCAV} ${RCX},${BY} A ${END_HH},${END_HH} 0 0,1 ${RCX},${BYB} Q ${CX},${BYB-CONCAV} ${LCX},${BYB} A ${END_HH},${END_HH} 0 0,1 ${LCX},${BY} Z`;
 
@@ -509,8 +340,8 @@ function renderSVG() {
   </defs>`;
 
   // リード線（胴体左右端から外へ）
-  html += `<line x1="0" y1="${CY}" x2="${BX}" y2="${CY}" stroke="#909098" stroke-width="2.5" stroke-linecap="round"/>`;
-  html += `<line x1="${BX_END}" y1="${CY}" x2="${SVG_W}" y2="${CY}" stroke="#909098" stroke-width="2.5" stroke-linecap="round"/>`;
+  html += `<line x1="0" y1="${CY}" x2="${BX}" y2="${CY}" stroke="#9098a8" stroke-width="2.5" stroke-linecap="round"/>`;
+  html += `<line x1="${BX_END}" y1="${CY}" x2="${SVG_W}" y2="${CY}" stroke="#9098a8" stroke-width="2.5" stroke-linecap="round"/>`;
 
   // 胴体（∞型、グラデーション）
   html += `<path d="${shape}" fill="url(#body-grad)" stroke="#a09070" stroke-width="1.2"/>`;
@@ -528,8 +359,8 @@ function renderSVG() {
       else                    fillAttr = `fill="${COLOR_MAP[name].hex}"`;
       strokeAttr = `stroke="rgba(0,0,0,0.22)" stroke-width="0.8"`;
     } else {
-      fillAttr   = `fill="rgba(74,82,204,0.14)"`;
-      strokeAttr = `stroke="rgba(74,82,204,0.55)" stroke-width="1.5" stroke-dasharray="3 2.5"`;
+      fillAttr   = `fill="rgba(190,90,56,0.12)"`;
+      strokeAttr = `stroke="rgba(190,90,56,0.55)" stroke-width="1.5" stroke-dasharray="3 2.5"`;
     }
     html += `<rect id="${id}" x="${bx}" y="${BY-4}" width="${BAND_W}" height="${END_HH*2+8}" ${fillAttr} ${strokeAttr} class="band-drop" data-index="${i}"/>`;
   }
@@ -545,10 +376,10 @@ function renderSVG() {
     const idx = i;
     el.addEventListener('dragover', e => {
       e.preventDefault();
-      el.setAttribute('stroke', '#4a52cc');
+      el.setAttribute('stroke', '#BE5A38');
       el.setAttribute('stroke-width', '2.5');
       el.removeAttribute('stroke-dasharray');
-      el.setAttribute('fill', bands[idx] ? el.getAttribute('fill') : 'rgba(74,82,204,0.30)');
+      el.setAttribute('fill', bands[idx] ? el.getAttribute('fill') : 'rgba(190,90,56,0.28)');
     });
     el.addEventListener('dragleave', () => restoreBandStyle(el, idx));
     el.addEventListener('drop', e => {
@@ -572,8 +403,8 @@ function restoreBandStyle(el, idx) {
     el.setAttribute('stroke-width', '0.8');
     el.removeAttribute('stroke-dasharray');
   } else {
-    el.setAttribute('fill', 'rgba(74,82,204,0.14)');
-    el.setAttribute('stroke', 'rgba(74,82,204,0.55)');
+    el.setAttribute('fill', 'rgba(190,90,56,0.12)');
+    el.setAttribute('stroke', 'rgba(190,90,56,0.55)');
     el.setAttribute('stroke-width', '1.5');
     el.setAttribute('stroke-dasharray', '3 2.5');
   }
@@ -581,8 +412,8 @@ function restoreBandStyle(el, idx) {
 
 function flashError(el, idx) {
   const orig = el.getAttribute('fill');
-  el.setAttribute('fill', '#f04040');
-  setTimeout(() => { el.setAttribute('fill', '#c02020'); }, 150);
+  el.setAttribute('fill', '#e05038');
+  setTimeout(() => { el.setAttribute('fill', '#b23a2e'); }, 150);
   setTimeout(() => { el.setAttribute('fill', orig); }, 320);
 }
 
