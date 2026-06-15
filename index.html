@@ -5,16 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電子工作ツール置き場</title>
 <meta name="description" content="自作の電子工作・学習ツール集。スマホからいつでもどうぞ。">
-<meta name="theme-color" content="#1a1e42">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef0fa; --card:#ffffff; --ink:#1a1c32; --ink-dim:#5a6080;
-    --accent:#4a52cc; --accent2:#7880dc; --border:#d4d8f0; --head:#1a1e42;
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61; --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html{background:var(--bg);}
   body{
-    font-family:-apple-system,'Segoe UI','Hiragino Kaku Gothic ProN','Meiryo',system-ui,sans-serif;
+    font-family:var(--sans); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     color:var(--ink); background:var(--bg);
     min-height:100vh; line-height:1.6;
     padding:0 16px calc(40px + env(safe-area-inset-bottom));
@@ -22,52 +27,65 @@
   .wrap{max-width:680px;margin:0 auto;}
 
   header{
-    background:linear-gradient(135deg,#1a1e42 0%,#2e3470 60%,#4a52cc 100%);
-    color:#fff; border-radius:0 0 22px 22px;
-    padding:calc(28px + env(safe-area-inset-top)) 22px 26px;
-    margin:0 -16px 22px; text-align:center;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    border-radius:0 0 22px 22px;
+    padding:calc(30px + env(safe-area-inset-top)) 22px 26px;
+    margin:0 -16px 24px; text-align:center;
+    box-shadow:0 12px 28px -22px rgba(50,38,24,.40);
   }
-  header h1{font-size:1.5rem;letter-spacing:.02em;}
-  header p{color:#c3c9ff;font-size:.86rem;margin-top:6px;}
+  header .mark{ display:block; margin:0 auto 14px; }
+  header h1{ font-family:var(--sans); font-weight:700; font-size:1.55rem; letter-spacing:.01em; color:var(--ink); }
+  header p{ color:var(--ink-dim); font-size:.85rem; margin-top:7px; }
+  header .rule{ width:46px; height:3px; background:var(--accent); border-radius:2px; margin:15px auto 0; }
 
-  .grid{display:grid;gap:14px;}
+  .grid{display:grid;gap:13px;}
   @media(min-width:560px){ .grid{grid-template-columns:1fr 1fr;} }
 
   .card{
     display:flex; align-items:center; gap:14px;
-    background:var(--card); border:1px solid var(--border); border-radius:16px;
-    padding:16px 18px; text-decoration:none; color:inherit;
-    box-shadow:0 1px 3px rgba(26,30,66,.06);
+    background:var(--surface); border:1px solid var(--border); border-radius:15px;
+    padding:15px 17px; text-decoration:none; color:inherit;
+    box-shadow:0 1px 2px rgba(50,38,24,.05);
     transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
   }
-  .card:active{ transform:scale(.98); border-color:var(--accent2); box-shadow:0 3px 12px rgba(74,82,204,.18); }
+  .card:hover{ border-color:var(--accent-dim); box-shadow:0 7px 18px -9px rgba(60,45,28,.30); transform:translateY(-1px); }
+  .card:active{ transform:scale(.985); }
   .ico{
-    flex-shrink:0; width:52px; height:52px; border-radius:14px;
-    display:grid; place-items:center; font-size:1.7rem;
-    background:var(--accent-bg,#e8ebff);
+    flex-shrink:0; width:50px; height:50px; border-radius:13px;
+    display:grid; place-items:center; font-size:1.6rem;
+    background:var(--accent-bg,#F2E9D8); border:1px solid rgba(80,60,30,.06);
   }
   .meta{min-width:0;}
-  .meta .t{font-weight:700;font-size:1.02rem;}
-  .meta .d{color:var(--ink-dim);font-size:.8rem;margin-top:2px;}
-  .arrow{margin-left:auto;color:var(--accent2);font-size:1.3rem;flex-shrink:0;}
+  .meta .t{ font-weight:700; font-size:1rem; color:var(--ink); }
+  .meta .d{ color:var(--ink-dim); font-size:.78rem; margin-top:2px; }
+  .arrow{ margin-left:auto; color:var(--accent-dim); font-size:1.3rem; flex-shrink:0; transition:color .12s; }
+  .card:hover .arrow{ color:var(--accent); }
 
   .note{
-    margin-top:22px; font-size:.76rem; color:var(--ink-dim);
-    background:#e4e8f8; border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+    margin-top:22px; font-size:.76rem; color:var(--ink-dim); line-height:1.7;
+    background:var(--accent-soft); border:1px solid var(--accent-line); border-radius:12px; padding:12px 14px;
   }
-  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:20px;}
+  footer{ text-align:center; color:var(--ink-dim); font-size:.72rem; margin-top:22px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>🛠️ 電子工作ツール置き場</h1>
+    <svg class="mark" width="50" height="26" viewBox="0 0 56 28" aria-hidden="true">
+      <line x1="9" y1="14" x2="47" y2="14" stroke="var(--accent)" stroke-width="2.6"/>
+      <circle cx="9" cy="14" r="5" fill="var(--accent)"/>
+      <circle cx="28" cy="14" r="5.6" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.6"/>
+      <circle cx="47" cy="14" r="5" fill="var(--accent)"/>
+    </svg>
+    <h1>電子工作ツール置き場</h1>
     <p>自作の学習ツール集 ― スマホからいつでもどうぞ</p>
+    <div class="rule"></div>
   </header>
 
   <nav class="grid">
     <a class="card" href="breadboard-designer.html">
-      <span class="ico" style="--accent-bg:#dff0e6">🔌</span>
+      <span class="ico" style="--accent-bg:#E7EDDC">🔌</span>
       <span class="meta">
         <span class="t">ブレッドボード配置デザイナー</span>
         <span class="d">回路図 ↔ ブレッドボード配置を学ぶ</span>
@@ -76,7 +94,7 @@
     </a>
 
     <a class="card" href="resistor-calculator.html">
-      <span class="ico" style="--accent-bg:#fbeede">🎨</span>
+      <span class="ico" style="--accent-bg:#F4E7DB">🎨</span>
       <span class="meta">
         <span class="t">抵抗値カラーコード計算機</span>
         <span class="d">カラーバンドから抵抗値を計算</span>
@@ -85,7 +103,7 @@
     </a>
 
     <a class="card" href="shooting-game/index.html">
-      <span class="ico" style="--accent-bg:#f3e2f5">🚀</span>
+      <span class="ico" style="--accent-bg:#ECE5D6">🚀</span>
       <span class="meta">
         <span class="t">シューティングゲーム</span>
         <span class="d">息抜きに</span>
