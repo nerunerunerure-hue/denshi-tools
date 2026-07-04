@@ -8,6 +8,9 @@
 <meta property="og:title" content="配信ウィジェット工房 | OBS用無料オーバーレイ作成">
 <meta property="og:description" content="タイマー・時計・目標カウンター・待機画面をノーコードでカスタマイズ。OBSにURLを貼るだけ。">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://nerunerunerure-hue.github.io/denshi-tools/stream-widgets.html">
+<meta property="og:image" content="https://nerunerunerure-hue.github.io/denshi-tools/og-stream-widgets.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F1EEE5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,6 +46,17 @@ header.top{
 header.top h1{ font-weight:700; font-size:1.7rem; letter-spacing:.01em; }
 header.top p{ color:var(--ink-dim); font-size:.9rem; margin-top:8px; }
 header.top .rule{ width:46px; height:3px; background:var(--accent); border-radius:2px; margin:16px auto 0; }
+header.top .badges{
+  display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:18px;
+}
+header.top .badge{
+  background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-line);
+  font-size:.74rem; font-weight:700; padding:5px 12px; border-radius:20px; letter-spacing:.01em;
+}
+
+/* ── スタジオ 2カラムレイアウト ── */
+body.studio .studio-grid{ display:block; }
+body.studio .col-right .premium-card.compact{ display:none; }
 
 /* ── セクション共通 ── */
 section.panel{
@@ -70,34 +84,47 @@ section.panel h2 .num{
 .theme-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
 .theme-card{
   position:relative; border:2px solid var(--border); border-radius:13px; overflow:hidden; cursor:pointer;
-  background:#20201f; transition:.15s; text-align:left;
+  background:#20201f; transition:.15s; text-align:left; padding:0;
 }
 .theme-card:hover{ transform:translateY(-2px); box-shadow:0 8px 18px -10px rgba(50,38,24,.4); }
 .theme-card.selected{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
 .theme-swatch{
-  height:64px; display:flex; align-items:center; justify-content:center; font-size:.95rem; font-weight:700;
-  position:relative;
+  height:76px; display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
 }
-.theme-card .name{
-  background:var(--surface); color:var(--ink); font-size:.76rem; font-weight:600; text-align:center;
-  padding:7px 6px; border-top:1px solid var(--border);
+.theme-swatch .tg-text{ font-size:26px; line-height:1; white-space:nowrap; }
+.theme-card .namerow{
+  background:var(--surface); color:var(--ink); font-size:.76rem; font-weight:600;
+  padding:7px 9px; border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
 }
-.theme-card .lock{
-  position:absolute; top:5px; right:6px; font-size:.85rem; filter:drop-shadow(0 1px 1px rgba(0,0,0,.5));
+.theme-card .namerow .tname{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.theme-card .tagpill{
+  font-size:.62rem; font-weight:700; padding:2px 7px; border-radius:20px; letter-spacing:.02em; flex-shrink:0;
 }
+.theme-card .tagpill.free{ background:#e4efd9; color:var(--success); }
+.theme-card .tagpill.locked{ background:var(--accent-soft); color:var(--accent); }
+.theme-swatch .tagpill{ position:absolute; top:6px; right:6px; z-index:2; box-shadow:0 1px 5px rgba(0,0,0,.3); }
 
 /* ── 設定フォーム ── */
-.form-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px; }
+.form-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px 14px; }
 .field{ display:flex; flex-direction:column; gap:6px; }
+.field.span2{ grid-column:1 / -1; }
 .field label{ font-size:.78rem; color:var(--ink-dim); font-weight:600; }
 .field input[type=text], .field input[type=number], .field select{
   background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:8px 11px;
   font-family:var(--sans); font-size:.88rem; color:var(--ink); width:100%;
 }
-.field input[type=color]{ width:100%; height:38px; border:1px solid var(--border); border-radius:9px; padding:2px; background:var(--surface2); cursor:pointer; }
+.field input[type=color]{ width:44px; height:36px; border:1px solid var(--border); border-radius:9px; padding:2px; background:var(--surface2); cursor:pointer; flex-shrink:0; }
 .field input:focus, .field select:focus{ outline:2px solid var(--accent-dim); outline-offset:1px; }
 .checkrow{ display:flex; align-items:center; gap:8px; font-size:.85rem; color:var(--ink); }
-.checkrow input{ width:16px; height:16px; accent-color:var(--accent); }
+.checkrow input{ width:16px; height:16px; accent-color:var(--accent); flex-shrink:0; }
+.options-row{
+  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center;
+  background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:10px 13px;
+}
+.accent-row{ display:flex; align-items:center; gap:8px; }
+.accent-row .btn.ghost{ padding:8px 12px; font-size:.78rem; }
 
 /* ── プレビュー ── */
 .preview-toolbar{ display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
@@ -108,18 +135,33 @@ section.panel h2 .num{
 }
 .chipbtn.active{ background:var(--accent-soft); color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent-line); }
 .chipbtn:hover:not(.active){ color:var(--ink); }
-.preview-stage{
+.preview-outer{
   position:relative; border:1px solid var(--border); border-radius:12px; overflow:hidden;
-  height:340px; background:
-    linear-gradient(45deg,#bbb 25%,transparent 25%) -10px 0/20px 20px,
-    linear-gradient(-45deg,#bbb 25%,transparent 25%) -10px 0/20px 20px,
-    linear-gradient(45deg,transparent 75%,#bbb 75%) -10px 0/20px 20px,
-    linear-gradient(-45deg,transparent 75%,#bbb 75%) -10px 0/20px 20px,
-    #ddd;
+  background:var(--surface2); display:flex; align-items:center; justify-content:center; padding:10px;
+}
+.preview-stage{
+  position:relative; overflow:hidden; width:100%; max-width:100%; border-radius:6px;
+  background:
+    linear-gradient(45deg,#ececec 25%,transparent 25%) 0 0/12px 12px,
+    linear-gradient(-45deg,#ececec 25%,transparent 25%) 0 0/12px 12px,
+    linear-gradient(45deg,transparent 75%,#ececec 75%) 0 0/12px 12px,
+    linear-gradient(-45deg,transparent 75%,#ececec 75%) 0 0/12px 12px,
+    #f6f6f6;
+  background-position:0 0,0 6px,6px -6px,-6px 0px;
 }
 .preview-stage.bg-black{ background:#111; }
 .preview-stage.bg-white{ background:#fff; }
-.preview-stage iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+.preview-stage iframe{ position:absolute; top:0; left:0; border:0; transform-origin:0 0; }
+.preview-dims{
+  position:absolute; top:8px; right:8px; z-index:6; background:rgba(33,31,26,.68); color:#fff;
+  font-size:.68rem; font-weight:600; padding:4px 9px; border-radius:20px; letter-spacing:.01em;
+  pointer-events:none;
+}
+.preview-hint{
+  font-size:.8rem; color:var(--ink-dim); margin-top:10px; background:var(--surface2);
+  border:1px solid var(--border); border-radius:9px; padding:9px 12px; line-height:1.6;
+}
+.preview-hint b{ color:var(--ink); }
 
 /* ── 出力エリア ── */
 .url-box{
@@ -161,6 +203,10 @@ details.howto ol li b{ color:var(--ink); }
 .premium-card h3{ font-size:1.15rem; margin-bottom:6px; }
 .premium-card p{ color:var(--ink-dim); font-size:.86rem; }
 .premium-card .price{ color:var(--accent); font-weight:700; }
+.premium-card.compact{ padding:16px 18px; gap:14px; margin-bottom:0; }
+.premium-card.compact h3{ font-size:.95rem; }
+.premium-card.compact p{ font-size:.78rem; }
+.premium-card.compact .txt{ flex:1 1 160px; }
 
 footer.bottom{ text-align:center; color:var(--ink-dim); font-size:.8rem; margin-top:26px; }
 footer.bottom a{ color:var(--accent); text-decoration:none; font-weight:600; }
@@ -168,9 +214,26 @@ footer.bottom a:hover{ text-decoration:underline; }
 footer.bottom .sep{ margin:0 10px; opacity:.5; }
 
 @media(max-width:640px){
-  .preview-stage{ height:220px; }
   section.panel{ padding:18px; }
   header.top h1{ font-size:1.4rem; }
+  header.top .badges{ gap:6px; }
+  header.top .badge{ font-size:.68rem; padding:4px 9px; }
+  .form-grid{ grid-template-columns:1fr; }
+}
+
+/* ── スタジオ 2カラム化（1080px以上） ── */
+@media(min-width:1080px){
+  body.studio .wrap{ max-width:1240px; }
+  body.studio .studio-grid{
+    display:grid; grid-template-columns:1fr 500px; gap:22px; align-items:start;
+  }
+  body.studio .col-right{
+    position:sticky; top:18px; align-self:start;
+  }
+  /* デスクトップの右カラムでは、フル版CTAをコンパクト表示に差し替え、
+     左カラム側の通常サイズCTAは隠す（重複表示を避ける） */
+  body.studio .col-left > .premium-card.full{ display:none; }
+  body.studio .col-right .premium-card.compact{ display:flex; }
 }
 </style>
 </head>
@@ -208,6 +271,8 @@ const THEMES = {
   plain: {
     name:'シンプル白', free:true, font:"'Zen Kaku Gothic New',sans-serif",
     swatchBg:'#3a3a3a', swatchFg:'#fff', accent:'#ffffff',
+    swatchCss:`color:#fff; font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700;
+      text-shadow:0 2px 10px rgba(0,0,0,.35),0 1px 2px rgba(0,0,0,.4);`,
     css:`
       .w-text{ color:var(--c1,#fff); text-shadow:0 2px 10px rgba(0,0,0,.35),0 1px 2px rgba(0,0,0,.4); }
       .w-sub{ color:rgba(255,255,255,.82); text-shadow:0 1px 6px rgba(0,0,0,.3); }
@@ -216,7 +281,9 @@ const THEMES = {
   },
   neon: {
     name:'ネオン', free:true, font:"'Zen Kaku Gothic New',sans-serif", numFont:"'Orbitron',sans-serif",
-    swatchBg:'#0a0a14', swatchFg:'#0ff', accent:'#0ff',
+    swatchBg:'#0a0a14', swatchFg:'#0ff', accent:'#4dfaff',
+    swatchCss:`color:#4dfaff; font-family:'Orbitron',sans-serif; font-weight:700;
+      text-shadow:0 0 6px #4dfaff,0 0 16px #4dfaff,0 0 34px #ff2fe0,0 0 3px #fff;`,
     css:`
       .w-text{ color:var(--c1,#4dfaff); font-family:'Orbitron',sans-serif;
         text-shadow:0 0 6px var(--c1,#4dfaff),0 0 16px var(--c1,#4dfaff),0 0 34px #ff2fe0,0 0 3px #fff; }
@@ -227,6 +294,8 @@ const THEMES = {
   pop: {
     name:'ポップ', free:true, font:"'M PLUS Rounded 1c',sans-serif",
     swatchBg:'#ffde59', swatchFg:'#ff4d6d', accent:'#ff4d6d',
+    swatchCss:`color:#ff4d6d; font-family:'M PLUS Rounded 1c',sans-serif; font-weight:900;
+      -webkit-text-stroke:5px #fff; paint-order:stroke fill; filter:drop-shadow(2px 4px 0 rgba(0,0,0,.18));`,
     css:`
       .w-text{ color:var(--c1,#ff4d6d); font-weight:900;
         -webkit-text-stroke:6px #fff; paint-order:stroke fill;
@@ -241,6 +310,8 @@ const THEMES = {
   cyber: {
     name:'サイバーHUD', free:false, font:"'Share Tech Mono',monospace",
     swatchBg:'#04140f', swatchFg:'#39ff9d', accent:'#39ff9d',
+    swatchCss:`color:#39ff9d; font-family:'Share Tech Mono',monospace; letter-spacing:.04em; font-weight:700;
+      text-shadow:0 0 4px #39ff9d,0 0 12px rgba(57,255,157,.6);`,
     css:`
       .w-text{ color:var(--c1,#39ff9d); font-family:'Share Tech Mono',monospace; letter-spacing:.04em;
         text-shadow:0 0 4px var(--c1,#39ff9d),0 0 12px rgba(57,255,157,.6); }
@@ -260,7 +331,10 @@ const THEMES = {
   },
   sumi: {
     name:'和・墨', free:false, font:"'Shippori Mincho',serif",
-    swatchBg:'#efe9dd', swatchFg:'#2b2620', accent:'#a3312a',
+    swatchBg:'#f2ecdf', swatchFg:'#2b2620', accent:'#a3312a',
+    swatchCss:`color:#2b2620; font-family:'Shippori Mincho',serif; font-weight:600;
+      text-shadow:0 1px 3px rgba(0,0,0,.15); position:relative; padding-bottom:10px;
+      border-bottom:3px solid #a3312a; display:inline-block;`,
     css:`
       .w-text{ color:#2b2620; font-family:'Shippori Mincho',serif; font-weight:600;
         text-shadow:0 1px 3px rgba(0,0,0,.15); position:relative; padding-bottom:14px; }
@@ -275,6 +349,10 @@ const THEMES = {
   yume: {
     name:'ゆめかわ', free:false, font:"'M PLUS Rounded 1c',sans-serif",
     swatchBg:'#ffd6f6', swatchFg:'#b06bd6', accent:'#ff9ad6',
+    swatchCss:`font-family:'M PLUS Rounded 1c',sans-serif; font-weight:700;
+      background:linear-gradient(90deg,#ffb6f2,#c8b6ff,#b6f0ff,#ffb6f2); background-size:300% 100%;
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      filter:drop-shadow(0 0 8px rgba(255,182,242,.7));`,
     css:`
       .w-text{ font-weight:700;
         background:linear-gradient(90deg,#ffb6f2,#c8b6ff,#b6f0ff,#ffb6f2);
@@ -290,6 +368,8 @@ const THEMES = {
   pixel: {
     name:'レトロゲーム', free:false, font:"'DotGothic16',sans-serif",
     swatchBg:'#1a1a2e', swatchFg:'#ffe66d', accent:'#ffe66d',
+    swatchCss:`color:#ffe66d; font-family:'DotGothic16',sans-serif; font-weight:700;
+      text-shadow:2px 2px 0 #1a1a2e,-2px -2px 0 #1a1a2e; letter-spacing:.02em;`,
     css:`
       .w-text{ color:var(--c1,#ffe66d); font-family:'DotGothic16',sans-serif;
         text-shadow:3px 3px 0 #1a1a2e,-2px -2px 0 #1a1a2e; image-rendering:pixelated; letter-spacing:.02em; }
@@ -302,6 +382,10 @@ const THEMES = {
   glass: {
     name:'ガラス', free:false, font:"'Zen Kaku Gothic New',sans-serif",
     swatchBg:'#89b4d6', swatchFg:'#fff', accent:'#ffffff',
+    swatchCss:`color:#fff; font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700;
+      text-shadow:0 2px 12px rgba(0,0,40,.25); background:rgba(255,255,255,.16);
+      backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.4); border-radius:12px;
+      padding:8px 18px; box-shadow:0 6px 20px rgba(0,0,20,.18), inset 0 1px 0 rgba(255,255,255,.5);`,
     css:`
       .w-text{ color:#fff; text-shadow:0 2px 12px rgba(0,0,40,.25); }
       .w-sub{ color:rgba(255,255,255,.85); }
@@ -316,6 +400,9 @@ const THEMES = {
   gold: {
     name:'ラグジュアリー', free:false, font:"'Shippori Mincho',serif",
     swatchBg:'#1c1a14', swatchFg:'#e8c874', accent:'#e8c874',
+    swatchCss:`font-family:'Shippori Mincho',serif; font-weight:600;
+      background:linear-gradient(100deg,#8a6a2f,#f3da8a,#c9982f,#f6e6b0,#8a6a2f); background-size:250% 100%;
+      -webkit-background-clip:text; background-clip:text; color:transparent;`,
     css:`
       .w-text{ font-family:'Shippori Mincho',serif; font-weight:600;
         background:linear-gradient(100deg,#8a6a2f,#f3da8a,#c9982f,#f6e6b0,#8a6a2f);
@@ -332,6 +419,8 @@ const THEMES = {
   aurora: {
     name:'オーロラ', free:false, font:"'Zen Kaku Gothic New',sans-serif",
     swatchBg:'#0d1b2a', swatchFg:'#7ee8c7', accent:'#7ee8c7',
+    swatchCss:`color:#eafffb; font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700;
+      text-shadow:0 0 10px rgba(126,232,199,.7),0 0 26px rgba(120,160,255,.55);`,
     css:`
       .w-text{ color:#eafffb; text-shadow:0 0 10px rgba(126,232,199,.7),0 0 26px rgba(120,160,255,.55); }
       .w-sub{ color:#bfe8ff; text-shadow:0 0 8px rgba(120,160,255,.5); }
@@ -342,6 +431,8 @@ const THEMES = {
   noir: {
     name:'ミニマル黒', free:false, font:"'Zen Kaku Gothic New',sans-serif",
     swatchBg:'#0b0b0b', swatchFg:'#fff', accent:'#e0332f',
+    swatchCss:`color:#fff; font-family:'Zen Kaku Gothic New',sans-serif; font-weight:900; letter-spacing:-.01em;
+      background:rgba(10,10,10,.72); border-radius:10px; padding:8px 20px;`,
     css:`
       .w-text{ color:#fff; font-weight:900; letter-spacing:-.01em; }
       .w-sub{ color:#b7b7b7; }
@@ -354,6 +445,8 @@ const THEMES = {
   sakura: {
     name:'桜', free:false, font:"'Zen Kaku Gothic New',sans-serif",
     swatchBg:'#3a222a', swatchFg:'#ffc2d9', accent:'#ff9ec2',
+    swatchCss:`color:#fff0f5; font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700;
+      text-shadow:0 0 10px rgba(255,158,194,.7),0 2px 8px rgba(80,20,40,.4);`,
     css:`
       .w-text{ color:#fff0f5; text-shadow:0 0 10px rgba(255,158,194,.7),0 2px 8px rgba(80,20,40,.4); }
       .w-sub{ color:#ffd4e6; text-shadow:0 1px 6px rgba(80,20,40,.35); }
@@ -519,25 +612,43 @@ function renderTimer(root, p, theme, themeId){
         remainMs += (pomoIsWork ? wmin : bmin) * 60000;
       }
     } else if(remainMs <= 0){
-      remainMs = 0; running = false;
+      remainMs = 0;
+      if(running) finished = true; // down到達の瞬間だけ演出をトリガー
+      running = false;
     }
   }
+  let finished = false;
   function render(){
     sync();
     disp.textContent = fmt(mode === 'up' ? elapsedMs : remainMs);
+    if(finished){
+      finished = false;
+      if(mode === 'down') disp.classList.add('w-finished');
+    }
   }
   render();
   setInterval(render, 200); // rAFは非表示時に完全停止するためsetIntervalで駆動
 
-  // 演出用キーフレーム（フェーズ切替時）
+  // 演出用キーフレーム（フェーズ切替時・カウントダウン終了時）
   const kf = document.createElement('style');
-  kf.textContent = `@keyframes phasePulse{ 0%{ transform:scale(1.12); filter:brightness(1.3);} 100%{ transform:scale(1); filter:brightness(1);} }`;
+  kf.textContent = `
+    @keyframes phasePulse{ 0%{ transform:scale(1.12); filter:brightness(1.3);} 100%{ transform:scale(1); filter:brightness(1);} }
+    @keyframes timerBlink{ 0%,100%{ opacity:1;} 50%{ opacity:.15;} }
+    .w-finished{ animation:timerBlink .5s ease-in-out 4; }
+  `;
   document.head.appendChild(kf);
 
   document.body.addEventListener('click', ()=>{
     sync(); // 停止直前までの経過を確定してから切り替える
+    if(mode === 'down' && remainMs <= 0){
+      // 終了後のクリックは点滅解除のみ。再開はダブルクリック(リセット)から
+      running = false;
+      disp.classList.remove('w-finished');
+      return;
+    }
     running = !running;
     anchor = Date.now();
+    disp.classList.remove('w-finished');
     render();
   });
   document.body.addEventListener('dblclick', (e)=>{
@@ -547,6 +658,7 @@ function renderTimer(root, p, theme, themeId){
     remainMs = mode === 'down' ? minParam*60000 : (mode==='pomo' ? wmin*60000 : 0);
     pomoIsWork = true; pomoCycle = 1;
     if(phaseEl) phaseEl.textContent = '作業 #1';
+    disp.classList.remove('w-finished');
     anchor = Date.now();
     render();
   });
@@ -651,6 +763,10 @@ function renderStandby(root, p, theme, themeId){
   const sub = p.get('sub') || '';
   const until = p.get('until'); // HH:MM
   const showClock = p.get('clock') === '1';
+  const sizeParam = p.get('size');
+  const mainSize = sizeParam ? parseFloat(sizeParam) : 64; // 既定は現行同様64px
+  const subSize = sizeParam ? mainSize * 0.28 : 22; // 既存の .w-sub 比率(size*0.28)相当。無指定時は現行既定22pxを維持
+  const cdSize = mainSize * 0.75; // カウントダウンはメインの0.75倍（無指定時64*0.75=48pxで現行と一致）
 
   document.documentElement.style.background = '';
   document.body.style.background = '';
@@ -665,10 +781,10 @@ function renderStandby(root, p, theme, themeId){
 
   root.innerHTML = `
     <div class="w-card">
-      <div class="w-text" id="stext" style="font-size:64px">${escHtml(text)}</div>
-      ${sub ? `<div class="w-sub">${escHtml(sub)}</div>` : ''}
-      ${until ? '<div class="w-text" id="countdown" style="font-size:48px;margin-top:8px"></div>' : ''}
-      ${showClock ? '<div class="w-sub" id="nowclock"></div>' : ''}
+      <div class="w-text" id="stext" style="font-size:${mainSize}px">${escHtml(text)}</div>
+      ${sub ? `<div class="w-sub" style="font-size:${subSize}px">${escHtml(sub)}</div>` : ''}
+      ${until ? `<div class="w-text" id="countdown" style="font-size:${cdSize}px;margin-top:8px"></div>` : ''}
+      ${showClock ? `<div class="w-sub" style="font-size:${subSize}px" id="nowclock"></div>` : ''}
     </div>
   `;
 
@@ -788,65 +904,89 @@ function buildApp(){
         <h1>配信ウィジェット工房</h1>
         <p>OBSにURLを貼るだけ。配信画面をかんたんデコレーション</p>
         <div class="rule"></div>
+        <div class="badges">
+          <span class="badge">✓ 無料で使える</span>
+          <span class="badge">✓ OBS対応・背景透過</span>
+          <span class="badge">✓ テーマ12種</span>
+        </div>
       </header>
 
-      <section class="panel">
-        <h2><span class="num">1</span>ウィジェット種別</h2>
-        <div class="tabbar" id="tabbar"></div>
-      </section>
+      <div class="studio-grid">
+        <div class="col-left">
+          <section class="panel">
+            <h2><span class="num">1</span>ウィジェット種別</h2>
+            <div class="tabbar" id="tabbar"></div>
+          </section>
 
-      <section class="panel">
-        <h2><span class="num">2</span>テーマを選ぶ</h2>
-        <div class="theme-grid" id="themeGrid"></div>
-      </section>
+          <section class="panel">
+            <h2><span class="num">2</span>テーマを選ぶ</h2>
+            <div class="theme-grid" id="themeGrid"></div>
+          </section>
 
-      <section class="panel">
-        <h2><span class="num">3</span>設定</h2>
-        <div class="form-grid" id="formGrid"></div>
-      </section>
+          <section class="panel">
+            <h2><span class="num">3</span>設定</h2>
+            <div class="form-grid" id="formGrid"></div>
+          </section>
 
-      <section class="panel">
-        <h2><span class="num">4</span>ライブプレビュー</h2>
-        <div class="preview-toolbar">
-          <button class="chipbtn" data-bg="checker">市松</button>
-          <button class="chipbtn" data-bg="black">黒</button>
-          <button class="chipbtn" data-bg="white">白</button>
-          <div class="spacer"></div>
+          <section class="panel">
+            <details class="howto">
+              <summary>使い方（OBSでの設定手順）</summary>
+              <ol>
+                <li>OBSの「ソース」パネルで <b>＋ → ブラウザ</b> を選択</li>
+                <li>上のURLを貼り付け、推奨サイズを <b>幅・高さ</b> に入力</li>
+                <li>操作（開始/一時停止・リセットなど）は、ソースを右クリック →
+                  <b>「対話」</b> ウィンドウを開いてクリック操作</li>
+                <li>背景は最初から透過なので、そのまま配信画面に重ねてOK
+                  （待機画面のみ不透明の演出背景です）</li>
+              </ol>
+            </details>
+          </section>
+
+          <div class="premium-card full">
+            <div class="txt">
+              <h3>フル版（<span class="price">¥500</span>）</h3>
+              <p>全12テーマ解放・オフライン同梱ファイル・商用利用OK。一度の購入でずっと使えます。</p>
+            </div>
+            <a class="btn" href="${BOOTH_URL}" target="_blank" rel="noopener noreferrer">BOOTHで見る →</a>
+          </div>
         </div>
-        <div class="preview-stage" id="stage">
-          <iframe id="previewFrame" title="ウィジェットプレビュー"></iframe>
-        </div>
-      </section>
 
-      <section class="panel">
-        <h2><span class="num">5</span>OBSに貼るURL</h2>
-        <div class="url-box">
-          <input type="text" id="urlOut" readonly>
-          <button class="btn" id="copyBtn">OBS用URLをコピー</button>
-        </div>
-        <p class="size-hint" id="sizeHint"></p>
-      </section>
+        <div class="col-right">
+          <section class="panel">
+            <h2><span class="num">4</span>ライブプレビュー</h2>
+            <div class="preview-toolbar">
+              <button class="chipbtn" data-bg="checker">市松</button>
+              <button class="chipbtn" data-bg="black">黒</button>
+              <button class="chipbtn" data-bg="white">白</button>
+              <div class="spacer"></div>
+              <button class="chipbtn" id="reloadBtn" type="button">⟳ 再読み込み</button>
+            </div>
+            <div class="preview-outer">
+              <div class="preview-stage" id="stage">
+                <iframe id="previewFrame" title="ウィジェットプレビュー"></iframe>
+                <span class="preview-dims" id="previewDims"></span>
+              </div>
+            </div>
+            <p class="preview-hint" id="previewHint"></p>
+          </section>
 
-      <section class="panel">
-        <details class="howto">
-          <summary>使い方（OBSでの設定手順）</summary>
-          <ol>
-            <li>OBSの「ソース」パネルで <b>＋ → ブラウザ</b> を選択</li>
-            <li>上のURLを貼り付け、推奨サイズを <b>幅・高さ</b> に入力</li>
-            <li>操作（開始/一時停止・リセットなど）は、ソースを右クリック →
-              <b>「対話」</b> ウィンドウを開いてクリック操作</li>
-            <li>背景は最初から透過なので、そのまま配信画面に重ねてOK
-              （待機画面のみ不透明の演出背景です）</li>
-          </ol>
-        </details>
-      </section>
+          <section class="panel">
+            <h2><span class="num">5</span>OBSに貼るURL</h2>
+            <div class="url-box">
+              <input type="text" id="urlOut" readonly>
+              <button class="btn" id="copyBtn">OBS用URLをコピー</button>
+            </div>
+            <p class="size-hint" id="sizeHint"></p>
+          </section>
 
-      <div class="premium-card">
-        <div class="txt">
-          <h3>フル版（<span class="price">¥500</span>）</h3>
-          <p>全12テーマ解放・オフライン同梱ファイル・商用利用OK。一度の購入でずっと使えます。</p>
+          <div class="premium-card compact">
+            <div class="txt">
+              <h3>フル版（<span class="price">¥500</span>）</h3>
+              <p>全12テーマ解放・商用利用OK</p>
+            </div>
+            <a class="btn" href="${BOOTH_URL}" target="_blank" rel="noopener noreferrer">BOOTHで見る →</a>
+          </div>
         </div>
-        <a class="btn" href="${BOOTH_URL}" target="_blank" rel="noopener noreferrer">BOOTHで見る →</a>
       </div>
 
       <footer class="bottom">
@@ -860,6 +1000,8 @@ function buildApp(){
   buildFormGrid();
   bindBgToggle();
   bindCopyButton();
+  bindReloadButton();
+  window.addEventListener('resize', fitPreview);
   updateAll();
 }
 
@@ -879,25 +1021,46 @@ function buildTabbar(){
   });
 }
 
+/* テーマごとの swatchCss を <style> に一括注入（初回だけでよい） */
+let themeSampleStylesInjected = false;
+function injectThemeSampleStyles(){
+  if(themeSampleStylesInjected) return;
+  themeSampleStylesInjected = true;
+  const css = THEME_IDS.map(id=>{
+    const t = THEMES[id];
+    if(!t.swatchCss) return '';
+    return `.theme-card[data-t="${id}"] .tg-text{ ${t.swatchCss} }`;
+  }).join('\n');
+  const style = document.createElement('style');
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+
 function buildThemeGrid(){
+  injectThemeSampleStyles();
   const grid = document.getElementById('themeGrid');
   grid.innerHTML = THEME_IDS.map(id=>{
     const t = THEMES[id];
     const locked = isPremium(id);
     return `
       <button type="button" class="theme-card ${id===state.theme?'selected':''}" data-t="${id}">
-        <span class="theme-swatch" style="background:${t.swatchBg};color:${t.swatchFg};font-family:${t.font}">
-          Aa
-          ${locked ? '<span class="lock">🔒</span>' : ''}
+        <span class="theme-swatch" style="background:${t.swatchBg}">
+          <span class="tg-text">25:00</span>
+          ${locked ? '<span class="tagpill locked">🔒 フル版</span>' : '<span class="tagpill free">無料</span>'}
         </span>
-        <span class="name">${t.name}</span>
+        <span class="namerow">
+          <span class="tname">${t.name}</span>
+        </span>
       </button>
     `;
   }).join('');
   grid.querySelectorAll('.theme-card').forEach(card=>{
     card.addEventListener('click', ()=>{
       state.theme = card.dataset.t;
+      // テーマ切替時は c1 を自動リセット（ピッカーはそのテーマのaccent色に同期）
+      fieldsFor(state.widget).c1 = '';
       buildThemeGrid();
+      buildFormGrid();
       updateAll();
     });
   });
@@ -907,7 +1070,9 @@ function buildThemeGrid(){
 function buildFormGrid(){
   const grid = document.getElementById('formGrid');
   const f = fieldsFor(state.widget);
+  const themeAccent = themeOf(state.theme).accent || '#be5a38';
   let html = '';
+  let options = ''; // チェックボックス類はまとめて「オプション」行に
 
   if(state.widget === 'timer'){
     html += `
@@ -924,14 +1089,16 @@ function buildFormGrid(){
         <div class="field"><label>作業時間（分）</label><input type="number" min="0.1" step="1" data-k="wmin" value="${f.wmin}"></div>
         <div class="field"><label>休憩時間（分）</label><input type="number" min="0.1" step="1" data-k="bmin" value="${f.bmin}"></div>
       ` : ''}
-      <div class="field"><label>&nbsp;</label><label class="checkrow"><input type="checkbox" data-k="as" ${f.as?'checked':''}> 自動スタート</label></div>
-      <div class="field"><label>&nbsp;</label><label class="checkrow"><input type="checkbox" data-k="h" ${f.h?'checked':''}> 時間桁を常時表示</label></div>
+    `;
+    options += `
+      <label class="checkrow"><input type="checkbox" data-k="as" ${f.as?'checked':''}> 自動スタート</label>
+      <label class="checkrow"><input type="checkbox" data-k="h" ${f.h?'checked':''}> 時間桁を常時表示</label>
     `;
   } else if(state.widget === 'clock'){
-    html += `
-      <div class="field"><label>&nbsp;</label><label class="checkrow"><input type="checkbox" data-k="sec" ${f.sec?'checked':''}> 秒を表示</label></div>
-      <div class="field"><label>&nbsp;</label><label class="checkrow"><input type="checkbox" data-k="date" ${f.date?'checked':''}> 日付を表示</label></div>
-      <div class="field"><label>&nbsp;</label><label class="checkrow"><input type="checkbox" data-k="h12" ${f.h12?'checked':''}> 12時間制</label></div>
+    options += `
+      <label class="checkrow"><input type="checkbox" data-k="sec" ${f.sec?'checked':''}> 秒を表示</label>
+      <label class="checkrow"><input type="checkbox" data-k="date" ${f.date?'checked':''}> 日付を表示</label>
+      <label class="checkrow"><input type="checkbox" data-k="h12" ${f.h12?'checked':''}> 12時間制</label>
     `;
   } else if(state.widget === 'counter'){
     html += `
@@ -939,20 +1106,31 @@ function buildFormGrid(){
       <div class="field"><label>目標値（空欄で進捗バー無し）</label><input type="number" data-k="goal" value="${f.goal}"></div>
       <div class="field"><label>初期値</label><input type="number" data-k="start" value="${f.start}"></div>
       <div class="field"><label>単位</label><input type="text" data-k="unit" value="${escHtml(f.unit)}" placeholder="例: 人 / 円 / 個"></div>
-      <div class="field"><label>保存キー（空欄で保存しない）</label><input type="text" data-k="store" value="${escHtml(f.store)}" placeholder="例: subgoal2026"></div>
+      <div class="field span2"><label>保存キー（空欄で保存しない）</label><input type="text" data-k="store" value="${escHtml(f.store)}" placeholder="例: subgoal2026"></div>
     `;
   } else if(state.widget === 'standby'){
     html += `
-      <div class="field"><label>メインテキスト</label><input type="text" data-k="text" value="${escHtml(f.text)}"></div>
-      <div class="field"><label>サブテキスト</label><input type="text" data-k="sub" value="${escHtml(f.sub)}" placeholder="例: 19時から開始予定"></div>
+      <div class="field span2"><label>メインテキスト</label><input type="text" data-k="text" value="${escHtml(f.text)}"></div>
+      <div class="field span2"><label>サブテキスト</label><input type="text" data-k="sub" value="${escHtml(f.sub)}" placeholder="例: 19時から開始予定"></div>
       <div class="field"><label>開始時刻カウントダウン（HH:MM）</label><input type="text" data-k="until" value="${escHtml(f.until)}" placeholder="例: 21:00"></div>
-      <div class="field"><label>&nbsp;</label><label class="checkrow"><input type="checkbox" data-k="clock" ${f.clock?'checked':''}> 現在時刻も表示</label></div>
+    `;
+    options += `
+      <label class="checkrow"><input type="checkbox" data-k="clock" ${f.clock?'checked':''}> 現在時刻も表示</label>
     `;
   }
 
+  if(options){
+    html += `<div class="field span2"><label>オプション</label><div class="options-row">${options}</div></div>`;
+  }
+
   html += `
-    <div class="field"><label>アクセントカラー</label><input type="color" data-k="c1" value="${normHex(f.c1,'#be5a38')}"></div>
-    <div class="field"><label>基準フォントサイズ（px・空欄で既定）</label><input type="number" data-k="size" value="${f.size}" placeholder="既定値を使用"></div>
+    <div class="field"><label>フォントサイズ (px)</label><input type="number" data-k="size" value="${f.size}" placeholder="既定"></div>
+    <div class="field"><label>アクセントカラー</label>
+      <div class="accent-row">
+        <input type="color" data-k="c1" value="${normHex(f.c1, themeAccent)}">
+        <button type="button" class="btn ghost" id="resetAccentBtn">テーマの色に戻す</button>
+      </div>
+    </div>
   `;
 
   grid.innerHTML = html;
@@ -967,6 +1145,14 @@ function buildFormGrid(){
     el.addEventListener('input', handler);
     el.addEventListener('change', handler);
   });
+  const resetBtn = document.getElementById('resetAccentBtn');
+  if(resetBtn){
+    resetBtn.addEventListener('click', ()=>{
+      fieldsFor(state.widget).c1 = '';
+      buildFormGrid();
+      scheduleUpdate();
+    });
+  }
 }
 
 function bindBgToggle(){
@@ -1038,6 +1224,36 @@ function currentParams(){
   return params;
 }
 
+/* 実寸(800x300 / 1920x1080)でレンダリングしたiframeを、枠の幅に合わせて縮小表示する。
+   これにより「OBSに貼った時と同じ構図」がプレビューでも再現される。 */
+function fitPreview(){
+  const stage = document.getElementById('stage');
+  const frame = document.getElementById('previewFrame');
+  if(!stage || !frame) return;
+  const d = WIDGET_DEFS[state.widget];
+  frame.style.width = d.size + 'px';
+  frame.style.height = d.sizeH + 'px';
+  const scale = stage.clientWidth / d.size;
+  frame.style.transform = `scale(${scale})`;
+}
+
+const PREVIEW_HINTS = {
+  timer:   '操作: クリック=開始/停止・ダブルクリック=リセット',
+  clock:   '自動で動きます（クリック操作はありません）',
+  counter: '操作: クリック=+1・Shift+クリック=−1・ダブルクリック=リセット',
+  standby: '自動で動きます（クリック操作はありません）',
+};
+
+function bindReloadButton(){
+  const btn = document.getElementById('reloadBtn');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    const frame = document.getElementById('previewFrame');
+    try{ frame.contentWindow.location.reload(); }
+    catch(e){ frame.src = frame.src; }
+  });
+}
+
 function updateAll(){
   const params = currentParams();
   const url = buildWidgetUrl(location.href.split('?')[0], state.widget, params);
@@ -1076,8 +1292,20 @@ function updateAll(){
   document.getElementById('sizeHint').innerHTML =
     `推奨ソースサイズ: <b>${d.size} × ${d.sizeH}</b>px`;
 
-  // プレビュー枠にサンプルリボンを重ねる（プレミアムテーマ選択時）
+  // プレビュー枠のアスペクト比を選択中ウィジェットの推奨サイズに一致させる
   const stage = document.getElementById('stage');
+  stage.style.aspectRatio = `${d.size} / ${d.sizeH}`;
+  fitPreview();
+
+  const dimsChip = document.getElementById('previewDims');
+  if(dimsChip) dimsChip.textContent = `実寸 ${d.size}×${d.sizeH} を縮小表示`;
+
+  const hintEl = document.getElementById('previewHint');
+  if(hintEl){
+    hintEl.innerHTML = `${PREVIEW_HINTS[state.widget] || ''}<br>OBSではソースの「対話」ボタンから同じ操作ができます`;
+  }
+
+  // プレビュー枠にサンプルリボンを重ねる（プレミアムテーマ選択時）
   let ribbon = document.getElementById('sampleRibbon');
   if(premium){
     if(!ribbon){
