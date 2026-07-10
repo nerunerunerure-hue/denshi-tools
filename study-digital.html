@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション3：デジタル回路｜電子回路 学習ノート</title>
+<meta name="description" content="論理ゲート、真理値表、2進数・16進数、7セグLED、フリップフロップ、カウンタを図解でおさらい。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:3px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  .tbl td.c,.tbl th.c{text-align:center}
+  .tbl .mono{font-family:var(--mono)}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .ovl{text-decoration:overline}
+  svg text{font-family:var(--sans)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="study-guide.html">‹ 学習ノート</a>
+  <span class="crumb">セクション3</span>
+  <span class="prog">できた <b id="done-count">0</b> / 15</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 3</div>
+  <h1>💡 デジタル回路</h1>
+  <p class="lead">デジタルの世界は「0か1か」の2択だけ。論理ゲートで判断し、フリップフロップで記憶する——コンピュータの中身も、この2つの組み合わせでできています。</p>
+  <nav class="toc">
+    <a href="#s3-1">1. 論理式</a><a href="#s3-2">2. 真理値表</a><a href="#s3-3">3. ディジタルIC</a><a href="#s3-4">4. ICで回路作成</a><a href="#s3-5">5. 正論理</a><a href="#s3-6">6. 負論理</a><a href="#s3-7">7. 2進数</a><a href="#s3-8">8. 16進数</a><a href="#s3-9">9. 進数変換</a><a href="#s3-10">10. 7segLED</a><a href="#s3-11">11. 7segで回路作成</a><a href="#s3-12">12. フリップフロップ</a><a href="#s3-13">13. FFで回路作成</a><a href="#s3-14">14. カウンタIC</a><a href="#s3-15">15. レジスタ</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 1. 論理式 ============ -->
+<section class="item" id="s3-1">
+  <h2><span class="no">3-1</span>論理式 — AND・OR・NOTを式で書く</h2>
+  <p class="goal">🎯 ゴール：基本ゲートの記号・論理式・動作をセットで言える</p>
+  <p>デジタル回路の判断はすべて<b>AND（〜かつ〜）・OR（〜または〜）・NOT（〜でない）</b>の組み合わせ。論理式はそれを数式の形で書いたものです。ANDは「・」、ORは「＋」、NOTは上線（バー）で表します。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 465" width="700">
+    <g font-size="12">
+      <!-- AND -->
+      <rect x="5" y="6" width="222" height="218" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="116" y="32" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">AND（論理積）</text>
+      <text x="116" y="54" text-anchor="middle" font-size="12.5" fill="#BE5A38" font-weight="600">Y ＝ A・B</text>
+      <line x1="22" y1="92" x2="45" y2="92" stroke="#211F1A" stroke-width="2"/>
+      <line x1="22" y1="120" x2="45" y2="120" stroke="#211F1A" stroke-width="2"/>
+      <path d="M45,76 H70 A30,30 0 0 1 70,136 H45 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <line x1="100" y1="106" x2="124" y2="106" stroke="#211F1A" stroke-width="2"/>
+      <text x="16" y="88" text-anchor="end">A</text><text x="16" y="124" text-anchor="end">B</text>
+      <text x="116" y="170" text-anchor="middle" font-size="11.5" fill="#716C61">両方1のときだけ1</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="146" y="88">A B│Y</text><text x="146" y="106">0 0│0</text><text x="146" y="122">0 1│0</text><text x="146" y="138">1 0│0</text><text x="146" y="154" fill="#BE5A38" font-weight="700">1 1│1</text>
+      </g>
+      <text x="116" y="200" text-anchor="middle" font-size="11" fill="#716C61">直列スイッチのイメージ</text>
+      <!-- OR -->
+      <rect x="239" y="6" width="222" height="218" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="350" y="32" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">OR（論理和）</text>
+      <text x="350" y="54" text-anchor="middle" font-size="12.5" fill="#BE5A38" font-weight="600">Y ＝ A＋B</text>
+      <line x1="256" y1="92" x2="284" y2="92" stroke="#211F1A" stroke-width="2"/>
+      <line x1="256" y1="120" x2="284" y2="120" stroke="#211F1A" stroke-width="2"/>
+      <path d="M278,76 Q292,106 278,136 Q308,132 330,106 Q308,80 278,76 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <line x1="330" y1="106" x2="356" y2="106" stroke="#211F1A" stroke-width="2"/>
+      <text x="250" y="88" text-anchor="end">A</text><text x="250" y="124" text-anchor="end">B</text>
+      <text x="350" y="170" text-anchor="middle" font-size="11.5" fill="#716C61">どちらか1なら1</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="380" y="88">A B│Y</text><text x="380" y="106" fill="#716C61">0 0│0</text><text x="380" y="122">0 1│1</text><text x="380" y="138">1 0│1</text><text x="380" y="154">1 1│1</text>
+      </g>
+      <text x="350" y="200" text-anchor="middle" font-size="11" fill="#716C61">並列スイッチのイメージ</text>
+      <!-- NOT -->
+      <rect x="473" y="6" width="222" height="218" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="584" y="32" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">NOT（否定）</text>
+      <text x="580" y="56" text-anchor="end" font-size="12.5" fill="#BE5A38" font-weight="600">Y ＝</text>
+      <text x="588" y="56" font-size="12.5" fill="#BE5A38" font-weight="600">A</text>
+      <line x1="586" y1="45" x2="600" y2="45" stroke="#BE5A38" stroke-width="1.8"/>
+      <line x1="500" y1="106" x2="524" y2="106" stroke="#211F1A" stroke-width="2"/>
+      <path d="M524,84 L560,106 L524,128 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <circle cx="566" cy="106" r="6" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <line x1="572" y1="106" x2="596" y2="106" stroke="#211F1A" stroke-width="2"/>
+      <text x="494" y="110" text-anchor="end">A</text>
+      <text x="584" y="170" text-anchor="middle" font-size="11.5" fill="#716C61">0↔1をひっくり返す</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="622" y="96">A│Y</text><text x="622" y="114">0│1</text><text x="622" y="130">1│0</text>
+      </g>
+      <text x="584" y="200" text-anchor="middle" font-size="11" fill="#716C61">インバータとも呼ぶ</text>
+      <!-- NAND -->
+      <rect x="5" y="238" width="222" height="218" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="116" y="264" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">NAND（ANDの否定）</text>
+      <text x="103" y="288" text-anchor="end" font-size="12.5" fill="#BE5A38" font-weight="600">Y ＝</text>
+      <text x="111" y="288" font-size="12.5" fill="#BE5A38" font-weight="600">A・B</text>
+      <line x1="109" y1="277" x2="146" y2="277" stroke="#BE5A38" stroke-width="1.8"/>
+      <line x1="22" y1="324" x2="45" y2="324" stroke="#211F1A" stroke-width="2"/>
+      <line x1="22" y1="352" x2="45" y2="352" stroke="#211F1A" stroke-width="2"/>
+      <path d="M45,308 H70 A30,30 0 0 1 70,368 H45 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <circle cx="106" cy="338" r="6" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <line x1="112" y1="338" x2="132" y2="338" stroke="#211F1A" stroke-width="2"/>
+      <text x="16" y="320" text-anchor="end">A</text><text x="16" y="356" text-anchor="end">B</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="146" y="320">A B│Y</text><text x="146" y="338">0 0│1</text><text x="146" y="354">0 1│1</text><text x="146" y="370">1 0│1</text><text x="146" y="386" fill="#BE5A38" font-weight="700">1 1│0</text>
+      </g>
+      <text x="116" y="420" text-anchor="middle" font-size="11" fill="#716C61">NANDだけで全ゲートを作れる万能選手</text>
+      <!-- NOR -->
+      <rect x="239" y="238" width="222" height="218" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="350" y="264" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">NOR（ORの否定）</text>
+      <text x="337" y="288" text-anchor="end" font-size="12.5" fill="#BE5A38" font-weight="600">Y ＝</text>
+      <text x="345" y="288" font-size="12.5" fill="#BE5A38" font-weight="600">A＋B</text>
+      <line x1="343" y1="277" x2="382" y2="277" stroke="#BE5A38" stroke-width="1.8"/>
+      <line x1="256" y1="324" x2="284" y2="324" stroke="#211F1A" stroke-width="2"/>
+      <line x1="256" y1="352" x2="284" y2="352" stroke="#211F1A" stroke-width="2"/>
+      <path d="M278,308 Q292,338 278,368 Q308,364 330,338 Q308,312 278,308 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <circle cx="336" cy="338" r="6" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <line x1="342" y1="338" x2="362" y2="338" stroke="#211F1A" stroke-width="2"/>
+      <text x="250" y="320" text-anchor="end">A</text><text x="250" y="356" text-anchor="end">B</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="380" y="320">A B│Y</text><text x="380" y="338" fill="#BE5A38" font-weight="700">0 0│1</text><text x="380" y="354">0 1│0</text><text x="380" y="370">1 0│0</text><text x="380" y="386">1 1│0</text>
+      </g>
+      <text x="350" y="420" text-anchor="middle" font-size="11" fill="#716C61">両方0のときだけ1</text>
+      <!-- XOR -->
+      <rect x="473" y="238" width="222" height="218" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="584" y="264" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">XOR（排他的論理和）</text>
+      <text x="584" y="288" text-anchor="middle" font-size="12.5" fill="#BE5A38" font-weight="600">Y ＝ A⊕B</text>
+      <line x1="490" y1="324" x2="512" y2="324" stroke="#211F1A" stroke-width="2"/>
+      <line x1="490" y1="352" x2="512" y2="352" stroke="#211F1A" stroke-width="2"/>
+      <path d="M506,308 Q520,338 506,368" fill="none" stroke="#211F1A" stroke-width="2.2"/>
+      <path d="M514,308 Q528,338 514,368 Q544,364 566,338 Q544,312 514,308 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+      <line x1="566" y1="338" x2="590" y2="338" stroke="#211F1A" stroke-width="2"/>
+      <text x="484" y="320" text-anchor="end">A</text><text x="484" y="356" text-anchor="end">B</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="608" y="320">A B│Y</text><text x="608" y="338">0 0│0</text><text x="608" y="354">0 1│1</text><text x="608" y="370">1 0│1</text><text x="608" y="386">1 1│0</text>
+      </g>
+      <text x="584" y="420" text-anchor="middle" font-size="11" fill="#716C61">「違うとき」だけ1 → 一致検出・加算に使う</text>
+    </g>
+  </svg>
+  <figcaption>図3-1　6つの基本ゲート：MIL記号・論理式・真理値表。出力側の小さな○が「否定」の印</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>書き方：AND＝<b>A・B</b>、OR＝<b>A＋B</b>、NOT＝<b>上線（バー）</b>。例：Y＝A・<span class="ovl">B</span>＋C。</li>
+      <li>記号の見分け：<b>ANDは平ら＋丸い頭、ORは反った入口、○付きは否定</b>。</li>
+      <li>NAND・NORは「AND・ORの出力をNOTしたもの」。<b>NANDだけであらゆる論理が作れる</b>。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-1">記号・式・動作をセットで言えるようになった</label>
+</section>
+
+<!-- ============ 2. 真理値表 ============ -->
+<section class="item" id="s3-2">
+  <h2><span class="no">3-2</span>真理値表 — 全パターンの一覧表</h2>
+  <p class="goal">🎯 ゴール：入力の全組み合わせを漏れなく書き出し、出力を埋められる</p>
+  <p>真理値表は<b>「入力の全組み合わせ」に対する出力を一覧にした表</b>。入力がn個なら行数は<b>2ⁿ行</b>（2入力＝4行、3入力＝8行）。組み合わせは<b>2進数のカウントアップ順（00→01→10→11）</b>で書くと絶対に漏れません。</p>
+  <div class="example"><span class="tt">✏️ 例：Y＝A・B＋C（AかつB、またはC）の真理値表（3入力＝8行）</span>
+    <table class="tbl">
+      <tr><th class="c">A</th><th class="c">B</th><th class="c">C</th><th class="c">A・B</th><th class="c">Y＝A・B＋C</th></tr>
+      <tr><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td></tr>
+      <tr><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono"><b>1</b></td></tr>
+      <tr><td class="c mono">0</td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td></tr>
+      <tr><td class="c mono">0</td><td class="c mono">1</td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono"><b>1</b></td></tr>
+      <tr><td class="c mono">1</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td></tr>
+      <tr><td class="c mono">1</td><td class="c mono">0</td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono"><b>1</b></td></tr>
+      <tr><td class="c mono">1</td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono"><b>1</b></td><td class="c mono"><b>1</b></td></tr>
+      <tr><td class="c mono">1</td><td class="c mono">1</td><td class="c mono">1</td><td class="c mono"><b>1</b></td><td class="c mono"><b>1</b></td></tr>
+    </table>
+    途中の列（A・B）を作ってから最終出力を埋めると、複雑な式でもミスが減る。
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>行数＝2ⁿ。<b>2進数の順に書く</b>のが鉄則（000,001,010,011,100…）。</li>
+      <li>「回路 → 真理値表 → 論理式」も「論理式 → 真理値表 → 回路」も、どちら向きにも行き来できるのがゴール。</li>
+      <li>真理値表が一致すれば、見た目の違う回路でも「同じ働き」と言える。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-2">真理値表を書けるようになった</label>
+</section>
+
+<!-- ============ 3. 各種ディジタルIC ============ -->
+<section class="item" id="s3-3">
+  <h2><span class="no">3-3</span>各種ディジタルIC（74シリーズ）</h2>
+  <p class="goal">🎯 ゴール：代表的な74シリーズICの中身とピンの数え方がわかる</p>
+  <p>論理ゲートは「74シリーズ」というICファミリで部品化されています。1つのパッケージにゲートが複数入っているのが普通です。</p>
+  <table class="tbl">
+    <tr><th>型番</th><th>中身</th><th>覚え方</th></tr>
+    <tr><td class="mono">7400</td><td>2入力NAND × 4個</td><td>いちばん基本。「00＝NAND」</td></tr>
+    <tr><td class="mono">7404</td><td>NOT（インバータ）× 6個</td><td>ひっくり返す6兄弟</td></tr>
+    <tr><td class="mono">7408</td><td>2入力AND × 4個</td><td>—</td></tr>
+    <tr><td class="mono">7432</td><td>2入力OR × 4個</td><td>—</td></tr>
+    <tr><td class="mono">7486</td><td>2入力XOR × 4個</td><td>一致・不一致の判定に</td></tr>
+  </table>
+  <figure class="fig">
+  <svg viewBox="0 0 700 320" width="700">
+    <!-- DIP本体 -->
+    <rect x="240" y="45" width="200" height="230" rx="8" fill="#3A362E"/>
+    <path d="M320,45 a20,20 0 0 0 40,0" fill="#F1EEE5"/>
+    <circle cx="262" cy="68" r="6" fill="#F1EEE5"/>
+    <text x="340" y="170" text-anchor="middle" font-size="15" fill="#EDE8DA" font-family="JetBrains Mono,monospace">7400</text>
+    <!-- 左ピン 1-7 -->
+    <g fill="#B9B2A0">
+      <rect x="222" y="60" width="18" height="12"/><rect x="222" y="92" width="18" height="12"/><rect x="222" y="124" width="18" height="12"/><rect x="222" y="156" width="18" height="12"/><rect x="222" y="188" width="18" height="12"/><rect x="222" y="220" width="18" height="12"/><rect x="222" y="252" width="18" height="12"/>
+      <rect x="440" y="60" width="18" height="12"/><rect x="440" y="92" width="18" height="12"/><rect x="440" y="124" width="18" height="12"/><rect x="440" y="156" width="18" height="12"/><rect x="440" y="188" width="18" height="12"/><rect x="440" y="220" width="18" height="12"/><rect x="440" y="252" width="18" height="12"/>
+    </g>
+    <g font-size="11.5" fill="#211F1A" text-anchor="end">
+      <text x="216" y="70">1</text><text x="216" y="102">2</text><text x="216" y="134">3</text><text x="216" y="166">4</text><text x="216" y="198">5</text><text x="216" y="230">6</text><text x="216" y="262">7</text>
+    </g>
+    <g font-size="11.5" fill="#211F1A">
+      <text x="464" y="70">14</text><text x="464" y="102">13</text><text x="464" y="134">12</text><text x="464" y="166">11</text><text x="464" y="198">10</text><text x="464" y="230">9</text><text x="464" y="262">8</text>
+    </g>
+    <text x="196" y="262" text-anchor="end" font-size="11.5" fill="#4A6FA5" font-weight="700">GND（7番）</text>
+    <text x="498" y="70" font-size="11.5" fill="#BE5A38" font-weight="700">VCC（14番）</text>
+    <text x="340" y="28" text-anchor="middle" font-size="11.5" fill="#716C61">切り欠き（またはドット）を上にして左上が1番</text>
+    <path d="M180,86 q-30,60 0,132" fill="none" stroke="#BE5A38" stroke-width="1.8"/>
+    <path d="M180,218 l-3,-11 l10,4 z" fill="#BE5A38"/>
+    <text x="150" y="150" text-anchor="middle" font-size="11" fill="#BE5A38">反時計回りに</text>
+    <text x="150" y="166" text-anchor="middle" font-size="11" fill="#BE5A38">番号が進む</text>
+    <!-- 中身1回路の説明 -->
+    <rect x="530" y="100" width="158" height="130" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+    <text x="609" y="124" text-anchor="middle" font-size="11.5" fill="#211F1A" font-weight="700">中身（1回路分）</text>
+    <line x1="552" y1="152" x2="574" y2="152" stroke="#211F1A" stroke-width="2"/>
+    <line x1="552" y1="176" x2="574" y2="176" stroke="#211F1A" stroke-width="2"/>
+    <path d="M574,138 H594 A26,26 0 0 1 594,190 H574 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="625" cy="164" r="5" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <line x1="630" y1="164" x2="650" y2="164" stroke="#211F1A" stroke-width="2"/>
+    <text x="546" y="148" text-anchor="end" font-size="11">1</text>
+    <text x="546" y="180" text-anchor="end" font-size="11">2</text>
+    <text x="658" y="168" font-size="11">3</text>
+    <text x="609" y="216" text-anchor="middle" font-size="10.5" fill="#716C61">同じものが4組入っている</text>
+    <text x="340" y="306" text-anchor="middle" font-size="11.5" fill="#716C61">電源は VCC（＋5V）と GND。まずこの2本をつながないとICは動かない</text>
+  </svg>
+  <figcaption>図3-2　7400（NAND×4）のピン配置。向きの目印 → 1番ピン → 反時計回り、の順で数える</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>ピン番号は<b>目印（切り欠き・ドット）を上にして左上が1番、反時計回り</b>。14ピンなら右上が14番。</li>
+      <li>多くの14ピンロジックICは<b>GND＝7番、VCC＝14番</b>（例外もあるので必ずデータシート確認）。</li>
+      <li>74LS…（TTL）、74HC…（CMOS）などの中間文字は「作り」の違い。同じ番号なら論理機能は同じ。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-3">ICの中身とピンの数え方がわかった</label>
+</section>
+
+<!-- ============ 4. ディジタルICを使った回路作成 ============ -->
+<section class="item" id="s3-4">
+  <h2><span class="no">3-4</span>ディジタルICを使った回路作成</h2>
+  <p class="goal">🎯 ゴール：スイッチ入力→ゲート→LED出力の回路を組める</p>
+  <p>「真理値表 → 論理式 → ゲートのつなぎ」と決めたら、実際の配線ではロジック以外の3点セット——<b>入力の処理・出力の電流制限・電源まわり</b>——が成功のカギになります。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 300" width="700">
+    <line x1="50" y1="50" x2="650" y2="50" stroke="#BE5A38" stroke-width="2.5"/>
+    <text x="666" y="55" font-size="12" fill="#BE5A38" font-weight="600">＋5V</text>
+    <line x1="50" y1="255" x2="650" y2="255" stroke="#716C61" stroke-width="2.5"/>
+    <text x="666" y="260" font-size="12" fill="#716C61">GND</text>
+    <!-- SW1 -->
+    <line x1="120" y1="50" x2="120" y2="78" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="120" cy="82" r="3.5" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <line x1="123" y1="85" x2="140" y2="102" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="120" cy="110" r="3.5" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <line x1="120" y1="113" x2="120" y2="128" stroke="#211F1A" stroke-width="2"/>
+    <text x="98" y="98" font-size="11.5" text-anchor="end" fill="#211F1A">SW1</text>
+    <circle cx="120" cy="128" r="3.5" fill="#211F1A"/>
+    <line x1="120" y1="128" x2="300" y2="128" stroke="#211F1A" stroke-width="2"/>
+    <rect x="112" y="150" width="16" height="52" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <line x1="120" y1="128" x2="120" y2="150" stroke="#211F1A" stroke-width="2"/>
+    <line x1="120" y1="202" x2="120" y2="255" stroke="#211F1A" stroke-width="2"/>
+    <text x="104" y="182" font-size="11" text-anchor="end" fill="#4A6FA5">10kΩ</text>
+    <!-- SW2 -->
+    <line x1="210" y1="50" x2="210" y2="78" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="210" cy="82" r="3.5" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <line x1="213" y1="85" x2="230" y2="102" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="210" cy="110" r="3.5" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <line x1="210" y1="113" x2="210" y2="156" stroke="#211F1A" stroke-width="2"/>
+    <text x="188" y="98" font-size="11.5" text-anchor="end" fill="#211F1A">SW2</text>
+    <circle cx="210" cy="156" r="3.5" fill="#211F1A"/>
+    <line x1="210" y1="156" x2="300" y2="156" stroke="#211F1A" stroke-width="2"/>
+    <rect x="202" y="176" width="16" height="52" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <line x1="210" y1="228" x2="210" y2="255" stroke="#211F1A" stroke-width="2"/>
+    <text x="194" y="206" font-size="11" text-anchor="end" fill="#4A6FA5">10kΩ</text>
+    <text x="163" y="242" font-size="11" fill="#4A6FA5">プルダウン抵抗</text>
+    <!-- AND -->
+    <path d="M300,112 H330 A30,30 0 0 1 330,172 H300 Z" fill="#FFFEFB" stroke="#211F1A" stroke-width="2.2"/>
+    <text x="322" y="147" font-size="11" fill="#211F1A">AND</text>
+    <line x1="360" y1="142" x2="420" y2="142" stroke="#211F1A" stroke-width="2"/>
+    <!-- 電流制限抵抗 + LED -->
+    <rect x="420" y="134" width="52" height="16" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="446" y="124" font-size="11" text-anchor="middle" fill="#4A6FA5">330Ω</text>
+    <line x1="472" y1="142" x2="510" y2="142" stroke="#211F1A" stroke-width="2"/>
+    <path d="M510,126 L542,142 L510,158 Z" fill="#E05252" stroke="#b23a2e" stroke-width="1.5"/>
+    <line x1="542" y1="126" x2="542" y2="158" stroke="#211F1A" stroke-width="2.5"/>
+    <path d="M522,120 l8,-11 M530,122 l8,-11" stroke="#BE5A38" stroke-width="1.8"/>
+    <line x1="542" y1="142" x2="580" y2="142" stroke="#211F1A" stroke-width="2"/>
+    <line x1="580" y1="142" x2="580" y2="255" stroke="#211F1A" stroke-width="2"/>
+    <text x="524" y="176" font-size="11.5" fill="#211F1A">LED</text>
+    <!-- パスコン -->
+    <line x1="630" y1="50" x2="630" y2="132" stroke="#211F1A" stroke-width="2"/>
+    <line x1="616" y1="132" x2="644" y2="132" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="616" y1="142" x2="644" y2="142" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="630" y1="142" x2="630" y2="255" stroke="#211F1A" stroke-width="2"/>
+    <line x1="548" y1="203" x2="618" y2="162" stroke="#B9B2A0" stroke-width="1.2"/>
+    <text x="500" y="212" font-size="10.5" text-anchor="middle" fill="#716C61">パスコン 0.1µF</text>
+    <text x="500" y="227" text-anchor="middle" font-size="10.5" fill="#716C61">（ICの電源そばに）</text>
+    <text x="290" y="286" font-size="11.5" fill="#716C61" text-anchor="middle">SW ON→入力H(1)、OFF→プルダウンで確実にL(0)。両方ONのときだけLED点灯（AND）</text>
+  </svg>
+  <figcaption>図3-3　「両方のスイッチを押すと点灯」するAND回路の実配線。入力を宙ぶらりんにしないのが鉄則</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>入力を開放（宙ぶらりん）にしない</b>：スイッチにはプルダウン（またはプルアップ）抵抗。未使用入力もHかLに固定する。</li>
+      <li><b>LEDには電流制限抵抗</b>（330Ωなど）を必ず直列に。</li>
+      <li><b>パスコン（0.1µF）</b>をICのVCC-GND間近くに。動作を安定させるお守り。</li>
+      <li>組む順序：電源配線 → 動作確認（VCC-GND電圧）→ 入力回路 → ロジック → 出力回路。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-4">ICを使った回路を組めるようになった</label>
+</section>
+
+<!-- ============ 5. 正論理 ============ -->
+<section class="item" id="s3-5">
+  <h2><span class="no">3-5</span>正論理 — Hを1とみなす</h2>
+  <p class="goal">🎯 ゴール：電圧のH/Lと論理の1/0の対応を説明できる</p>
+  <p>デジタル信号の実体は電圧です。電圧が高い状態を<b>H（High）</b>、低い状態を<b>L（Low）</b>と呼び、<b>H＝1、L＝0と割り当てるのが正論理</b>。ふだんの論理回路はほぼ正論理で考えます。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 300" width="700">
+    <!-- 電圧帯 -->
+    <rect x="90" y="40" width="90" height="80" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <rect x="90" y="120" width="90" height="70" fill="#F5E8D4" stroke="#E8D3B0"/>
+    <rect x="90" y="190" width="90" height="70" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="82" y="46" text-anchor="end" font-size="11" fill="#716C61">5V</text>
+    <text x="82" y="124" text-anchor="end" font-size="11" fill="#716C61">2.0V</text>
+    <text x="82" y="194" text-anchor="end" font-size="11" fill="#716C61">0.8V</text>
+    <text x="82" y="262" text-anchor="end" font-size="11" fill="#716C61">0V</text>
+    <text x="135" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="#4f6b3a">H</text>
+    <text x="135" y="95" text-anchor="middle" font-size="10.5" fill="#4f6b3a">Highレベル</text>
+    <text x="135" y="160" text-anchor="middle" font-size="10.5" fill="#9a5a22">不定（使わない）</text>
+    <text x="135" y="222" text-anchor="middle" font-size="13" font-weight="700" fill="#4A6FA5">L</text>
+    <text x="135" y="241" text-anchor="middle" font-size="10.5" fill="#4A6FA5">Lowレベル</text>
+    <text x="135" y="285" text-anchor="middle" font-size="10.5" fill="#716C61">TTL入力の目安</text>
+    <!-- 対応表 -->
+    <g text-anchor="middle">
+      <rect x="270" y="60" width="180" height="150" rx="12" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="360" y="90" font-size="13.5" font-weight="700" fill="#BE5A38">正論理</text>
+      <text x="360" y="130" font-size="13">H（高い電圧）→ 1</text>
+      <text x="360" y="162" font-size="13">L（低い電圧）→ 0</text>
+      <text x="360" y="194" font-size="10.5" fill="#716C61">「電圧が来てる＝ON＝1」の直感どおり</text>
+      <rect x="480" y="60" width="180" height="150" rx="12" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="570" y="90" font-size="13.5" font-weight="700" fill="#4A6FA5">負論理</text>
+      <text x="570" y="130" font-size="13">H（高い電圧）→ 0</text>
+      <text x="570" y="162" font-size="13">L（低い電圧）→ 1</text>
+      <text x="570" y="194" font-size="10.5" fill="#716C61">「Lのときに意味がある」信号で使う</text>
+      <text x="465" y="262" font-size="11.5" fill="#716C61">同じ電圧でも「どちらを1と呼ぶか」という約束の違い</text>
+    </g>
+  </svg>
+  <figcaption>図3-4　電圧レベル（H/L）と論理値（1/0）の割り当て。正論理はH＝1、負論理はL＝1</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>H/Lは<b>電圧の話</b>、1/0は<b>意味の話</b>。この2階建てを分けて考えるのがコツ。</li>
+      <li>HとLの間には「不定」の帯がある。中途半端な電圧は0でも1でもない（だから入力を開放にしない）。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-5">正論理を説明できるようになった</label>
+</section>
+
+<!-- ============ 6. 負論理 ============ -->
+<section class="item" id="s3-6">
+  <h2><span class="no">3-6</span>負論理 — Lを1とみなす（アクティブ・ロー）</h2>
+  <p class="goal">🎯 ゴール：バー付き信号・○付きピンの意味を読み取れる</p>
+  <p>負論理は<b>L＝1（有効）、H＝0</b>とみなす約束。「Lになったときに動く」信号は<b>アクティブ・ロー</b>と呼ばれ、リセットやチップ選択など制御信号の定番です。</p>
+  <table class="tbl">
+    <tr><th>見た目</th><th>意味</th></tr>
+    <tr><td>信号名の上線：<span class="ovl">RESET</span>、<span class="ovl">CS</span></td><td>Lにするとリセット／選択が働く（アクティブ・ロー）</td></tr>
+    <tr><td>ICピンの小さな○</td><td>そのピンは負論理（Lで有効・出力ならLを出す）</td></tr>
+    <tr><td>○も上線もない</td><td>正論理（Hで有効）</td></tr>
+  </table>
+  <div class="example"><span class="tt">✏️ 読み取り練習</span>
+    <span class="ovl">RESET</span>端子付きのカウンタIC。ふだんこの端子はH・Lどちらにしておく？
+    <details class="ans"><summary>答えを見る</summary>
+      <b>H</b>にしておく（＝リセット無効で普通に動作）。<b>Lに落とした瞬間リセット</b>がかかる。バー付き＝「Lで発動」と読む。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>負論理は「壊れて信号線がGNDに落ちたときに安全側に倒れる」「ノイズに強い」などの理由で制御信号に多い。</li>
+      <li>回路図を読むとき、<b>バーと○を見つけたら「Lで有効」と翻訳</b>すれば混乱しない。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-6">負論理を読み取れるようになった</label>
+</section>
+
+<!-- ============ 7. 2進数 ============ -->
+<section class="item" id="s3-7">
+  <h2><span class="no">3-7</span>2進数 — 0と1だけの数</h2>
+  <p class="goal">🎯 ゴール：位の重みを使って2進数を読める</p>
+  <p>デジタル回路はH/Lの2状態しか持てないので、数は<b>0と1だけで表す2進数</b>を使います。各桁には<b>重み（1, 2, 4, 8, 16…と倍々）</b>があり、「1が立っている桁の重みを足す」と10進数になります。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 235" width="700">
+    <g text-anchor="middle" font-size="13">
+      <text x="350" y="32" font-size="12.5" fill="#716C61">桁の重み（右から 1, 2, 4, 8, …と倍々に増える）</text>
+      <g font-family="JetBrains Mono,monospace" font-size="14" fill="#716C61">
+        <text x="130" y="66">128</text><text x="190" y="66">64</text><text x="250" y="66">32</text><text x="310" y="66">16</text><text x="370" y="66">8</text><text x="430" y="66">4</text><text x="490" y="66">2</text><text x="550" y="66">1</text>
+      </g>
+      <g>
+        <rect x="102" y="80" width="56" height="52" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+        <rect x="162" y="80" width="56" height="52" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+        <rect x="222" y="80" width="56" height="52" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+        <rect x="282" y="80" width="56" height="52" rx="8" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/>
+        <rect x="342" y="80" width="56" height="52" rx="8" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/>
+        <rect x="402" y="80" width="56" height="52" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+        <rect x="462" y="80" width="56" height="52" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+        <rect x="522" y="80" width="56" height="52" rx="8" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/>
+      </g>
+      <g font-family="JetBrains Mono,monospace" font-size="24" font-weight="700">
+        <text x="130" y="115" fill="#B9B2A0">0</text><text x="190" y="115" fill="#B9B2A0">0</text><text x="250" y="115" fill="#B9B2A0">0</text><text x="310" y="115" fill="#BE5A38">1</text><text x="370" y="115" fill="#BE5A38">1</text><text x="430" y="115" fill="#B9B2A0">0</text><text x="490" y="115" fill="#B9B2A0">0</text><text x="550" y="115" fill="#BE5A38">1</text>
+      </g>
+      <text x="350" y="170" font-size="15" fill="#211F1A">1が立っている桁の重みを足す → <tspan font-weight="700" fill="#BE5A38">16 ＋ 8 ＋ 1 ＝ 25</tspan></text>
+      <text x="350" y="204" font-size="12.5" fill="#716C61">00011001（2進） ＝ 25（10進）　／　1桁＝1ビット、この8桁＝8ビット＝1バイト</text>
+    </g>
+  </svg>
+  <figcaption>図3-5　2進数の読み方。左端が最上位ビット（MSB）、右端が最下位ビット（LSB）</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>重みは右から <b>1, 2, 4, 8, 16, 32, 64, 128</b>。この8つはそのまま暗記してよい。</li>
+      <li>nビットで表せるのは<b>0〜2ⁿ−1</b>（4ビット＝0〜15、8ビット＝0〜255）。</li>
+      <li>2進数の1桁＝<b>ビット</b>。デジタル回路の信号線1本が1ビットに対応する。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-7">2進数を読めるようになった</label>
+</section>
+
+<!-- ============ 8. 16進数 ============ -->
+<section class="item" id="s3-8">
+  <h2><span class="no">3-8</span>16進数 — 4ビットを1文字で</h2>
+  <p class="goal">🎯 ゴール：0〜F と 4ビットの対応がわかる</p>
+  <p>2進数は桁が長くて読みにくいので、<b>4ビットをまとめて1桁で表す16進数</b>をよく使います。使う記号は<b>0〜9とA〜F</b>の16種類（A=10, B=11, C=12, D=13, E=14, F=15）。</p>
+  <table class="tbl">
+    <tr><th class="c">10進</th><td class="c mono">0</td><td class="c mono">1</td><td class="c mono">2</td><td class="c mono">3</td><td class="c mono">4</td><td class="c mono">5</td><td class="c mono">6</td><td class="c mono">7</td></tr>
+    <tr><th class="c">2進</th><td class="c mono">0000</td><td class="c mono">0001</td><td class="c mono">0010</td><td class="c mono">0011</td><td class="c mono">0100</td><td class="c mono">0101</td><td class="c mono">0110</td><td class="c mono">0111</td></tr>
+    <tr><th class="c">16進</th><td class="c mono">0</td><td class="c mono">1</td><td class="c mono">2</td><td class="c mono">3</td><td class="c mono">4</td><td class="c mono">5</td><td class="c mono">6</td><td class="c mono">7</td></tr>
+  </table>
+  <table class="tbl">
+    <tr><th class="c">10進</th><td class="c mono">8</td><td class="c mono">9</td><td class="c mono">10</td><td class="c mono">11</td><td class="c mono">12</td><td class="c mono">13</td><td class="c mono">14</td><td class="c mono">15</td></tr>
+    <tr><th class="c">2進</th><td class="c mono">1000</td><td class="c mono">1001</td><td class="c mono">1010</td><td class="c mono">1011</td><td class="c mono">1100</td><td class="c mono">1101</td><td class="c mono">1110</td><td class="c mono">1111</td></tr>
+    <tr><th class="c">16進</th><td class="c mono">8</td><td class="c mono">9</td><td class="c mono"><b>A</b></td><td class="c mono"><b>B</b></td><td class="c mono"><b>C</b></td><td class="c mono"><b>D</b></td><td class="c mono"><b>E</b></td><td class="c mono"><b>F</b></td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>16進1桁＝2進4桁（きっちり対応）</b>。だからプログラムやデータシートで多用される。</li>
+      <li>書き方の目印：<span style="font-family:var(--mono)">0x3F</span>・<span style="font-family:var(--mono)">3FH</span> などは16進の意味。</li>
+      <li>まず <b>A=1010、C=1100、F=1111</b> あたりを覚えると速くなる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-8">0〜Fと4ビットの対応がわかった</label>
+</section>
+
+<!-- ============ 9. 進数変換 ============ -->
+<section class="item" id="s3-9">
+  <h2><span class="no">3-9</span>進数変換 — 3つの方法で行き来する</h2>
+  <p class="goal">🎯 ゴール:2進⇄10進⇄16進を自力で変換できる</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 420" width="700">
+    <!-- (a) 2進→10進 -->
+    <text x="30" y="30" font-size="13" font-weight="700" fill="#211F1A">① 2進 → 10進：重みを足す</text>
+    <g font-family="JetBrains Mono,monospace" font-size="16" text-anchor="middle">
+      <text x="120" y="66" fill="#BE5A38" font-weight="700">1</text><text x="160" y="66" fill="#211F1A">0</text><text x="200" y="66" fill="#BE5A38" font-weight="700">1</text><text x="240" y="66" fill="#BE5A38" font-weight="700">1</text>
+    </g>
+    <g font-size="11" text-anchor="middle" fill="#716C61">
+      <text x="120" y="86">8</text><text x="160" y="86">4</text><text x="200" y="86">2</text><text x="240" y="86">1</text>
+    </g>
+    <text x="420" y="70" font-size="14" fill="#211F1A" text-anchor="middle">1011₂ ＝ 8＋2＋1 ＝ <tspan font-weight="700" fill="#BE5A38">11</tspan></text>
+    <line x1="30" y1="112" x2="670" y2="112" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- (b) 10進→2進 -->
+    <text x="30" y="140" font-size="13" font-weight="700" fill="#211F1A">② 10進 → 2進：2で割って余りを下から読む</text>
+    <g font-family="JetBrains Mono,monospace" font-size="14" fill="#211F1A">
+      <text x="90" y="176">2 ) 25</text><text x="230" y="176">… 余り <tspan fill="#BE5A38" font-weight="700">1</tspan></text>
+      <text x="90" y="204">2 ) 12</text><text x="230" y="204">… 余り <tspan fill="#BE5A38" font-weight="700">0</tspan></text>
+      <text x="90" y="232">2 )  6</text><text x="230" y="232">… 余り <tspan fill="#BE5A38" font-weight="700">0</tspan></text>
+      <text x="90" y="260">2 )  3</text><text x="230" y="260">… 余り <tspan fill="#BE5A38" font-weight="700">1</tspan></text>
+      <text x="90" y="288">     1</text><text x="230" y="288">… 最後の商 <tspan fill="#BE5A38" font-weight="700">1</tspan></text>
+    </g>
+    <line x1="98" y1="182" x2="146" y2="182" stroke="#211F1A" stroke-width="1.4"/>
+    <line x1="98" y1="210" x2="146" y2="210" stroke="#211F1A" stroke-width="1.4"/>
+    <line x1="98" y1="238" x2="146" y2="238" stroke="#211F1A" stroke-width="1.4"/>
+    <line x1="98" y1="266" x2="146" y2="266" stroke="#211F1A" stroke-width="1.4"/>
+    <path d="M392,286 L392,172 " fill="none" stroke="#4f6b3a" stroke-width="2"/>
+    <path d="M392,172 l-5,12 h10 z" fill="#4f6b3a"/>
+    <text x="404" y="216" font-size="11.5" fill="#4f6b3a">下から上へ</text>
+    <text x="404" y="232" font-size="11.5" fill="#4f6b3a">読む</text>
+    <text x="540" y="226" font-size="14" font-family="JetBrains Mono,monospace" text-anchor="middle" fill="#211F1A">25 ＝ <tspan font-weight="700" fill="#BE5A38">11001</tspan>₂</text>
+    <line x1="30" y1="316" x2="670" y2="316" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- (c) 2進⇄16進 -->
+    <text x="30" y="344" font-size="13" font-weight="700" fill="#211F1A">③ 2進 ⇄ 16進：右から4ビットずつ区切るだけ</text>
+    <rect x="120" y="360" width="118" height="38" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <rect x="248" y="360" width="118" height="38" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <g font-family="JetBrains Mono,monospace" font-size="17" text-anchor="middle">
+      <text x="179" y="386" fill="#211F1A">1101</text>
+      <text x="307" y="386" fill="#211F1A">0110</text>
+    </g>
+    <g font-size="13.5" text-anchor="middle" font-family="JetBrains Mono,monospace">
+      <text x="179" y="416" fill="#4A6FA5" font-weight="700">D (13)</text>
+      <text x="307" y="416" fill="#4f6b3a" font-weight="700">6</text>
+    </g>
+    <text x="480" y="390" font-size="14" font-family="JetBrains Mono,monospace" fill="#211F1A">11010110₂ ＝ <tspan font-weight="700" fill="#BE5A38">D6</tspan>（16進）</text>
+  </svg>
+  <figcaption>図3-6　変換の3パターン。「重みを足す」「2で割る」「4ビット区切り」でどの方向にも行ける</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題</span>
+    ① 2進 <span style="font-family:var(--mono)">11111111</span> を10進と16進に　② 16進 <span style="font-family:var(--mono)">A3</span> を2進に
+    <details class="ans"><summary>答えを見る</summary>
+      ① 128+64+32+16+8+4+2+1＝<b>255</b>。4ビットずつ区切ると 1111|1111 → <b>FF</b>。<br>
+      ② A＝1010、3＝0011 → <b>10100011</b>。10進なら 163。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>10進→16進は「一度2進を経由する」か「16で割って余り」。<b>2進経由が確実</b>。</li>
+      <li>区切りは必ず<b>右（下位）から4ビットずつ</b>。足りない分は左に0を補う。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-9">進数変換ができるようになった</label>
+</section>
+
+<!-- ============ 10. 7segLED ============ -->
+<section class="item" id="s3-10">
+  <h2><span class="no">3-10</span>7セグメントLED</h2>
+  <p class="goal">🎯 ゴール：セグメント名（a〜g）と点灯パターン、コモンの種類がわかる</p>
+  <p>7セグメントLEDは<b>7本の棒状LED（＋小数点dp）の点灯パターンで数字を表す</b>表示器。中身はただのLEDが8個入っているだけ、と考えると怖くありません。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 425" width="700">
+    <text x="150" y="36" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">セグメントの名前</text>
+    <g stroke="#FFFEFB" stroke-width="1">
+      <rect x="105" y="60" width="90" height="18" rx="6" fill="#BE5A38"/>
+      <rect x="78" y="87" width="18" height="86" rx="6" fill="#BE5A38"/>
+      <rect x="204" y="87" width="18" height="86" rx="6" fill="#BE5A38"/>
+      <rect x="105" y="182" width="90" height="18" rx="6" fill="#BE5A38"/>
+      <rect x="78" y="209" width="18" height="86" rx="6" fill="#BE5A38"/>
+      <rect x="204" y="209" width="18" height="86" rx="6" fill="#BE5A38"/>
+      <rect x="105" y="304" width="90" height="18" rx="6" fill="#BE5A38"/>
+    </g>
+    <g font-size="13" font-weight="700" fill="#FFFEFB" text-anchor="middle">
+      <text x="150" y="74">a</text><text x="87" y="135">f</text><text x="213" y="135">b</text><text x="150" y="196">g</text><text x="87" y="257">e</text><text x="213" y="257">c</text><text x="150" y="318">d</text>
+    </g>
+    <circle cx="242" cy="313" r="9" fill="#EDE8DA" stroke="#B9B2A0"/>
+    <text x="242" y="345" text-anchor="middle" font-size="11" fill="#716C61">dp（小数点）</text>
+    <text x="150" y="375" text-anchor="middle" font-size="11.5" fill="#716C61">上からa、時計回りにb〜f、</text>
+    <text x="150" y="393" text-anchor="middle" font-size="11.5" fill="#716C61">真ん中がg</text>
+    <!-- コモンの種類 -->
+    <g text-anchor="middle">
+      <rect x="292" y="36" width="190" height="140" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="387" y="60" font-size="12.5" font-weight="700" fill="#211F1A">カソードコモン</text>
+      <line x1="347" y1="76" x2="347" y2="88" stroke="#211F1A" stroke-width="2"/>
+      <line x1="427" y1="76" x2="427" y2="88" stroke="#211F1A" stroke-width="2"/>
+      <path d="M340,88 L354,88 L347,104 Z" fill="#211F1A"/>
+      <path d="M420,88 L434,88 L427,104 Z" fill="#211F1A"/>
+      <line x1="340" y1="104" x2="354" y2="104" stroke="#211F1A" stroke-width="2"/>
+      <line x1="420" y1="104" x2="434" y2="104" stroke="#211F1A" stroke-width="2"/>
+      <line x1="347" y1="104" x2="347" y2="116" stroke="#211F1A" stroke-width="2"/>
+      <line x1="427" y1="104" x2="427" y2="116" stroke="#211F1A" stroke-width="2"/>
+      <line x1="327" y1="116" x2="447" y2="116" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="377" y1="124" x2="397" y2="124" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="382" y1="131" x2="392" y2="131" stroke="#211F1A" stroke-width="2.5"/>
+      <text x="387" y="156" font-size="10.5" fill="#716C61">−側が共通→GNDへ。</text>
+      <text x="387" y="171" font-size="10.5" fill="#4f6b3a" font-weight="600">セグメントにHで点灯</text>
+      <rect x="498" y="36" width="190" height="140" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="593" y="60" font-size="12.5" font-weight="700" fill="#211F1A">アノードコモン</text>
+      <line x1="533" y1="90" x2="653" y2="90" stroke="#BE5A38" stroke-width="2.5"/>
+      <text x="593" y="80" font-size="10" fill="#BE5A38">＋共通 → VCCへ</text>
+      <line x1="553" y1="90" x2="553" y2="100" stroke="#211F1A" stroke-width="2"/>
+      <line x1="633" y1="90" x2="633" y2="100" stroke="#211F1A" stroke-width="2"/>
+      <path d="M546,100 L560,100 L553,116 Z" fill="#211F1A"/>
+      <path d="M626,100 L640,100 L633,116 Z" fill="#211F1A"/>
+      <line x1="546" y1="116" x2="560" y2="116" stroke="#211F1A" stroke-width="2"/>
+      <line x1="626" y1="116" x2="640" y2="116" stroke="#211F1A" stroke-width="2"/>
+      <line x1="553" y1="116" x2="553" y2="130" stroke="#211F1A" stroke-width="2"/>
+      <line x1="633" y1="116" x2="633" y2="130" stroke="#211F1A" stroke-width="2"/>
+      <text x="593" y="156" font-size="10.5" fill="#716C61">＋側が共通→VCCへ。</text>
+      <text x="593" y="171" font-size="10.5" fill="#4A6FA5" font-weight="600">セグメントにLで点灯</text>
+    </g>
+    <!-- 0-9 パターン -->
+    <text x="490" y="212" text-anchor="middle" font-size="12.5" font-weight="700" fill="#211F1A">0〜9の点灯パターン</text>
+    <g>
+      <g transform="translate(300,226)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#BE5A38"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#EDE8DA"/><rect x="4" y="40" width="5" height="26" fill="#BE5A38"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">0</text></g>
+      <g transform="translate(378,226)"><rect x="11" y="0" width="22" height="5" fill="#EDE8DA"/><rect x="4" y="7" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#EDE8DA"/><rect x="4" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#EDE8DA"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">1</text></g>
+      <g transform="translate(456,226)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#BE5A38"/><rect x="35" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">2</text></g>
+      <g transform="translate(534,226)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">3</text></g>
+      <g transform="translate(612,226)"><rect x="11" y="0" width="22" height="5" fill="#EDE8DA"/><rect x="4" y="7" width="5" height="26" fill="#BE5A38"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#EDE8DA"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">4</text></g>
+      <g transform="translate(300,330)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#BE5A38"/><rect x="35" y="7" width="5" height="26" fill="#EDE8DA"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">5</text></g>
+      <g transform="translate(378,330)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#BE5A38"/><rect x="35" y="7" width="5" height="26" fill="#EDE8DA"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#BE5A38"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">6</text></g>
+      <g transform="translate(456,330)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#EDE8DA"/><rect x="4" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#EDE8DA"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">7</text></g>
+      <g transform="translate(534,330)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#BE5A38"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#BE5A38"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">8</text></g>
+      <g transform="translate(612,330)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#BE5A38"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">9</text></g>
+    </g>
+  </svg>
+  <figcaption>図3-7　セグメント名は上からa、時計回り。コモン（共通端子）が＋か−かで駆動のH/Lが逆になる</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「8」は全セグメント、「1」はbとcだけ。<b>0〜9のパターンは自分で一度書き出す</b>と一気に定着する。</li>
+      <li><b>カソードコモン＝−が共通（Hで点灯）／アノードコモン＝＋が共通（Lで点灯）</b>。買う前・使う前に必ず確認。</li>
+      <li>dp（小数点）を含めると中身はLED8個。1本ずつはただのLEDなので極性と電流制限が必要。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-10">セグメント名とパターンがわかった</label>
+</section>
+
+<!-- ============ 11. 7segを使った回路作成 ============ -->
+<section class="item" id="s3-11">
+  <h2><span class="no">3-11</span>7segLEDを使った回路作成</h2>
+  <p class="goal">🎯 ゴール：デコーダICを使って数値を表示する構成を説明できる</p>
+  <p>7本のセグメントを1本ずつ自力で制御するのは大変。そこで<b>「BCD（2進化10進）の4ビットを入れると、a〜gの7本を自動で作ってくれる」デコーダIC</b>を使います。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 250" width="700">
+    <rect x="35" y="70" width="130" height="76" rx="10" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <text x="100" y="100" text-anchor="middle" font-size="12.5" font-weight="600" fill="#211F1A">BCDスイッチ</text>
+    <text x="100" y="122" text-anchor="middle" font-size="12" font-family="JetBrains Mono,monospace" fill="#BE5A38" font-weight="700">0101</text>
+    <g stroke="#211F1A" stroke-width="1.8">
+      <line x1="165" y1="88" x2="235" y2="88"/><line x1="165" y1="102" x2="235" y2="102"/><line x1="165" y1="116" x2="235" y2="116"/><line x1="165" y1="130" x2="235" y2="130"/>
+    </g>
+    <text x="200" y="80" text-anchor="middle" font-size="10.5" fill="#716C61">4ビット</text>
+    <rect x="235" y="60" width="150" height="96" rx="10" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/>
+    <text x="310" y="96" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">デコーダIC</text>
+    <text x="310" y="116" text-anchor="middle" font-size="11" fill="#211F1A">（4511など）</text>
+    <text x="310" y="136" text-anchor="middle" font-size="10.5" fill="#716C61">BCD → 7セグ信号に変換</text>
+    <g stroke="#211F1A" stroke-width="1.5">
+      <line x1="385" y1="74" x2="455" y2="74"/><line x1="385" y1="86" x2="455" y2="86"/><line x1="385" y1="98" x2="455" y2="98"/><line x1="385" y1="110" x2="455" y2="110"/><line x1="385" y1="122" x2="455" y2="122"/><line x1="385" y1="134" x2="455" y2="134"/><line x1="385" y1="146" x2="455" y2="146"/>
+    </g>
+    <g fill="#FFFEFB" stroke="#211F1A" stroke-width="1.3">
+      <rect x="410" y="71" width="16" height="6"/><rect x="410" y="83" width="16" height="6"/><rect x="410" y="95" width="16" height="6"/><rect x="410" y="107" width="16" height="6"/><rect x="410" y="119" width="16" height="6"/><rect x="410" y="131" width="16" height="6"/><rect x="410" y="143" width="16" height="6"/>
+    </g>
+    <text x="410" y="178" text-anchor="middle" font-size="10.5" fill="#4A6FA5">a〜gの7本</text>
+    <text x="410" y="194" text-anchor="middle" font-size="10.5" fill="#4A6FA5">（各線に抵抗）</text>
+    <rect x="455" y="46" width="104" height="150" rx="10" fill="#3A362E"/>
+    <g><rect x="490" y="62" width="22" height="5" fill="#E05252"/><rect x="483" y="69" width="5" height="26" fill="#E05252"/><rect x="514" y="69" width="5" height="26" fill="#4a453a"/><rect x="490" y="95" width="22" height="5" fill="#E05252"/><rect x="483" y="102" width="5" height="26" fill="#4a453a"/><rect x="514" y="102" width="5" height="26" fill="#E05252"/><rect x="490" y="128" width="22" height="5" fill="#E05252"/></g>
+    <text x="507" y="164" text-anchor="middle" font-size="11" fill="#EDE8DA">7seg LED</text>
+    <text x="507" y="180" text-anchor="middle" font-size="9.5" fill="#B9B2A0">カソードコモン</text>
+    <line x1="507" y1="196" x2="507" y2="216" stroke="#211F1A" stroke-width="2"/>
+    <line x1="493" y1="216" x2="521" y2="216" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="498" y1="223" x2="516" y2="223" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="503" y1="230" x2="511" y2="230" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="560" y="222" font-size="10.5" fill="#716C61">共通端子→GND</text>
+    <text x="240" y="226" text-anchor="middle" font-size="12" fill="#211F1A">0101（＝5）を入力すると「5」が点灯する</text>
+  </svg>
+  <figcaption>図3-8　BCD入力 → デコーダIC → 電流制限抵抗 → 7seg。この3段構成が基本形</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>4511はカソードコモン用（出力H）、74LS47などはアノードコモン用（出力L）</b>。7segの種類とペアで選ぶ。</li>
+      <li><b>電流制限抵抗はセグメント1本ごとに</b>入れる（1本にまとめると点灯本数で明るさが変わってしまう）。</li>
+      <li>カウンタIC（後述）→デコーダ→7segとつなぐと「押した回数を数えて表示する」回路が完成する。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-11">表示回路の構成を説明できるようになった</label>
+</section>
+
+<!-- ============ 12. フリップフロップ ============ -->
+<section class="item" id="s3-12">
+  <h2><span class="no">3-12</span>フリップフロップ — 1ビットを記憶する</h2>
+  <p class="goal">🎯 ゴール：RS・D・JKの違いと動作表がわかる</p>
+  <p>ゲートは「今の入力」だけで出力が決まりますが、フリップフロップ（FF）は<b>1ビット（0か1）を覚えておける記憶回路</b>。カウンタもレジスタもメモリも、元をたどればFFの集まりです。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 455" width="700">
+    <g text-anchor="middle">
+      <!-- RS -->
+      <rect x="8" y="10" width="218" height="215" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="117" y="36" font-size="13" font-weight="700" fill="#211F1A">RS-FF（基本形）</text>
+      <rect x="72" y="52" width="90" height="70" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+      <line x1="42" y1="68" x2="72" y2="68" stroke="#211F1A" stroke-width="2"/>
+      <line x1="42" y1="106" x2="72" y2="106" stroke="#211F1A" stroke-width="2"/>
+      <line x1="162" y1="68" x2="192" y2="68" stroke="#211F1A" stroke-width="2"/>
+      <line x1="162" y1="106" x2="192" y2="106" stroke="#211F1A" stroke-width="2"/>
+      <text x="84" y="73" font-size="12">S</text><text x="84" y="111" font-size="12">R</text>
+      <text x="149" y="73" font-size="12">Q</text><text x="149" y="111" font-size="12">Q̄</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="117" y="148">S R│Q</text>
+        <text x="117" y="166">0 0│保持</text>
+        <text x="117" y="182">1 0│1(セット)</text>
+        <text x="117" y="198">0 1│0(リセット)</text>
+        <text x="117" y="214" fill="#b23a2e">1 1│禁止</text>
+      </g>
+      <!-- D -->
+      <rect x="241" y="10" width="218" height="215" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="350" y="36" font-size="13" font-weight="700" fill="#211F1A">D-FF（データ保存）</text>
+      <rect x="305" y="52" width="90" height="70" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+      <line x1="275" y1="68" x2="305" y2="68" stroke="#211F1A" stroke-width="2"/>
+      <line x1="275" y1="106" x2="305" y2="106" stroke="#211F1A" stroke-width="2"/>
+      <path d="M305,99 l11,7 l-11,7 z" fill="none" stroke="#211F1A" stroke-width="1.8"/>
+      <line x1="395" y1="68" x2="425" y2="68" stroke="#211F1A" stroke-width="2"/>
+      <text x="317" y="73" font-size="12">D</text><text x="330" y="111" font-size="11">CK</text>
+      <text x="382" y="73" font-size="12">Q</text>
+      <g font-size="11.5" fill="#211F1A">
+        <text x="350" y="150">クロックの立ち上がり（↑）の</text>
+        <text x="350" y="168">瞬間の D を Q に取り込む</text>
+        <text x="350" y="196" fill="#716C61">それ以外のタイミングでは</text>
+        <text x="350" y="212" fill="#716C61">D が変化しても Q は保持</text>
+      </g>
+      <!-- JK -->
+      <rect x="474" y="10" width="218" height="215" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="583" y="36" font-size="13" font-weight="700" fill="#211F1A">JK-FF（万能型）</text>
+      <rect x="538" y="52" width="90" height="70" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+      <line x1="508" y1="64" x2="538" y2="64" stroke="#211F1A" stroke-width="2"/>
+      <line x1="508" y1="87" x2="538" y2="87" stroke="#211F1A" stroke-width="2"/>
+      <line x1="508" y1="110" x2="538" y2="110" stroke="#211F1A" stroke-width="2"/>
+      <path d="M538,80 l11,7 l-11,7 z" fill="none" stroke="#211F1A" stroke-width="1.8"/>
+      <line x1="628" y1="68" x2="658" y2="68" stroke="#211F1A" stroke-width="2"/>
+      <text x="550" y="69" font-size="12">J</text><text x="563" y="92" font-size="11">CK</text><text x="550" y="115" font-size="12">K</text>
+      <text x="615" y="73" font-size="12">Q</text>
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#211F1A">
+        <text x="583" y="148">J K│動作</text>
+        <text x="583" y="166">0 0│保持</text>
+        <text x="583" y="182">1 0│1　0 1│0</text>
+        <text x="583" y="198" fill="#BE5A38" font-weight="700">1 1│反転(トグル)</text>
+      </g>
+      <text x="583" y="218" font-size="10.5" fill="#716C61">禁止入力がないのが強み</text>
+    </g>
+    <!-- D-FF タイミングチャート -->
+    <text x="350" y="256" text-anchor="middle" font-size="12.5" font-weight="700" fill="#211F1A">D-FFのタイミングチャート（↑＝立ち上がりエッジで取り込み）</text>
+    <g stroke="#D9D2C0" stroke-width="1" stroke-dasharray="4 3">
+      <line x1="120" y1="270" x2="120" y2="400"/><line x1="240" y1="270" x2="240" y2="400"/><line x1="360" y1="270" x2="360" y2="400"/><line x1="480" y1="270" x2="480" y2="400"/>
+    </g>
+    <text x="66" y="296" text-anchor="end" font-size="12" fill="#211F1A">CLK</text>
+    <path d="M80,300 H120 V282 H180 V300 H240 V282 H300 V300 H360 V282 H420 V300 H480 V282 H540 V300 H620" fill="none" stroke="#211F1A" stroke-width="2.2"/>
+    <g fill="#BE5A38">
+      <path d="M116,306 l4,-9 l4,9 z"/><path d="M236,306 l4,-9 l4,9 z"/><path d="M356,306 l4,-9 l4,9 z"/><path d="M476,306 l4,-9 l4,9 z"/>
+    </g>
+    <text x="66" y="342" text-anchor="end" font-size="12" fill="#4A6FA5">D</text>
+    <path d="M80,348 H90 V330 H210 V348 H330 V330 H620" fill="none" stroke="#4A6FA5" stroke-width="2.2"/>
+    <text x="66" y="386" text-anchor="end" font-size="12" fill="#BE5A38">Q</text>
+    <path d="M80,392 H120 V374 H240 V392 H360 V374 H620" fill="none" stroke="#BE5A38" stroke-width="2.2"/>
+    <g font-size="10.5" fill="#716C61" text-anchor="middle">
+      <text x="120" y="420">↑D=1→Q=1</text><text x="240" y="420">↑D=0→Q=0</text><text x="360" y="420">↑D=1→Q=1</text><text x="480" y="420">↑D=1→保持</text>
+    </g>
+    <text x="350" y="446" text-anchor="middle" font-size="11" fill="#716C61">エッジの「瞬間」だけ見る。途中のDの変化は無視される＝ノイズに強い記憶</text>
+  </svg>
+  <figcaption>図3-9　FF3種の記号と動作。CKピンの「▷」はエッジ（変化の瞬間）で動く印</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>RS-FF</b>：セット/リセットの基本形。S＝R＝1は<b>禁止入力</b>。</li>
+      <li><b>D-FF</b>：クロックの<b>立ち上がりエッジ</b>でDをQへ。「1ビットのカメラのシャッター」。</li>
+      <li><b>JK-FF</b>：禁止がなく、<b>J＝K＝1でトグル（反転）</b>。この反転がカウンタの心臓部になる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-12">3種のFFの違いがわかった</label>
+</section>
+
+<!-- ============ 13. FFを用いた回路作成 ============ -->
+<section class="item" id="s3-13">
+  <h2><span class="no">3-13</span>フリップフロップで作る回路 — カウンタ</h2>
+  <p class="goal">🎯 ゴール：T-FFをつなぐと2進カウンタになる理由を波形で説明できる</p>
+  <p>JK-FFをJ＝K＝1（T-FF）にすると「クロックのたびに反転」します。反転＝<b>周波数が半分（2分周）</b>。これを数珠つなぎにすると、各段が1/2, 1/4, 1/8…となり、<b>そのまま2進数のカウントアップ</b>になります。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 330" width="700">
+    <g stroke="#D9D2C0" stroke-width="1" stroke-dasharray="3 3">
+      <line x1="100" y1="58" x2="100" y2="248"/><line x1="160" y1="58" x2="160" y2="248"/><line x1="220" y1="58" x2="220" y2="248"/><line x1="280" y1="58" x2="280" y2="248"/><line x1="340" y1="58" x2="340" y2="248"/><line x1="400" y1="58" x2="400" y2="248"/><line x1="460" y1="58" x2="460" y2="248"/><line x1="520" y1="58" x2="520" y2="248"/><line x1="580" y1="58" x2="580" y2="248"/>
+    </g>
+    <text x="88" y="80" text-anchor="end" font-size="12" fill="#211F1A">CLK</text>
+    <path d="M100,84 V68 H130 V84 H160 V68 H190 V84 H220 V68 H250 V84 H280 V68 H310 V84 H340 V68 H370 V84 H400 V68 H430 V84 H460 V68 H490 V84 H520 V68 H550 V84 H580 V68 H610 V84 H630" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <text x="88" y="130" text-anchor="end" font-size="12" fill="#BE5A38">Q0</text>
+    <path d="M100,134 V118 H160 V134 H220 V118 H280 V134 H340 V118 H400 V134 H460 V118 H520 V134 H580 V118 H630" fill="none" stroke="#BE5A38" stroke-width="2.2"/>
+    <text x="656" y="128" font-size="11" fill="#BE5A38">1/2</text>
+    <text x="88" y="180" text-anchor="end" font-size="12" fill="#4A6FA5">Q1</text>
+    <path d="M100,184 H160 V168 H280 V184 H400 V168 H520 V184 H630" fill="none" stroke="#4A6FA5" stroke-width="2.2"/>
+    <text x="656" y="178" font-size="11" fill="#4A6FA5">1/4</text>
+    <text x="88" y="230" text-anchor="end" font-size="12" fill="#4f6b3a">Q2</text>
+    <path d="M100,234 H280 V218 H520 V234 H630" fill="none" stroke="#4f6b3a" stroke-width="2.2"/>
+    <text x="656" y="228" font-size="11" fill="#4f6b3a">1/8</text>
+    <g font-size="12" text-anchor="middle" font-family="JetBrains Mono,monospace" fill="#211F1A">
+      <text x="130" y="272">1</text><text x="190" y="272">2</text><text x="250" y="272">3</text><text x="310" y="272">4</text><text x="370" y="272">5</text><text x="430" y="272">6</text><text x="490" y="272">7</text><text x="550" y="272">0</text><text x="610" y="272">1</text>
+    </g>
+    <text x="350" y="296" text-anchor="middle" font-size="11.5" fill="#716C61">（Q2 Q1 Q0）を2進数として読むと 001→010→011→100…と数えている！</text>
+    <text x="350" y="318" text-anchor="middle" font-size="11.5" fill="#211F1A" font-weight="600">T-FF（J＝K＝1のJK-FF）を3個つなぐ → 0〜7を数える3ビット2進カウンタ（＝8分周）</text>
+  </svg>
+  <figcaption>図3-10　カウンタの正体は「反転の連鎖」。各段の周波数が半分になっていく＝分周</figcaption>
+  </figure>
+  <div class="caution"><span class="tt">⚠️ 実験でハマりがち：チャタリング</span>
+    押しボタンをクロックにすると、接点が跳ねて1回押しただけで数回カウントが進むことがある（チャタリング）。コンデンサやシュミットトリガICで対策するか、「そういう現象がある」と知っておくだけでも切り分けが速くなる。
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>FFをn個つなぐと<b>nビットカウンタ（0〜2ⁿ−1）</b>。3個で0〜7、4個で0〜15。</li>
+      <li>1段ごとに周波数1/2 → カウンタは<b>分周器</b>としても使われる（時計の1秒作りなど）。</li>
+      <li>D-FFのQ̄をDに戻してもT-FF（トグル）が作れる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-13">カウンタの仕組みを説明できるようになった</label>
+</section>
+
+<!-- ============ 14. カウンタIC ============ -->
+<section class="item" id="s3-14">
+  <h2><span class="no">3-14</span>カウンタIC</h2>
+  <p class="goal">🎯 ゴール：カウンタICの役割と代表的な端子がわかる</p>
+  <p>FFを自分でつながなくても、1チップでカウンタになっているICがあります。<b>クロックが入るたびに2進数で＋1（または−1）</b>してくれる部品です。</p>
+  <table class="tbl">
+    <tr><th>型番（例）</th><th>種類</th><th>特徴</th></tr>
+    <tr><td class="mono">74HC161</td><td>4ビット2進（16進）カウンタ</td><td>0〜15を数える。同期式・プリセット可</td></tr>
+    <tr><td class="mono">7490</td><td>10進カウンタ</td><td>0〜9で一周 → 7seg表示と相性がよい</td></tr>
+    <tr><td class="mono">74HC193</td><td>アップダウンカウンタ</td><td>＋1も−1もできる</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>主な端子：<b>CLK（クロック入力）・Q0〜Q3（2進出力）・<span class="ovl">CLR</span>（リセット：0に戻す）・<span class="ovl">LD</span>（プリセット：好きな値から開始）</b>。バー付き＝アクティブ・ロー（Lで動作）が多い。</li>
+      <li>カウンタIC → デコーダIC → 7seg とつなぐと「数えて表示」が完成。前項の回路とつながる。</li>
+      <li>10進カウンタは「9の次に0へ戻る」ようにFF＋リセットが内蔵されている、と考えればよい。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-14">カウンタICの役割がわかった</label>
+</section>
+
+<!-- ============ 15. レジスタ ============ -->
+<section class="item" id="s3-15">
+  <h2><span class="no">3-15</span>レジスタ — 複数ビットをまとめて保持</h2>
+  <p class="goal">🎯 ゴール：シフトレジスタの動きをクロックごとに追える</p>
+  <p>D-FFを並べて<b>複数ビットをまとめて記憶する回路がレジスタ</b>。中でも、クロックごとにデータを隣へ送っていく<b>シフトレジスタ</b>は「バケツリレーの記憶装置」です。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 235" width="700">
+    <text x="60" y="88" font-size="11.5" fill="#4A6FA5" text-anchor="middle">直列データ</text>
+    <text x="60" y="104" font-size="11.5" fill="#4A6FA5" text-anchor="middle">入力</text>
+    <line x1="88" y1="110" x2="122" y2="110" stroke="#4A6FA5" stroke-width="2.2"/>
+    <path d="M119,104 L130,110 L119,116 Z" fill="#4A6FA5"/>
+    <g>
+      <rect x="130" y="78" width="86" height="64" rx="8" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+      <rect x="256" y="78" width="86" height="64" rx="8" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+      <rect x="382" y="78" width="86" height="64" rx="8" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+      <rect x="508" y="78" width="86" height="64" rx="8" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    </g>
+    <g font-size="12" text-anchor="middle" fill="#211F1A">
+      <text x="173" y="105" font-weight="700">FF0</text><text x="299" y="105" font-weight="700">FF1</text><text x="425" y="105" font-weight="700">FF2</text><text x="551" y="105" font-weight="700">FF3</text>
+      <text x="173" y="124" font-size="10.5" fill="#716C61">D-FF</text><text x="299" y="124" font-size="10.5" fill="#716C61">D-FF</text><text x="425" y="124" font-size="10.5" fill="#716C61">D-FF</text><text x="551" y="124" font-size="10.5" fill="#716C61">D-FF</text>
+    </g>
+    <g stroke="#211F1A" stroke-width="2">
+      <line x1="216" y1="110" x2="256" y2="110"/><line x1="342" y1="110" x2="382" y2="110"/><line x1="468" y1="110" x2="508" y2="110"/>
+    </g>
+    <g fill="#211F1A">
+      <path d="M250,105 l8,5 l-8,5 z"/><path d="M376,105 l8,5 l-8,5 z"/><path d="M502,105 l8,5 l-8,5 z"/>
+    </g>
+    <g stroke="#BE5A38" stroke-width="2">
+      <line x1="173" y1="78" x2="173" y2="52"/><line x1="299" y1="78" x2="299" y2="52"/><line x1="425" y1="78" x2="425" y2="52"/><line x1="551" y1="78" x2="551" y2="52"/>
+    </g>
+    <g font-size="11.5" fill="#BE5A38" text-anchor="middle" font-weight="700">
+      <text x="173" y="42">Q0</text><text x="299" y="42">Q1</text><text x="425" y="42">Q2</text><text x="551" y="42">Q3</text>
+    </g>
+    <line x1="100" y1="178" x2="620" y2="178" stroke="#4f6b3a" stroke-width="2"/>
+    <g stroke="#4f6b3a" stroke-width="2">
+      <line x1="173" y1="178" x2="173" y2="142"/><line x1="299" y1="178" x2="299" y2="142"/><line x1="425" y1="178" x2="425" y2="142"/><line x1="551" y1="178" x2="551" y2="142"/>
+    </g>
+    <text x="628" y="198" font-size="11.5" fill="#4f6b3a">CLK（共通）</text>
+    <text x="350" y="215" text-anchor="middle" font-size="11.5" fill="#716C61">クロックが来るたびに、全FFが一斉に「左隣の値」を取り込む → データが1つずつ右へ進む</text>
+  </svg>
+  <figcaption>図3-11　4ビットシフトレジスタ。1本の線から入れたデータが、4クロックで4ビット並列に揃う</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 動きを追ってみる（1→0→1→1 の順に入力）</span>
+    <table class="tbl">
+      <tr><th>クロック</th><th class="c">入力</th><th class="c">Q0</th><th class="c">Q1</th><th class="c">Q2</th><th class="c">Q3</th></tr>
+      <tr><td>はじめ</td><td class="c mono">—</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td></tr>
+      <tr><td>1回目</td><td class="c mono">1</td><td class="c mono"><b>1</b></td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td></tr>
+      <tr><td>2回目</td><td class="c mono">0</td><td class="c mono"><b>0</b></td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono">0</td></tr>
+      <tr><td>3回目</td><td class="c mono">1</td><td class="c mono"><b>1</b></td><td class="c mono">0</td><td class="c mono">1</td><td class="c mono">0</td></tr>
+      <tr><td>4回目</td><td class="c mono">1</td><td class="c mono"><b>1</b></td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono">1</td></tr>
+    </table>
+    データが1クロックずつ右へスライドしていくのがわかる。
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>レジスタ＝D-FFの集まり</b>。並列に一斉保存するタイプと、1ビットずつ送るシフトタイプがある。</li>
+      <li>シフトレジスタIC（74HC164、74HC595など）は<b>「線3本で LED をたくさん制御」</b>など、少ないピンでデータを送るのに大活躍。</li>
+      <li>カウンタは「数を覚えるFF」、レジスタは「データを覚えるFF」。どちらもFFの応用と捉えると整理できる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s3-15">シフトレジスタの動きを追えるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（セクション3）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+  <details><summary>Q1. AND・OR・NOTの論理式の書き方は？</summary><div class="a">AND＝A・B、OR＝A＋B、NOT＝<span class="ovl">A</span>（上線）。</div></details>
+  <details><summary>Q2. 2入力の真理値表は何行？3入力では？</summary><div class="a">2ⁿ行なので、2入力＝<b>4行</b>、3入力＝<b>8行</b>。2進数のカウント順（00,01,10,11）に書くと漏れない。</div></details>
+  <details><summary>Q3. NANDゲートの出力がLになるのはどんなとき？</summary><div class="a"><b>入力が両方H（1・1）のときだけ</b>。それ以外はすべてH。ANDの逆と覚える。</div></details>
+  <details><summary>Q4. 7400はどんなIC？VCCとGNDは何番ピン？</summary><div class="a">2入力<b>NANDが4個</b>入ったIC。<b>VCC＝14番、GND＝7番</b>（切り欠きを上にして左上が1番、反時計回り）。</div></details>
+  <details><summary>Q5. 使わない入力ピンはどうする？</summary><div class="a"><b>HかLに固定する（開放にしない）</b>。宙ぶらりんだとレベルが不定になり誤動作の原因になる。</div></details>
+  <details><summary>Q6. 正論理と負論理の違いは？</summary><div class="a">正論理＝<b>H を1</b>とする。負論理＝<b>L を1</b>とする。電圧（H/L）と意味（1/0）の割り当て方の違い。</div></details>
+  <details><summary>Q7. <span class="ovl">RESET</span>（バー付き）端子の意味は？</summary><div class="a"><b>Lにするとリセットがかかる（アクティブ・ロー）</b>。ふだんはHにしておく。</div></details>
+  <details><summary>Q8. 2進数 1101 を10進数に。</summary><div class="a">8＋4＋1＝<b>13</b>（16進ならD）。</div></details>
+  <details><summary>Q9. 10進数 25 を2進数に。</summary><div class="a">2で割って余りを下から読む → <b>11001</b>（16＋8＋1で検算OK）。</div></details>
+  <details><summary>Q10. 2進数 11111111 を16進数と10進数に。</summary><div class="a">1111|1111 → <b>FF</b>。10進では<b>255</b>（8ビットの最大値）。</div></details>
+  <details><summary>Q11. 7segで「1」を出すとき点灯するセグメントは？</summary><div class="a"><b>bとc</b>（右側の縦2本）。ちなみに「8」は7本全部。</div></details>
+  <details><summary>Q12. アノードコモンとカソードコモンの違いは？</summary><div class="a">アノードコモン＝<b>＋側が共通（セグメントをLにすると点灯）</b>、カソードコモン＝<b>−側が共通（Hで点灯）</b>。デコーダICもそれに合わせて選ぶ（4511はカソードコモン用）。</div></details>
+  <details><summary>Q13. D-FFがDを取り込むのはいつ？</summary><div class="a"><b>クロックの立ち上がりエッジの瞬間</b>。それ以外ではDが変化してもQは保持される。</div></details>
+  <details><summary>Q14. JK-FFでJ＝K＝1にすると？</summary><div class="a">クロックのたびに出力が<b>反転（トグル）</b>する。これがT-FFで、カウンタ（2分周）の基本になる。</div></details>
+  <details><summary>Q15. FFを3個つないだカウンタは何がどこまで数えられる？</summary><div class="a"><b>3ビット2進カウンタで0〜7</b>（＝8分周）。n個なら0〜2ⁿ−1。</div></details>
+  <details><summary>Q16. シフトレジスタはどんな動きをする？</summary><div class="a">クロックごとに<b>データを隣のFFへ1つずつ送って</b>保持する。直列で入れたデータを並列で取り出す、などピン数の節約に使われる。</div></details>
+</section>
+
+<nav class="pager">
+  <a href="study-analog.html"><span class="dir">‹ まえへ</span>セクション2：半導体・アナログ回路</a>
+  <a href="study-guide.html" class="next"><span class="dir">総仕上げ ›</span>学習ノート トップ（進捗と抜き打ちチェック）</a>
+</nav>
+
+<footer>電子回路 学習ノート ─ セクション3：デジタル回路</footer>
+</div>
+
+<script>
+const KEY='denshiStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+</script>
+</body>
+</html>

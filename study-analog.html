@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション2：半導体・アナログ回路｜電子回路 学習ノート</title>
+<meta name="description" content="半導体、ダイオード、整流回路、トランジスタ、オペアンプと増幅回路を図解でおさらい。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="study-guide.html">‹ 学習ノート</a>
+  <span class="crumb">セクション2</span>
+  <span class="prog">できた <b id="done-count">0</b> / 10</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 2</div>
+  <h1>📻 半導体・アナログ回路</h1>
+  <p class="lead">主役はダイオードとトランジスタ。「一方向にしか流さない」「小さな信号で大きな電流を操る」——この2つの性質から、整流も増幅もぜんぶつながっていきます。</p>
+  <nav class="toc">
+    <a href="#s2-1">1. 半導体</a><a href="#s2-2">2. ダイオードの性質</a><a href="#s2-3">3. 整流回路</a><a href="#s2-4">4. 静特性</a><a href="#s2-5">5. 増幅度</a><a href="#s2-6">6. 増幅とスイッチング</a><a href="#s2-7">7. オペアンプ</a><a href="#s2-8">8. 基本増幅回路</a><a href="#s2-9">9. 増幅回路の製作</a><a href="#s2-10">10. オシロで実測</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 1. 半導体 ============ -->
+<section class="item" id="s2-1">
+  <h2><span class="no">2-1</span>半導体とは</h2>
+  <p class="goal">🎯 ゴール：半導体を「導体・絶縁体との違い」と「N型・P型」で説明できる</p>
+  <p>物質は電気の流れやすさで3つに分けられます。半導体はその中間で、<b>不純物をほんの少し混ぜる（ドーピング）ことで流れやすさを自由に設計できる</b>のが最大の特徴。だからこそ「電子部品の材料」になります。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 345" width="700">
+    <g text-anchor="middle">
+      <rect x="40" y="36" width="195" height="74" rx="10" fill="#E7EDDC" stroke="#D5DFC6"/>
+      <text x="137" y="62" font-size="13.5" font-weight="700" fill="#4f6b3a">導体</text>
+      <text x="137" y="84" font-size="11.5" fill="#211F1A">銅・銀・アルミ</text>
+      <text x="137" y="101" font-size="11" fill="#716C61">よく流れる</text>
+      <rect x="252" y="36" width="195" height="74" rx="10" fill="#F3E5DA" stroke="#E6C3B0"/>
+      <text x="349" y="62" font-size="13.5" font-weight="700" fill="#BE5A38">半導体</text>
+      <text x="349" y="84" font-size="11.5" fill="#211F1A">シリコン(Si)・ゲルマニウム</text>
+      <text x="349" y="101" font-size="11" fill="#716C61">条件しだいで変わる</text>
+      <rect x="464" y="36" width="195" height="74" rx="10" fill="#F2EFE6" stroke="#E2DCCD"/>
+      <text x="561" y="62" font-size="13.5" font-weight="700" fill="#716C61">絶縁体</text>
+      <text x="561" y="84" font-size="11.5" fill="#211F1A">ゴム・ガラス・樹脂</text>
+      <text x="561" y="101" font-size="11" fill="#716C61">ほぼ流れない</text>
+      <line x1="60" y1="132" x2="640" y2="132" stroke="#716C61" stroke-width="2"/>
+      <path d="M60,132 l14,-6 v12 z" fill="#716C61"/>
+      <path d="M640,132 l-14,-6 v12 z" fill="#716C61"/>
+      <text x="110" y="152" font-size="11" fill="#716C61">流れやすい</text>
+      <text x="590" y="152" font-size="11" fill="#716C61">流れにくい</text>
+      <!-- N型 -->
+      <text x="192" y="188" font-size="13" font-weight="700" fill="#4A6FA5">N型半導体</text>
+      <rect x="62" y="198" width="260" height="76" rx="10" fill="#FFFFFF" stroke="#4A6FA5" stroke-width="1.5"/>
+      <g>
+        <circle cx="105" cy="226" r="11" fill="#4A6FA5"/><text x="105" y="231" font-size="12" fill="#fff">−</text>
+        <circle cx="160" cy="248" r="11" fill="#4A6FA5"/><text x="160" y="253" font-size="12" fill="#fff">−</text>
+        <circle cx="215" cy="222" r="11" fill="#4A6FA5"/><text x="215" y="227" font-size="12" fill="#fff">−</text>
+        <circle cx="272" cy="246" r="11" fill="#4A6FA5"/><text x="272" y="251" font-size="12" fill="#fff">−</text>
+      </g>
+      <text x="192" y="296" font-size="11.5" fill="#211F1A">リンなど（5価）を混ぜる → 電子が余る</text>
+      <text x="192" y="314" font-size="11.5" fill="#4A6FA5" font-weight="600">電気を運ぶのは「自由電子（−）」</text>
+      <!-- P型 -->
+      <text x="508" y="188" font-size="13" font-weight="700" fill="#BE5A38">P型半導体</text>
+      <rect x="378" y="198" width="260" height="76" rx="10" fill="#FFFFFF" stroke="#BE5A38" stroke-width="1.5"/>
+      <g>
+        <circle cx="421" cy="226" r="11" fill="none" stroke="#BE5A38" stroke-width="2"/><text x="421" y="231" font-size="12" fill="#BE5A38">＋</text>
+        <circle cx="476" cy="248" r="11" fill="none" stroke="#BE5A38" stroke-width="2"/><text x="476" y="253" font-size="12" fill="#BE5A38">＋</text>
+        <circle cx="531" cy="222" r="11" fill="none" stroke="#BE5A38" stroke-width="2"/><text x="531" y="227" font-size="12" fill="#BE5A38">＋</text>
+        <circle cx="588" cy="246" r="11" fill="none" stroke="#BE5A38" stroke-width="2"/><text x="588" y="251" font-size="12" fill="#BE5A38">＋</text>
+      </g>
+      <text x="508" y="296" font-size="11.5" fill="#211F1A">ホウ素など（3価）を混ぜる → 電子の「穴」ができる</text>
+      <text x="508" y="314" font-size="11.5" fill="#BE5A38" font-weight="600">電気を運ぶのは「ホール（＋）」</text>
+    </g>
+  </svg>
+  <figcaption>図2-1　半導体は導体と絶縁体の中間。不純物の種類でN型（電子）とP型（ホール）を作り分ける</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>純粋なシリコン（真性半導体）はほとんど電気を流さない。<b>不純物添加（ドーピング）</b>で性質を制御する。</li>
+      <li><b>N型＝Negative（電子が運ぶ）／P型＝Positive（ホールが運ぶ）</b>。</li>
+      <li>PとNを貼り合わせると<b>ダイオード</b>、3層に重ねると<b>トランジスタ</b>。ここから全部つながる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-1">説明できるようになった</label>
+</section>
+
+<!-- ============ 2. ダイオードの性質 ============ -->
+<section class="item" id="s2-2">
+  <h2><span class="no">2-2</span>ダイオードの性質 — 一方通行の弁</h2>
+  <p class="goal">🎯 ゴール：整流性（一方向にしか流さない）を図と数字で説明できる</p>
+  <p>ダイオードはPN接合の2端子素子。<b>アノード→カソードの向き（順方向）だけ電流を通し、逆向き（逆方向）はブロック</b>します。水道の逆止弁のイメージです。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 285" width="700">
+    <g text-anchor="middle">
+      <text x="180" y="30" font-size="13.5" font-weight="700" fill="#4f6b3a">順方向 → 流れる</text>
+      <text x="528" y="30" font-size="13.5" font-weight="700" fill="#b23a2e">逆方向 → 流れない</text>
+      <line x1="352" y1="20" x2="352" y2="265" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+      <!-- 順方向 -->
+      <path d="M60,95 H130 M186,95 H310 V150 M310,184 V230 H60 V95" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <path d="M130,78 L166,95 L130,112 Z" fill="#211F1A"/>
+      <line x1="166" y1="78" x2="166" y2="112" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="166" y1="95" x2="186" y2="95" stroke="#211F1A" stroke-width="2"/>
+      <rect x="48" y="145" width="24" height="40" fill="#FCFBF7"/>
+      <line x1="49" y1="158" x2="71" y2="158" stroke="#211F1A" stroke-width="3"/>
+      <line x1="54" y1="172" x2="66" y2="172" stroke="#211F1A" stroke-width="2"/>
+      <line x1="60" y1="95" x2="60" y2="158" stroke="#211F1A" stroke-width="2"/>
+      <line x1="60" y1="172" x2="60" y2="230" stroke="#211F1A" stroke-width="2"/>
+      <text x="42" y="155" font-size="12" text-anchor="end">＋</text>
+      <text x="42" y="182" font-size="12" text-anchor="end">−</text>
+      <circle cx="310" cy="167" r="18" fill="#F9E79F" stroke="#211F1A" stroke-width="2"/>
+      <line x1="298" y1="155" x2="322" y2="179" stroke="#211F1A" stroke-width="1.8"/>
+      <line x1="322" y1="155" x2="298" y2="179" stroke="#211F1A" stroke-width="1.8"/>
+      <g stroke="#E4B93C" stroke-width="2" stroke-linecap="round">
+        <line x1="310" y1="138" x2="310" y2="128"/><line x1="332" y1="147" x2="340" y2="140"/><line x1="288" y1="147" x2="280" y2="140"/>
+      </g>
+      <path d="M226,89 l16,6 l-16,6 z" fill="#BE5A38"/>
+      <text x="234" y="80" font-size="12" fill="#BE5A38" font-weight="700">電流</text>
+      <text x="185" y="256" font-size="11.5" fill="#211F1A">＋がアノードにつながる → 点灯</text>
+      <!-- 逆方向 -->
+      <path d="M410,95 H480 M536,95 H660 V150 M660,184 V230 H410 V95" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <path d="M536,78 L500,95 L536,112 Z" fill="#211F1A"/>
+      <line x1="500" y1="78" x2="500" y2="112" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="480" y1="95" x2="500" y2="95" stroke="#211F1A" stroke-width="2"/>
+      <rect x="398" y="145" width="24" height="40" fill="#FCFBF7"/>
+      <line x1="399" y1="158" x2="421" y2="158" stroke="#211F1A" stroke-width="3"/>
+      <line x1="404" y1="172" x2="416" y2="172" stroke="#211F1A" stroke-width="2"/>
+      <line x1="410" y1="95" x2="410" y2="158" stroke="#211F1A" stroke-width="2"/>
+      <line x1="410" y1="172" x2="410" y2="230" stroke="#211F1A" stroke-width="2"/>
+      <text x="392" y="155" font-size="12" text-anchor="end">＋</text>
+      <circle cx="660" cy="167" r="18" fill="#EAE4D5" stroke="#716C61" stroke-width="2"/>
+      <line x1="648" y1="155" x2="672" y2="179" stroke="#716C61" stroke-width="1.8"/>
+      <line x1="672" y1="155" x2="648" y2="179" stroke="#716C61" stroke-width="1.8"/>
+      <text x="536" y="150" font-size="22" font-weight="700" fill="#b23a2e">✕</text>
+      <text x="536" y="256" font-size="11.5" fill="#211F1A">向きが逆 → 電流ゼロ・消灯</text>
+    </g>
+  </svg>
+  <figcaption>図2-2　順方向なら点灯、逆方向なら消灯。ダイオードの向き＝三角の向き＝電流の向き</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題</span>
+    5V電源にシリコンダイオードと抵抗を直列につないだ。抵抗にかかる電圧はおよそ何V？
+    <details class="ans"><summary>答えを見る</summary>
+      ダイオードの順方向には約0.6〜0.7Vが「取られる」ので、抵抗には <b>5 − 0.7 ≒ 4.3V</b>。<br>
+      「ダイオードは通すとき約0.7V消費する」は回路計算で頻出の感覚です。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>この「一方向にしか流さない性質」を<b>整流性（整流作用）</b>と呼ぶ。</li>
+      <li>順方向でも<b>約0.6〜0.7V（シリコン）</b>を超えるまではほぼ流れない。LEDでは約1.8〜3.4V。</li>
+      <li>用途：交流→直流の整流、逆接続保護、スイッチのサージ吸収など。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-2">説明できるようになった</label>
+</section>
+
+<!-- ============ 3. 整流回路 ============ -->
+<section class="item" id="s2-3">
+  <h2><span class="no">2-3</span>整流回路 — 交流を直流に変える</h2>
+  <p class="goal">🎯 ゴール：半波整流と全波整流の違いを波形で説明できる</p>
+  <p>コンセントの電気は交流（＋と−が交互に入れかわる）。電子回路は直流で動くので、<b>ダイオードで「向きをそろえる」＝整流</b>が必要です。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 395" width="700">
+    <!-- 半波 -->
+    <text x="30" y="28" font-size="13.5" font-weight="700" fill="#211F1A">半波整流（ダイオード1本）— マイナス側は捨てる</text>
+    <circle cx="70" cy="105" r="20" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <path d="M60,105 q5,-9 10,0 q5,9 10,0" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <path d="M70,85 V60 H150 M206,60 H290 V85 M290,125 V150 H70 V125" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <path d="M150,44 L186,60 L150,76 Z" fill="#211F1A"/>
+    <line x1="186" y1="44" x2="186" y2="76" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="186" y1="60" x2="206" y2="60" stroke="#211F1A" stroke-width="2"/>
+    <rect x="281" y="85" width="18" height="40" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="312" y="110" font-size="11.5" fill="#211F1A">負荷</text>
+    <text x="70" y="145" font-size="11" fill="#716C61" text-anchor="middle">交流入力</text>
+    <!-- 半波波形 -->
+    <line x1="390" y1="105" x2="530" y2="105" stroke="#B9B2A0" stroke-width="1.5"/>
+    <path d="M390,105 Q407,55 425,105 Q442,155 460,105 Q477,55 495,105 Q512,155 530,105" fill="none" stroke="#4A6FA5" stroke-width="2.5"/>
+    <text x="460" y="175" font-size="11" fill="#4A6FA5" text-anchor="middle">入力（交流）</text>
+    <path d="M545,99 l14,6 l-14,6 z" fill="#716C61"/>
+    <line x1="570" y1="105" x2="690" y2="105" stroke="#B9B2A0" stroke-width="1.5"/>
+    <path d="M570,105 Q585,55 600,105 L630,105 Q645,55 660,105 L690,105" fill="none" stroke="#BE5A38" stroke-width="2.5"/>
+    <text x="630" y="175" font-size="11" fill="#BE5A38" text-anchor="middle">出力（山が半分だけ）</text>
+    <line x1="30" y1="196" x2="670" y2="196" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- 全波 -->
+    <text x="30" y="224" font-size="13.5" font-weight="700" fill="#211F1A">全波整流（ブリッジ：ダイオード4本）— マイナス側も折り返して使う</text>
+    <circle cx="60" cy="305" r="20" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <path d="M50,305 q5,-9 10,0 q5,9 10,0" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <path d="M60,285 V255 H170 M60,325 V355 H170" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <!-- ブリッジひし形 -->
+    <line x1="170" y1="255" x2="215" y2="305" stroke="#211F1A" stroke-width="2"/>
+    <line x1="170" y1="255" x2="125" y2="305" stroke="#211F1A" stroke-width="2"/>
+    <line x1="125" y1="305" x2="170" y2="355" stroke="#211F1A" stroke-width="2"/>
+    <line x1="170" y1="355" x2="215" y2="305" stroke="#211F1A" stroke-width="2"/>
+    <g>
+      <g transform="translate(192,280) rotate(48)"><path d="M-7,-6 L7,0 L-7,6 Z" fill="#211F1A"/><line x1="7" y1="-6" x2="7" y2="6" stroke="#211F1A" stroke-width="2"/></g>
+      <g transform="translate(148,280) rotate(-48)"><path d="M-7,-6 L7,0 L-7,6 Z" fill="#211F1A"/><line x1="7" y1="-6" x2="7" y2="6" stroke="#211F1A" stroke-width="2"/></g>
+      <g transform="translate(192,330) rotate(-48)"><path d="M-7,-6 L7,0 L-7,6 Z" fill="#211F1A"/><line x1="7" y1="-6" x2="7" y2="6" stroke="#211F1A" stroke-width="2"/></g>
+      <g transform="translate(148,330) rotate(48)"><path d="M-7,-6 L7,0 L-7,6 Z" fill="#211F1A"/><line x1="7" y1="-6" x2="7" y2="6" stroke="#211F1A" stroke-width="2"/></g>
+    </g>
+    <text x="222" y="298" font-size="11.5" fill="#BE5A38" font-weight="700">＋</text>
+    <text x="112" y="298" font-size="11.5" fill="#4A6FA5" font-weight="700">−</text>
+    <path d="M215,305 H280 V285 M125,305 V375 H280 V325" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <rect x="271" y="285" width="18" height="40" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="302" y="310" font-size="11.5" fill="#211F1A">負荷</text>
+    <!-- 全波波形 -->
+    <line x1="390" y1="305" x2="530" y2="305" stroke="#B9B2A0" stroke-width="1.5"/>
+    <path d="M390,305 Q407,255 425,305 Q442,355 460,305 Q477,255 495,305 Q512,355 530,305" fill="none" stroke="#4A6FA5" stroke-width="2.5"/>
+    <text x="460" y="375" font-size="11" fill="#4A6FA5" text-anchor="middle">入力（交流）</text>
+    <path d="M545,299 l14,6 l-14,6 z" fill="#716C61"/>
+    <line x1="570" y1="305" x2="690" y2="305" stroke="#B9B2A0" stroke-width="1.5"/>
+    <path d="M570,305 Q585,255 600,305 Q615,255 630,305 Q645,255 660,305 Q675,255 690,305" fill="none" stroke="#BE5A38" stroke-width="2.5"/>
+    <text x="630" y="375" font-size="11" fill="#BE5A38" text-anchor="middle">出力（山が全部上向き）</text>
+  </svg>
+  <figcaption>図2-3　半波整流は山が半分、全波整流（ブリッジ）はマイナスの山も上向きに折り返す</figcaption>
+  </figure>
+  <p>整流しただけの出力はまだ「脈打つ直流」。<b>平滑コンデンサ</b>が山と山の間を埋めて、なめらかな直流に近づけます。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 235" width="700">
+    <rect x="30" y="70" width="90" height="46" rx="9" fill="#F2EFE6" stroke="#716C61"/>
+    <text x="75" y="90" font-size="11" text-anchor="middle" fill="#211F1A">全波整流の</text>
+    <text x="75" y="106" font-size="11" text-anchor="middle" fill="#211F1A">出力</text>
+    <path d="M120,93 H290 M180,93 V120 M180,150 V180 M120,180 H290 M290,93 V115 M290,155 V180" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <line x1="120" y1="93" x2="120" y2="180" stroke="none"/>
+    <line x1="164" y1="120" x2="196" y2="120" stroke="#211F1A" stroke-width="2.5"/>
+    <path d="M164,136 q16,-12 32,0" fill="none" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="150" y="147" font-size="15" font-weight="700" fill="#211F1A" text-anchor="middle">＋</text>
+    <text x="238" y="114" text-anchor="middle" font-size="11.5" fill="#BE5A38" font-weight="600">平滑コンデンサ</text>
+    <rect x="281" y="115" width="18" height="40" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="312" y="140" font-size="11.5" fill="#211F1A">負荷</text>
+    <circle cx="180" cy="93" r="3.5" fill="#211F1A"/>
+    <!-- 波形 -->
+    <line x1="400" y1="150" x2="680" y2="150" stroke="#B9B2A0" stroke-width="1.5"/>
+    <path d="M400,150 Q415,80 430,150 Q445,80 460,150 Q475,80 490,150 Q505,80 520,150" fill="none" stroke="#D69B81" stroke-width="2" stroke-dasharray="4 3"/>
+    <path d="M400,150 Q409,84 418,82 L444,96 Q451,84 460,82 L486,96 Q493,84 502,82 L520,94" fill="none" stroke="#BE5A38" stroke-width="2.5"/>
+    <text x="460" y="185" font-size="11" fill="#716C61" text-anchor="middle">充電→放電をくり返して山の間を埋める</text>
+    <path d="M540,110 l14,6 l-14,6 z" fill="#716C61"/>
+    <line x1="565" y1="150" x2="685" y2="150" stroke="#B9B2A0" stroke-width="1.5"/>
+    <path d="M565,92 L595,98 L610,92 L640,98 L655,92 L685,98" fill="none" stroke="#4f6b3a" stroke-width="2.5"/>
+    <text x="625" y="120" font-size="11" fill="#4f6b3a" text-anchor="middle">ほぼ直流（リプルが少し残る）</text>
+    <text x="350" y="222" font-size="11.5" fill="#716C61" text-anchor="middle">交流 → 変圧（トランス） → 整流（ダイオード） → 平滑（コンデンサ） → 直流：電源回路の基本の流れ</text>
+  </svg>
+  <figcaption>図2-4　平滑コンデンサの働き。残った小さな波を「リプル」と呼ぶ</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>半波整流</b>：ダイオード1本。簡単だが半分捨てるので効率が悪く脈動が大きい。</li>
+      <li><b>全波整流（ブリッジ）</b>：ダイオード4本。マイナス側も使うので山の数が2倍＝平滑しやすい。</li>
+      <li>全波整流後の脈動（リプル）の周波数は<b>入力の2倍</b>（50Hz→100Hz）。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-3">波形で説明できるようになった</label>
+</section>
+
+<!-- ============ 4. 静特性 ============ -->
+<section class="item" id="s2-4">
+  <h2><span class="no">2-4</span>静特性 — 素子の「性格」を表すグラフ</h2>
+  <p class="goal">🎯 ゴール：V-I特性グラフの読み方がわかる</p>
+  <p>静特性とは、素子に<b>電圧をかけたとき電流がどう流れるかの関係（V-I特性）</b>をグラフにしたもの。素子の「性格表」です。抵抗なら直線（オームの法則）ですが、ダイオードはこんな曲線になります。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 330" width="700">
+    <line x1="80" y1="170" x2="660" y2="170" stroke="#716C61" stroke-width="2"/>
+    <line x1="390" y1="40" x2="390" y2="300" stroke="#716C61" stroke-width="2"/>
+    <path d="M660,170 l-12,-5 v10 z" fill="#716C61"/>
+    <path d="M390,40 l-5,12 h10 z" fill="#716C61"/>
+    <text x="672" y="174" font-size="12" fill="#716C61">V</text>
+    <text x="390" y="30" font-size="12" fill="#716C61" text-anchor="middle">I（電流）</text>
+    <text x="640" y="192" font-size="11" fill="#716C61" text-anchor="end">順方向電圧 →</text>
+    <text x="130" y="192" font-size="11" fill="#716C61">← 逆方向電圧</text>
+    <!-- 順方向カーブ -->
+    <path d="M390,170 Q450,168 470,158 Q488,146 492,60" fill="none" stroke="#BE5A38" stroke-width="3"/>
+    <line x1="470" y1="166" x2="470" y2="174" stroke="#211F1A" stroke-width="2"/>
+    <text x="470" y="192" font-size="11.5" text-anchor="middle" fill="#BE5A38" font-weight="700">約0.6V</text>
+    <text x="560" y="100" font-size="12" fill="#BE5A38" font-weight="600">立ち上がり電圧を</text>
+    <text x="560" y="118" font-size="12" fill="#BE5A38" font-weight="600">超えると急に流れる</text>
+    <!-- 逆方向 -->
+    <line x1="390" y1="172" x2="180" y2="174" stroke="#4A6FA5" stroke-width="2.5"/>
+    <path d="M180,174 Q166,176 162,220 Q160,248 158,272" fill="none" stroke="#4A6FA5" stroke-width="2.5" stroke-dasharray="5 4"/>
+    <text x="255" y="150" font-size="12" fill="#4A6FA5">逆方向はほぼ流れない</text>
+    <text x="255" y="167" font-size="10.5" fill="#716C61">（ごくわずかな漏れ電流のみ）</text>
+    <text x="150" y="296" font-size="11.5" fill="#4A6FA5">降伏（ブレークダウン）：</text>
+    <text x="150" y="313" font-size="11.5" fill="#4A6FA5">一定の逆電圧で急に流れ出す</text>
+    <text x="150" y="255" font-size="10.5" fill="#716C61" text-anchor="end">ツェナーダイオードは</text>
+    <text x="150" y="270" font-size="10.5" fill="#716C61" text-anchor="end">ここを定電圧に利用</text>
+  </svg>
+  <figcaption>図2-5　ダイオードの静特性（V-I特性）。直線にならない＝オームの法則に従わない素子</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>グラフの読み方：<b>横軸＝かけた電圧、縦軸＝流れた電流</b>。ある電圧のときの電流が一目でわかる。</li>
+      <li>抵抗の静特性は原点を通る直線（傾き＝1/R）。ダイオードは曲線＝<b>非直線（非線形）素子</b>。</li>
+      <li>トランジスタにも静特性がある（V<sub>CE</sub>-I<sub>C</sub>特性など）。データシートのグラフを読む練習が実務につながる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-4">グラフを読めるようになった</label>
+</section>
+
+<!-- ============ 5. 増幅度 ============ -->
+<section class="item" id="s2-5">
+  <h2><span class="no">2-5</span>増幅度 — 何倍になったか</h2>
+  <p class="goal">🎯 ゴール：入力と出力から増幅度を計算できる（dBも）</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 250" width="700">
+    <line x1="30" y1="120" x2="160" y2="120" stroke="#B9B2A0" stroke-width="1.2"/>
+    <path d="M30,120 q16,-24 32,0 q16,24 32,0 q16,-24 32,0 q16,24 32,0" fill="none" stroke="#4A6FA5" stroke-width="2.5"/>
+    <text x="95" y="160" font-size="11.5" fill="#4A6FA5" text-anchor="middle">入力 Vin＝0.2Vpp</text>
+    <line x1="168" y1="120" x2="205" y2="120" stroke="#211F1A" stroke-width="2"/>
+    <path d="M205,70 L205,170 L320,120 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2.5" stroke-linejoin="round"/>
+    <text x="243" y="126" font-size="12" fill="#BE5A38" font-weight="700">増幅</text>
+    <line x1="320" y1="120" x2="356" y2="120" stroke="#211F1A" stroke-width="2"/>
+    <line x1="360" y1="120" x2="520" y2="120" stroke="#B9B2A0" stroke-width="1.2"/>
+    <path d="M360,120 q20,-90 40,0 q20,90 40,0 q20,-90 40,0 q20,90 40,0" fill="none" stroke="#BE5A38" stroke-width="2.5"/>
+    <text x="440" y="200" font-size="11.5" fill="#BE5A38" text-anchor="middle">出力 Vout＝2.0Vpp</text>
+    <g font-size="12.5" fill="#211F1A">
+      <text x="545" y="72" font-weight="700">電圧増幅度</text>
+      <text x="545" y="96">Av＝Vout ÷ Vin</text>
+      <text x="545" y="120" fill="#BE5A38" font-weight="700">＝2.0 ÷ 0.2＝10倍</text>
+      <text x="545" y="156" font-weight="700">デシベル表示</text>
+      <text x="545" y="180">Gv＝20 log₁₀ Av</text>
+      <text x="545" y="204" fill="#BE5A38" font-weight="700">10倍＝20dB</text>
+    </g>
+  </svg>
+  <figcaption>図2-6　増幅度＝出力÷入力。同じ形のまま「背の高さ」だけ大きくするのが理想の増幅</figcaption>
+  </figure>
+  <div class="formula">電圧増幅度 Av ＝ Vout ／ Vin　　（dB表示：Gv ＝ 20 log₁₀ Av）</div>
+  <div class="example"><span class="tt">✏️ 例題</span>
+    入力50mV、出力2.5Vの増幅回路。増幅度は何倍？何dB？
+    <details class="ans"><summary>答えを見る</summary>
+      Av＝2.5V ÷ 0.05V＝<b>50倍</b>。Gv＝20 log₁₀ 50 ≒ <b>34dB</b>。<br>
+      目安：10倍=20dB、100倍=40dB、2倍≒6dB。「倍率のケタ数×20dB」で概算できる。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>増幅度は「比率」なので単位なし。電圧増幅度のほかに電流増幅度・電力増幅度もある。</li>
+      <li>dBは大きな倍率を扱いやすくする対数表現。増幅回路を多段につなぐと<b>dBは足し算</b>できて便利。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-5">計算できるようになった</label>
+</section>
+
+<!-- ============ 6. 増幅作用とスイッチング作用 ============ -->
+<section class="item" id="s2-6">
+  <h2><span class="no">2-6</span>トランジスタの増幅作用とスイッチング作用</h2>
+  <p class="goal">🎯 ゴール：1つの素子の2つの使い方を説明できる</p>
+  <p>トランジスタ（NPN）は3本足（ベースB・コレクタC・エミッタE）。<b>ベースに流すわずかな電流で、コレクタに流れる大きな電流をコントロール</b>できます。これを「じわじわ」使えば増幅、「全開/全閉」で使えばスイッチです。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 345" width="700">
+    <g text-anchor="middle">
+      <text x="175" y="30" font-size="13.5" font-weight="700" fill="#BE5A38">増幅作用（水道の蛇口のイメージ）</text>
+      <text x="525" y="30" font-size="13.5" font-weight="700" fill="#4A6FA5">スイッチング作用（ON / OFF）</text>
+      <line x1="352" y1="20" x2="352" y2="325" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+      <!-- 増幅 -->
+      <circle cx="180" cy="165" r="52" fill="none" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="167" y1="140" x2="167" y2="190" stroke="#211F1A" stroke-width="4"/>
+      <line x1="95" y1="165" x2="167" y2="165" stroke="#211F1A" stroke-width="2"/>
+      <line x1="167" y1="150" x2="205" y2="126" stroke="#211F1A" stroke-width="2"/>
+      <line x1="205" y1="126" x2="205" y2="95" stroke="#211F1A" stroke-width="2"/>
+      <line x1="167" y1="180" x2="205" y2="204" stroke="#211F1A" stroke-width="2"/>
+      <line x1="205" y1="204" x2="205" y2="238" stroke="#211F1A" stroke-width="2"/>
+      <path d="M196,197 l11,5 l-4,-11 z" fill="#211F1A"/>
+      <text x="88" y="152" font-size="12" fill="#716C61">B</text>
+      <text x="218" y="102" font-size="12" fill="#716C61">C</text>
+      <text x="218" y="240" font-size="12" fill="#716C61">E</text>
+      <path d="M108,159 l16,6 l-16,6 z" fill="#4A6FA5"/>
+      <text x="112" y="196" font-size="11.5" fill="#4A6FA5" font-weight="600">IB＝0.1mA</text>
+      <text x="112" y="212" font-size="10.5" fill="#716C61">小さい電流</text>
+      <path d="M199,108 l6,16 l6,-16 z" fill="#BE5A38"/>
+      <line x1="205" y1="70" x2="205" y2="95" stroke="#BE5A38" stroke-width="3"/>
+      <text x="262" y="76" font-size="11.5" fill="#BE5A38" font-weight="700">IC＝10mA</text>
+      <text x="262" y="92" font-size="10.5" fill="#716C61">大きい電流</text>
+      <text x="175" y="278" font-size="13" fill="#211F1A" font-weight="700">IC ＝ hFE × IB</text>
+      <text x="175" y="298" font-size="11.5" fill="#716C61">hFE（直流電流増幅率）＝100 の例</text>
+      <text x="175" y="318" font-size="11.5" fill="#BE5A38">小さな信号が大きな電流の「蛇口」を回す</text>
+      <!-- スイッチング -->
+      <g font-size="11.5">
+        <rect x="392" y="52" width="128" height="180" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+        <text x="456" y="76" font-weight="700" fill="#716C61">OFF（遮断）</text>
+        <line x1="456" y1="92" x2="456" y2="112" stroke="#211F1A" stroke-width="2"/>
+        <circle cx="456" cy="126" r="12" fill="#EAE4D5" stroke="#716C61" stroke-width="2"/>
+        <line x1="456" y1="140" x2="456" y2="158" stroke="#211F1A" stroke-width="2"/>
+        <circle cx="456" cy="163" r="4" fill="#211F1A"/>
+        <line x1="459" y1="160" x2="478" y2="146" stroke="#211F1A" stroke-width="2.5"/>
+        <circle cx="480" cy="184" r="4" fill="#211F1A"/>
+        <line x1="456" y1="188" x2="456" y2="208" stroke="none"/>
+        <line x1="480" y1="188" x2="480" y2="208" stroke="#211F1A" stroke-width="2"/>
+        <text x="456" y="226" fill="#716C61">IB＝0 → 電流ゼロ</text>
+        <rect x="536" y="52" width="128" height="180" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+        <text x="600" y="76" font-weight="700" fill="#4f6b3a">ON（飽和）</text>
+        <line x1="600" y1="92" x2="600" y2="106" stroke="#211F1A" stroke-width="2"/>
+        <circle cx="600" cy="122" r="13" fill="#F9E79F" stroke="#BE5A38" stroke-width="2"/>
+        <g stroke="#E4B93C" stroke-width="2" stroke-linecap="round">
+          <line x1="600" y1="102" x2="600" y2="96"/><line x1="616" y1="110" x2="621" y2="105"/><line x1="584" y1="110" x2="579" y2="105"/>
+        </g>
+        <line x1="600" y1="135" x2="600" y2="156" stroke="#211F1A" stroke-width="2"/>
+        <circle cx="600" cy="161" r="4" fill="#211F1A"/>
+        <line x1="600" y1="165" x2="600" y2="182" stroke="#211F1A" stroke-width="2.5"/>
+        <circle cx="600" cy="187" r="4" fill="#211F1A"/>
+        <line x1="600" y1="191" x2="600" y2="208" stroke="#211F1A" stroke-width="2"/>
+        <text x="600" y="226" fill="#4f6b3a">十分なIB → 全開</text>
+      </g>
+      <text x="525" y="262" font-size="11.5" fill="#211F1A">ベース電流ゼロ＝スイッチ開（遮断）</text>
+      <text x="525" y="282" font-size="11.5" fill="#211F1A">十分なベース電流＝スイッチ閉（飽和）</text>
+      <text x="525" y="308" font-size="11.5" fill="#4A6FA5" font-weight="600">マイコンの小さな出力でLEDやモータを</text>
+      <text x="525" y="326" font-size="11.5" fill="#4A6FA5" font-weight="600">駆動できるのはこの働きのおかげ</text>
+    </g>
+  </svg>
+  <figcaption>図2-7　同じトランジスタでも、中間領域で使えば「増幅」、両端（遮断⇄飽和）で使えば「スイッチ」</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題</span>
+    hFE＝200のトランジスタで、ベース電流IB＝50µAのときコレクタ電流ICは？
+    <details class="ans"><summary>答えを見る</summary>
+      IC＝hFE×IB＝200×0.05mA＝<b>10mA</b>。LEDを点けるのに十分な電流を、マイコンでも出せる50µAで制御できる。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>増幅作用</b>：IC＝hFE×IB。中間領域（活性領域）で信号の形を保ったまま大きくする → アナログ回路。</li>
+      <li><b>スイッチング作用</b>：遮断（OFF）と飽和（ON）の2状態だけ使う → デジタル回路・電力制御。</li>
+      <li>エミッタの矢印の向き＝電流が出ていく向き（NPN）。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-6">2つの作用を説明できるようになった</label>
+</section>
+
+<!-- ============ 7. オペアンプ ============ -->
+<section class="item" id="s2-7">
+  <h2><span class="no">2-7</span>オペアンプの基本動作</h2>
+  <p class="goal">🎯 ゴール：「差を巨大に増幅するIC」と2つの約束事を説明できる</p>
+  <p>オペアンプは<b>2つの入力の「電圧差」を、10万倍以上というケタ違いの倍率で増幅するIC</b>。そのままでは出力がすぐ振り切れる（飽和する）ので、実際は出力の一部を−入力に戻す<b>負帰還</b>をかけて、ちょうどよい倍率にして使います。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 300" width="700">
+    <path d="M220,60 L220,240 L420,150 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2.5" stroke-linejoin="round"/>
+    <line x1="140" y1="105" x2="220" y2="105" stroke="#211F1A" stroke-width="2"/>
+    <line x1="140" y1="195" x2="220" y2="195" stroke="#211F1A" stroke-width="2"/>
+    <line x1="420" y1="150" x2="500" y2="150" stroke="#211F1A" stroke-width="2"/>
+    <text x="234" y="111" font-size="17" font-weight="700" fill="#211F1A">−</text>
+    <text x="234" y="201" font-size="17" font-weight="700" fill="#211F1A">＋</text>
+    <text x="132" y="99" font-size="12" text-anchor="end" fill="#716C61">反転入力</text>
+    <text x="132" y="201" font-size="12" text-anchor="end" fill="#716C61">非反転入力</text>
+    <text x="508" y="144" font-size="12" fill="#716C61">出力</text>
+    <line x1="300" y1="97" x2="300" y2="55" stroke="#211F1A" stroke-width="2"/>
+    <line x1="300" y1="203" x2="300" y2="245" stroke="#211F1A" stroke-width="2"/>
+    <text x="300" y="44" font-size="11" text-anchor="middle" fill="#716C61">＋電源</text>
+    <text x="300" y="262" font-size="11" text-anchor="middle" fill="#716C61">−電源（またはGND）</text>
+    <text x="305" y="156" font-size="12.5" text-anchor="middle" fill="#BE5A38" font-weight="700">×10万以上</text>
+    <rect x="530" y="55" width="160" height="190" rx="12" fill="#FCFBF7" stroke="#E2DCCD"/>
+    <text x="610" y="82" font-size="12.5" font-weight="700" fill="#211F1A" text-anchor="middle">2つの約束事</text>
+    <text x="610" y="100" font-size="10.5" fill="#716C61" text-anchor="middle">（負帰還があるとき）</text>
+    <g font-size="11.5" fill="#211F1A">
+      <text x="544" y="128">① 入力端子に電流は</text>
+      <text x="558" y="146">流れ込まない</text>
+      <text x="544" y="180">② ＋と−の電圧は</text>
+      <text x="558" y="198">ほぼ等しくなる</text>
+      <text x="544" y="222" fill="#BE5A38" font-weight="600">＝バーチャルショート</text>
+    </g>
+  </svg>
+  <figcaption>図2-8　オペアンプの記号と「2つの約束事」。この2つだけで増幅回路の計算ができる</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>出力は「（＋入力 − −入力）× 巨大な倍率」。差がわずかでも出力は大きく振れる。</li>
+      <li><b>バーチャルショート（仮想短絡）</b>：負帰還がかかっていると、オペアンプ自身が出力を調整して<b>V＋ ≒ V−</b>に保つ。ショートしているわけではないのに等しくなる、という意味。</li>
+      <li>負帰還なしで使うと出力は電源いっぱいまで振り切れる（これはこれで「コンパレータ」として使える）。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-7">基本動作を説明できるようになった</label>
+</section>
+
+<!-- ============ 8. 基本増幅回路 ============ -->
+<section class="item" id="s2-8">
+  <h2><span class="no">2-8</span>基本増幅回路 — 反転・非反転・エミッタ接地</h2>
+  <p class="goal">🎯 ゴール：代表的な増幅回路の形とゲインの式がわかる</p>
+  <p>まずはオペアンプの2大定番。<b>倍率が抵抗2本の比で決まる</b>のが最大の魅力です。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 330" width="700">
+    <g text-anchor="middle">
+      <text x="175" y="28" font-size="13.5" font-weight="700" fill="#211F1A">反転増幅回路</text>
+      <text x="528" y="28" font-size="13.5" font-weight="700" fill="#211F1A">非反転増幅回路</text>
+    </g>
+    <line x1="352" y1="18" x2="352" y2="310" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- 反転増幅 -->
+    <line x1="30" y1="130" x2="60" y2="130" stroke="#211F1A" stroke-width="2"/>
+    <rect x="60" y="122" width="56" height="16" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="88" y="114" font-size="11.5" text-anchor="middle" fill="#211F1A">Rin 10kΩ</text>
+    <line x1="116" y1="130" x2="160" y2="130" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="140" cy="130" r="3.5" fill="#211F1A"/>
+    <path d="M160,95 L160,185 L250,140 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2" stroke-linejoin="round"/>
+    <text x="172" y="128" font-size="13" font-weight="700">−</text>
+    <text x="172" y="172" font-size="13" font-weight="700">＋</text>
+    <line x1="140" y1="130" x2="140" y2="62" stroke="#211F1A" stroke-width="2"/>
+    <line x1="140" y1="62" x2="176" y2="62" stroke="#211F1A" stroke-width="2"/>
+    <rect x="176" y="54" width="56" height="16" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="204" y="46" font-size="11.5" text-anchor="middle" fill="#211F1A">Rf 100kΩ</text>
+    <line x1="232" y1="62" x2="270" y2="62" stroke="#211F1A" stroke-width="2"/>
+    <line x1="270" y1="62" x2="270" y2="140" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="270" cy="140" r="3.5" fill="#211F1A"/>
+    <line x1="250" y1="140" x2="320" y2="140" stroke="#211F1A" stroke-width="2"/>
+    <line x1="160" y1="165" x2="130" y2="165" stroke="#211F1A" stroke-width="2"/>
+    <line x1="120" y1="165" x2="140" y2="165" stroke="none"/>
+    <line x1="118" y1="165" x2="130" y2="165" stroke="#211F1A" stroke-width="2"/>
+    <line x1="110" y1="165" x2="118" y2="165" stroke="none"/>
+    <line x1="106" y1="173" x2="130" y2="173" stroke="none"/>
+    <line x1="118" y1="165" x2="118" y2="176" stroke="#211F1A" stroke-width="2"/>
+    <line x1="106" y1="176" x2="130" y2="176" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="110" y1="182" x2="126" y2="182" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="114" y1="188" x2="122" y2="188" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="24" y="120" font-size="12" fill="#716C61">Vin</text>
+    <text x="328" y="134" font-size="12" fill="#716C61">Vout</text>
+    <text x="175" y="232" font-size="13.5" text-anchor="middle" font-weight="700" fill="#211F1A">Av ＝ −Rf ÷ Rin</text>
+    <text x="175" y="256" font-size="12.5" text-anchor="middle" fill="#BE5A38" font-weight="600">例：−100k÷10k＝−10倍</text>
+    <text x="175" y="278" font-size="11" text-anchor="middle" fill="#716C61">マイナス＝出力の位相が反転する</text>
+    <!-- 非反転増幅 -->
+    <line x1="400" y1="168" x2="470" y2="168" stroke="#211F1A" stroke-width="2"/>
+    <path d="M470,95 L470,185 L560,140 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2" stroke-linejoin="round"/>
+    <text x="482" y="128" font-size="13" font-weight="700">−</text>
+    <text x="482" y="172" font-size="13" font-weight="700">＋</text>
+    <line x1="450" y1="115" x2="470" y2="115" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="450" cy="115" r="3.5" fill="#211F1A"/>
+    <line x1="450" y1="115" x2="450" y2="62" stroke="#211F1A" stroke-width="2"/>
+    <line x1="450" y1="62" x2="486" y2="62" stroke="#211F1A" stroke-width="2"/>
+    <rect x="486" y="54" width="56" height="16" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="514" y="46" font-size="11.5" text-anchor="middle" fill="#211F1A">Rf 100kΩ</text>
+    <line x1="542" y1="62" x2="580" y2="62" stroke="#211F1A" stroke-width="2"/>
+    <line x1="580" y1="62" x2="580" y2="140" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="580" cy="140" r="3.5" fill="#211F1A"/>
+    <line x1="560" y1="140" x2="630" y2="140" stroke="#211F1A" stroke-width="2"/>
+    <rect x="404" y="107" width="30" height="16" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="419" y="99" font-size="11.5" text-anchor="middle" fill="#211F1A">Rg 10kΩ</text>
+    <line x1="434" y1="115" x2="450" y2="115" stroke="#211F1A" stroke-width="2"/>
+    <line x1="404" y1="115" x2="390" y2="115" stroke="#211F1A" stroke-width="2"/>
+    <line x1="390" y1="115" x2="390" y2="128" stroke="#211F1A" stroke-width="2"/>
+    <line x1="378" y1="128" x2="402" y2="128" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="382" y1="134" x2="398" y2="134" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="386" y1="140" x2="394" y2="140" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="394" y="162" font-size="12" fill="#716C61">Vin</text>
+    <text x="638" y="134" font-size="12" fill="#716C61">Vout</text>
+    <text x="528" y="232" font-size="13.5" text-anchor="middle" font-weight="700" fill="#211F1A">Av ＝ 1 ＋ Rf ÷ Rg</text>
+    <text x="528" y="256" font-size="12.5" text-anchor="middle" fill="#BE5A38" font-weight="600">例：1＋100k÷10k＝11倍</text>
+    <text x="528" y="278" font-size="11" text-anchor="middle" fill="#716C61">位相はそのまま（反転しない）</text>
+  </svg>
+  <figcaption>図2-9　オペアンプの2大基本回路。倍率は抵抗の比だけで決まる</figcaption>
+  </figure>
+  <p>トランジスタ1石の代表は<b>エミッタ接地増幅回路</b>。エミッタを共通（接地側）にして、ベースに入れた小さな信号をコレクタ側で大きく取り出します。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 330" width="700">
+    <!-- 電源レール -->
+    <line x1="150" y1="55" x2="560" y2="55" stroke="#211F1A" stroke-width="2"/>
+    <text x="580" y="60" font-size="12" fill="#BE5A38" font-weight="600">VCC（＋9V）</text>
+    <line x1="150" y1="285" x2="560" y2="285" stroke="#211F1A" stroke-width="2"/>
+    <text x="580" y="290" font-size="12" fill="#716C61">GND（0V）</text>
+    <!-- RB1 RB2 -->
+    <line x1="220" y1="55" x2="220" y2="85" stroke="#211F1A" stroke-width="2"/>
+    <rect x="212" y="85" width="16" height="48" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="204" y="112" font-size="11.5" text-anchor="end" fill="#211F1A">RB1</text>
+    <line x1="220" y1="133" x2="220" y2="200" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="220" cy="168" r="3.5" fill="#211F1A"/>
+    <rect x="212" y="200" width="16" height="48" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="204" y="227" text-anchor="end" font-size="11.5" fill="#211F1A">RB2</text>
+    <line x1="220" y1="248" x2="220" y2="285" stroke="#211F1A" stroke-width="2"/>
+    <!-- C1 -->
+    <line x1="60" y1="168" x2="118" y2="168" stroke="#211F1A" stroke-width="2"/>
+    <line x1="118" y1="154" x2="118" y2="182" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="128" y1="154" x2="128" y2="182" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="128" y1="168" x2="220" y2="168" stroke="#211F1A" stroke-width="2"/>
+    <text x="123" y="142" font-size="11.5" text-anchor="middle" fill="#211F1A">C1</text>
+    <text x="46" y="160" font-size="12" text-anchor="middle" fill="#4A6FA5" font-weight="600">Vin</text>
+    <path d="M22,190 q9,-16 18,0 q9,16 18,0" fill="none" stroke="#4A6FA5" stroke-width="2"/>
+    <!-- トランジスタ -->
+    <circle cx="390" cy="168" r="40" fill="none" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="380" y1="148" x2="380" y2="188" stroke="#211F1A" stroke-width="4"/>
+    <line x1="220" y1="168" x2="380" y2="168" stroke="#211F1A" stroke-width="2"/>
+    <line x1="380" y1="156" x2="408" y2="138" stroke="#211F1A" stroke-width="2"/>
+    <line x1="408" y1="138" x2="408" y2="120" stroke="#211F1A" stroke-width="2"/>
+    <line x1="380" y1="180" x2="408" y2="198" stroke="#211F1A" stroke-width="2"/>
+    <line x1="408" y1="198" x2="408" y2="215" stroke="#211F1A" stroke-width="2"/>
+    <path d="M400,192 l10,5 l-4,-11 z" fill="#211F1A"/>
+    <!-- RC -->
+    <line x1="408" y1="55" x2="408" y2="72" stroke="#211F1A" stroke-width="2"/>
+    <rect x="400" y="72" width="16" height="48" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="428" y="99" font-size="11.5" fill="#211F1A">RC</text>
+    <circle cx="408" cy="130" r="3.5" fill="#211F1A"/>
+    <!-- RE + CE -->
+    <rect x="400" y="215" width="16" height="42" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="392" y="240" font-size="11.5" text-anchor="end" fill="#211F1A">RE</text>
+    <line x1="408" y1="257" x2="408" y2="285" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="408" cy="210" r="3.5" fill="#211F1A"/>
+    <line x1="408" y1="210" x2="470" y2="210" stroke="#211F1A" stroke-width="2"/>
+    <line x1="470" y1="210" x2="470" y2="232" stroke="#211F1A" stroke-width="2"/>
+    <line x1="456" y1="232" x2="484" y2="232" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="456" y1="242" x2="484" y2="242" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="470" y1="242" x2="470" y2="285" stroke="#211F1A" stroke-width="2"/>
+    <text x="494" y="242" font-size="11.5" fill="#211F1A">CE</text>
+    <!-- C2 出力 -->
+    <line x1="408" y1="130" x2="530" y2="130" stroke="#211F1A" stroke-width="2"/>
+    <line x1="530" y1="116" x2="530" y2="144" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="540" y1="116" x2="540" y2="144" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="540" y1="130" x2="590" y2="130" stroke="#211F1A" stroke-width="2"/>
+    <text x="535" y="104" font-size="11.5" text-anchor="middle" fill="#211F1A">C2</text>
+    <text x="608" y="122" font-size="12" fill="#BE5A38" font-weight="600">Vout</text>
+    <path d="M596,166 q13,-42 26,0 q13,42 26,0" fill="none" stroke="#BE5A38" stroke-width="2.5"/>
+    <text x="622" y="196" font-size="10.5" text-anchor="middle" fill="#716C61">大きく・逆位相</text>
+    <text x="345" y="318" font-size="11.5" text-anchor="middle" fill="#716C61">RB1・RB2＝バイアス（あらかじめ少し電流を流す準備）／RC＝電流変化→電圧変化に変換／C1・C2＝直流を切り信号だけ通す</text>
+  </svg>
+  <figcaption>図2-10　エミッタ接地増幅回路。出力は入力の逆位相（180°反転）になるのが特徴</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>反転増幅：Av＝−Rf/Rin</b>、<b>非反転増幅：Av＝1＋Rf/Rg</b>。抵抗比で倍率が決まる。</li>
+      <li><b>エミッタ接地</b>は電圧増幅の代表格。出力は入力と<b>逆位相</b>。</li>
+      <li>バイアス＝信号が来る前に「ちょうど動きやすい位置」に直流をかけておくこと。波形の下半分が切れないようにするため。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-8">回路の形とゲイン式がわかった</label>
+</section>
+
+<!-- ============ 9. 増幅回路の製作 ============ -->
+<section class="item" id="s2-9">
+  <h2><span class="no">2-9</span>増幅回路を製作する</h2>
+  <p class="goal">🎯 ゴール：設計→部品選定→はんだ付け→動作確認の流れで組める</p>
+  <ol>
+    <li><b>回路図を理解する</b>：各部品の役割（バイアス？結合？）を言えるようにしてから作る</li>
+    <li><b>部品選定・確認</b>：抵抗はカラーコード、コンデンサは容量と耐圧、トランジスタは型番と足の並び（データシート）</li>
+    <li><b>配置を決める</b>：信号の流れ（入力→出力）が一方向になるよう並べると配線が短くなる</li>
+    <li><b>はんだ付け</b>：下図の「富士山型」を目標に。1点3秒が目安</li>
+    <li><b>通電前チェック</b>：目視（ブリッジ・イモはんだ）→テスタで電源-GND間の短絡がないか確認</li>
+    <li><b>動作確認</b>：電源電圧 → 直流（バイアス）電圧 → 信号、の順に確認</li>
+  </ol>
+  <figure class="fig">
+  <svg viewBox="0 0 700 235" width="700">
+    <g text-anchor="middle">
+      <text x="180" y="34" font-size="13.5" font-weight="700" fill="#4f6b3a">✓ 良いはんだ（富士山型）</text>
+      <text x="520" y="34" font-size="13.5" font-weight="700" fill="#b23a2e">✕ イモはんだ（団子型）</text>
+      <line x1="352" y1="22" x2="352" y2="215" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+      <rect x="70" y="168" width="230" height="14" fill="#6B8F5A"/>
+      <rect x="150" y="160" width="66" height="8" fill="#C9A227"/>
+      <line x1="183" y1="66" x2="183" y2="160" stroke="#5b5b5b" stroke-width="6"/>
+      <path d="M156,160 C170,128 178,116 183,110 C188,116 196,128 210,160 Z" fill="#AEB4BC" stroke="#8b9096" stroke-width="1.5"/>
+      <text x="183" y="205" font-size="11.5" fill="#211F1A">すそが広がり、表面につや</text>
+      <rect x="410" y="168" width="230" height="14" fill="#6B8F5A"/>
+      <rect x="490" y="160" width="66" height="8" fill="#C9A227"/>
+      <line x1="523" y1="66" x2="523" y2="160" stroke="#5b5b5b" stroke-width="6"/>
+      <circle cx="523" cy="135" r="27" fill="#9AA0A6" stroke="#7e848a" stroke-width="1.5"/>
+      <path d="M505,128 q10,10 22,4" fill="none" stroke="#6e7378" stroke-width="1.5"/>
+      <text x="523" y="205" font-size="11.5" fill="#211F1A">丸い団子＝中まで溶けていない</text>
+    </g>
+  </svg>
+  <figcaption>図2-11　はんだの良否。パッドとリードの両方を温めてから、はんだを送るのがコツ</figcaption>
+  </figure>
+  <div class="caution"><span class="tt">⚠️ 動かないときのデバッグ順序</span>
+    ①電源は来ているか（VCC-GND間の電圧）→ ②直流バイアスは設計どおりか（各端子の電圧をテスタで）→ ③信号は通っているか（オシロで入力から順にたどる）。<b>「電源→直流→交流」の順</b>で切り分けると迷わない。
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-9">製作の流れが身についた</label>
+</section>
+
+<!-- ============ 10. オシロで実測 ============ -->
+<section class="item" id="s2-10">
+  <h2><span class="no">2-10</span>オシロスコープで増幅回路を実測する</h2>
+  <p class="goal">🎯 ゴール：入出力を同時観測して増幅度と位相を実測できる</p>
+  <p>作った増幅回路の仕上げは実測。<b>CH1に入力、CH2に出力</b>をつないで同時に見ると、増幅度も位相も一目でわかります。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 320" width="700">
+    <rect x="55" y="35" width="400" height="250" fill="#FFFFFF" stroke="#211F1A" stroke-width="2"/>
+    <g stroke="#EAE4D5" stroke-width="1">
+      <line x1="105" y1="35" x2="105" y2="285"/><line x1="155" y1="35" x2="155" y2="285"/><line x1="205" y1="35" x2="205" y2="285"/><line x1="255" y1="35" x2="255" y2="285"/><line x1="305" y1="35" x2="305" y2="285"/><line x1="355" y1="35" x2="355" y2="285"/><line x1="405" y1="35" x2="405" y2="285"/>
+      <line x1="55" y1="85" x2="455" y2="85"/><line x1="55" y1="135" x2="455" y2="135"/><line x1="55" y1="185" x2="455" y2="185"/><line x1="55" y1="235" x2="455" y2="235"/>
+    </g>
+    <path d="M55,100 Q80,80 105,100 Q130,120 155,100 Q180,80 205,100 Q230,120 255,100 Q280,80 305,100 Q330,120 355,100 Q380,80 405,100 Q430,120 455,100" fill="none" stroke="#4A6FA5" stroke-width="2.5"/>
+    <text x="65" y="62" font-size="12" fill="#4A6FA5" font-weight="700">CH1：入力 0.2Vpp</text>
+    <path d="M55,210 Q80,280 105,210 Q130,140 155,210 Q180,280 205,210 Q230,140 255,210 Q280,280 305,210 Q330,140 355,210 Q380,280 405,210 Q430,140 455,210" fill="none" stroke="#BE5A38" stroke-width="2.5"/>
+    <text x="65" y="158" font-size="12" fill="#BE5A38" font-weight="700">CH2：出力 2.0Vpp（山谷が逆＝反転）</text>
+    <g font-size="12.5" fill="#211F1A">
+      <text x="480" y="66" font-weight="700">読み取り</text>
+      <text x="480" y="92">Av＝2.0÷0.2</text>
+      <text x="480" y="112" fill="#BE5A38" font-weight="700">＝10倍（20dB）</text>
+      <text x="480" y="146">位相：180°反転</text>
+      <text x="480" y="166" fill="#716C61" font-size="11">→ エミッタ接地・反転増幅</text>
+      <text x="480" y="186" fill="#716C61" font-size="11">　らしい正しい動き</text>
+    </g>
+    <rect x="470" y="205" width="215" height="88" rx="10" fill="#F5E8D4" stroke="#E8D3B0"/>
+    <text x="578" y="228" font-size="11.5" text-anchor="middle" fill="#9a5a22" font-weight="700">入力を上げすぎると…</text>
+    <line x1="495" y1="262" x2="660" y2="262" stroke="#B9B2A0" stroke-width="1"/>
+    <path d="M495,262 Q502,240 508,240 L522,240 Q532,240 538,262 Q545,284 551,284 L565,284 Q575,284 581,262 Q588,240 594,240 L608,240 Q618,240 624,262" fill="none" stroke="#9a5a22" stroke-width="2.5"/>
+    <text x="578" y="308" font-size="11" text-anchor="middle" fill="#9a5a22">頭打ち＝クリッピング（ひずみ）</text>
+  </svg>
+  <figcaption>図2-12　2ch同時観測。振幅の比＝増幅度、山谷のずれ＝位相。振りすぎると波形の頭が切れる</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>実測の手順：CH1＝入力、CH2＝出力 → 両方のVppを読む → <b>Av＝Vout/Vin</b>。</li>
+      <li><b>位相反転の確認</b>もセットで（エミッタ接地・反転増幅なら山と谷が逆）。</li>
+      <li><b>クリッピング</b>：出力が電源電圧の限界に当たって頭打ちになる現象。入力を下げれば元に戻る。</li>
+      <li>理論値（設計ゲイン）と実測値を比べて誤差を考察するところまでやると、セクション1の内容とつながる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s2-10">実測・評価できるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（セクション2）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+  <details><summary>Q1. 半導体とは何か。代表的な材料は？</summary><div class="a">導体と絶縁体の中間の性質を持ち、<b>不純物添加で電気的性質を制御できる</b>物質。代表はシリコン（Si）、ゲルマニウム（Ge）。</div></details>
+  <details><summary>Q2. N型・P型で電気を運ぶもの（キャリア）はそれぞれ何？</summary><div class="a">N型＝<b>自由電子（−）</b>、P型＝<b>ホール（＋）</b>。5価の不純物でN型、3価でP型になる。</div></details>
+  <details><summary>Q3. ダイオードに電流が流れる向きと、流れ始める電圧は？</summary><div class="a"><b>アノード→カソード（順方向）のみ</b>。シリコンでは約<b>0.6〜0.7V</b>を超えると流れ始める。</div></details>
+  <details><summary>Q4. 半波整流と全波整流の違いは？ブリッジのダイオードは何本？</summary><div class="a">半波は交流の半分だけ使う（1本）、全波はマイナス側も折り返して使う。ブリッジ整流は<b>4本</b>。全波はリプル周波数が入力の2倍になり平滑しやすい。</div></details>
+  <details><summary>Q5. 平滑コンデンサの役割は？</summary><div class="a">整流後の脈流の<b>山と山の間を充放電で埋めて</b>、直流に近づける。残る脈動をリプルという。</div></details>
+  <details><summary>Q6. 静特性とは何と何の関係を示すグラフ？</summary><div class="a">素子にかける<b>電圧（V）と流れる電流（I）の関係</b>（V-I特性）。抵抗は直線、ダイオードは0.6V付近から急に立ち上がる曲線。</div></details>
+  <details><summary>Q7. 入力0.1V・出力1Vの増幅回路。増幅度は何倍？何dB？</summary><div class="a">Av＝1÷0.1＝<b>10倍</b>＝<b>20dB</b>（Gv＝20log₁₀10）。</div></details>
+  <details><summary>Q8. hFE＝100、IB＝20µAのときICは？</summary><div class="a">IC＝hFE×IB＝100×0.02mA＝<b>2mA</b>。</div></details>
+  <details><summary>Q9. トランジスタをスイッチとして使うときの2つの状態は？</summary><div class="a"><b>遮断（OFF：IB=0でICも0）と飽和（ON：十分なIBで全開）</b>。中間の活性領域を使うのが増幅。</div></details>
+  <details><summary>Q10. バーチャルショートとは？成り立つ条件は？</summary><div class="a">オペアンプの<b>＋入力と−入力の電圧がほぼ等しくなる</b>こと。<b>負帰還がかかっている</b>ときに成り立つ。実際に短絡しているわけではない。</div></details>
+  <details><summary>Q11. 反転増幅回路で Rin＝10kΩ、Rf＝47kΩ のとき増幅度は？</summary><div class="a">Av＝−Rf/Rin＝<b>−4.7倍</b>（4.7倍に増幅し、位相が反転）。</div></details>
+  <details><summary>Q12. エミッタ接地増幅回路の出力位相は入力に対してどうなる？</summary><div class="a"><b>180°反転（逆位相）</b>。オシロの2ch観測で山と谷が逆になることで確認できる。</div></details>
+</section>
+
+<nav class="pager">
+  <a href="study-basics.html"><span class="dir">‹ まえへ</span>セクション1：電気回路基礎</a>
+  <a href="study-digital.html" class="next"><span class="dir">つぎへ ›</span>セクション3：デジタル回路</a>
+</nav>
+
+<footer>電子回路 学習ノート ─ セクション2：半導体・アナログ回路</footer>
+</div>
+
+<script>
+const KEY='denshiStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+</script>
+</body>
+</html>

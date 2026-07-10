@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション1：電気回路基礎｜電子回路 学習ノート</title>
+<meta name="description" content="電流・電圧・抵抗、オームの法則、直列並列、テスタとオシロの使い方を図解でおさらい。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="study-guide.html">‹ 学習ノート</a>
+  <span class="crumb">セクション1</span>
+  <span class="prog">できた <b id="done-count">0</b> / 14</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 1</div>
+  <h1>⚡ 電気回路基礎</h1>
+  <p class="lead">すべての土台になるセクション。「電気の3つの量」と「測り方」がわかると、この先のアナログもデジタルも一気に読みやすくなります。</p>
+  <nav class="toc">
+    <a href="#s1-1">1. 電流・電圧・抵抗</a><a href="#s1-2">2. オームの法則</a><a href="#s1-3">3. 直列と並列</a><a href="#s1-4">4. 合成抵抗</a><a href="#s1-5">5. 図記号</a><a href="#s1-6">6. テスタで測れるもの</a><a href="#s1-7">7. オシロで測れるもの</a><a href="#s1-8">8. 部品の極性</a><a href="#s1-9">9. 結線場所の判断</a><a href="#s1-10">10. テスタの使い方</a><a href="#s1-11">11. オシロの使い方</a><a href="#s1-12">12. 理論値と実測値</a><a href="#s1-13">13. 安全な操作</a><a href="#s1-14">14. 整理整頓</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 1. 電流・電圧・抵抗 ============ -->
+<section class="item" id="s1-1">
+  <h2><span class="no">1-1</span>電流・電圧・抵抗 — 電気の3つの量</h2>
+  <p class="goal">🎯 ゴール：3つの量のちがいを、単位つきで自分の言葉で説明できる</p>
+  <p>電気は目に見えないので、まず<b>水の流れ</b>に置きかえてイメージするのが近道です。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 285" width="700">
+    <text x="170" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#4A6FA5">水の回路にたとえると…</text>
+    <text x="530" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#BE5A38">電気の回路</text>
+    <line x1="350" y1="20" x2="350" y2="265" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- 水の回路：配管ループ -->
+    <rect x="55" y="55" width="230" height="160" rx="22" fill="none" stroke="#BFD7E8" stroke-width="12"/>
+    <!-- 細い管（抵抗）：右辺を細く上書き -->
+    <line x1="285" y1="100" x2="285" y2="170" stroke="#FFFEFB" stroke-width="14"/>
+    <line x1="285" y1="98" x2="285" y2="172" stroke="#4A6FA5" stroke-width="5"/>
+    <text x="278" y="140" text-anchor="end" font-size="12" fill="#4A6FA5" font-weight="600">細い管</text>
+    <text x="278" y="156" text-anchor="end" font-size="11" fill="#716C61">＝ 抵抗</text>
+    <!-- ポンプ -->
+    <circle cx="55" cy="135" r="27" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="2.5"/>
+    <path d="M47,145 L47,128 L59,136 L59,120" fill="none" stroke="#4A6FA5" stroke-width="3" stroke-linecap="round"/>
+    <text x="55" y="185" text-anchor="middle" font-size="12" fill="#4A6FA5" font-weight="600">ポンプ ＝ 電池</text>
+    <text x="55" y="201" text-anchor="middle" font-size="11" fill="#716C61">（押し出す力＝電圧）</text>
+    <!-- 流れ矢印 -->
+    <path d="M140,49 l16,6 l-16,6 z" fill="#4A6FA5"/>
+    <path d="M200,221 l-16,-6 l16,-6 z" fill="#4A6FA5"/>
+    <text x="170" y="42" text-anchor="middle" font-size="12" fill="#4A6FA5" font-weight="600">水の流れ ＝ 電流</text>
+    <!-- 電気の回路 -->
+    <path d="M420,70 H640 V200 H420 Z" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <!-- 電池記号（左辺） -->
+    <rect x="404" y="112" width="32" height="46" fill="#FFFEFB" stroke="none"/>
+    <line x1="406" y1="127" x2="434" y2="127" stroke="#211F1A" stroke-width="3"/>
+    <line x1="413" y1="143" x2="427" y2="143" stroke="#211F1A" stroke-width="2"/>
+    <line x1="420" y1="70" x2="420" y2="127" stroke="#211F1A" stroke-width="2"/>
+    <line x1="420" y1="143" x2="420" y2="200" stroke="#211F1A" stroke-width="2"/>
+    <text x="396" y="124" text-anchor="end" font-size="12" fill="#211F1A">＋</text>
+    <text x="396" y="152" text-anchor="end" font-size="12" fill="#211F1A">−</text>
+    <text x="452" y="146" font-size="12.5" fill="#211F1A" font-weight="600">電池</text>
+    <text x="452" y="162" font-size="11.5" fill="#716C61">電圧 V〔V ボルト〕</text>
+    <!-- 抵抗（右辺） -->
+    <rect x="630" y="105" width="20" height="60" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="622" y="130" text-anchor="end" font-size="12.5" font-weight="600" fill="#211F1A">抵抗</text>
+    <text x="622" y="147" text-anchor="end" font-size="11.5" fill="#716C61">R〔Ω オーム〕</text>
+    <!-- 電流矢印 -->
+    <path d="M520,64 l16,6 l-16,6 z" fill="#BE5A38"/>
+    <path d="M560,206 l-16,-6 l16,-6 z" fill="#BE5A38"/>
+    <text x="530" y="56" text-anchor="middle" font-size="12" fill="#BE5A38" font-weight="600">電流 I〔A アンペア〕</text>
+    <text x="530" y="232" text-anchor="middle" font-size="11" fill="#716C61">＋から出て−へ戻る向きが「電流の向き」</text>
+    <text x="170" y="252" text-anchor="middle" font-size="11" fill="#716C61">ポンプが強い（電圧が高い）ほど、</text>
+    <text x="170" y="268" text-anchor="middle" font-size="11" fill="#716C61">管が細い（抵抗が大きい）ほど流れは変わる</text>
+  </svg>
+  <figcaption>図1-1　水流モデル：ポンプ＝電池（電圧）、水の流れ＝電流、細い管＝抵抗</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th>量</th><th>記号</th><th>単位</th><th>イメージ</th></tr>
+    <tr><td><b>電流</b>（電荷の移動量）</td><td>I</td><td>A（アンペア）</td><td>流れる水の量</td></tr>
+    <tr><td><b>電圧</b>（電流を流す圧力）</td><td>V（Eとも書く）</td><td>V（ボルト）</td><td>ポンプが押す力・水位の差</td></tr>
+    <tr><td><b>抵抗</b>（電流の流れにくさ）</td><td>R</td><td>Ω（オーム）</td><td>管の細さ</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>電流は「流れる量」、電圧は「流そうとする圧力」、抵抗は「流れにくさ」。役割がぜんぶ違う。</li>
+      <li>電圧は2点間の<b>差</b>（電位差）。「〜に対して何V」という測り方をする。</li>
+      <li>よく使う補助単位：<b>1mA = 0.001A</b>、<b>1kΩ = 1000Ω</b>、<b>1MΩ = 1000kΩ</b>。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-1">説明できるようになった</label>
+</section>
+
+<!-- ============ 2. オームの法則 ============ -->
+<section class="item" id="s1-2">
+  <h2><span class="no">1-2</span>オームの法則 — V = I × R</h2>
+  <p class="goal">🎯 ゴール：電圧・電流・抵抗のうち2つがわかれば残り1つを計算できる</p>
+  <p>3つの量は勝手バラバラではなく、いつも <b>V = I × R</b> の関係で結ばれています。これが回路計算の出発点です。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 250" width="700">
+    <!-- 三角形 -->
+    <path d="M115,38 L35,198 L195,198 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2.5" stroke-linejoin="round"/>
+    <line x1="72" y1="124" x2="158" y2="124" stroke="#BE5A38" stroke-width="2"/>
+    <line x1="115" y1="124" x2="115" y2="198" stroke="#BE5A38" stroke-width="2"/>
+    <text x="115" y="105" text-anchor="middle" font-size="30" font-weight="700" fill="#BE5A38">V</text>
+    <text x="83" y="180" text-anchor="middle" font-size="26" font-weight="700" fill="#211F1A">I</text>
+    <text x="150" y="180" text-anchor="middle" font-size="26" font-weight="700" fill="#211F1A">R</text>
+    <text x="115" y="228" text-anchor="middle" font-size="12" fill="#716C61">求めたい文字を指でかくすと</text>
+    <text x="115" y="244" text-anchor="middle" font-size="12" fill="#716C61">残りが計算式になる</text>
+    <!-- 3つの式 -->
+    <g font-size="15" font-weight="600" fill="#211F1A">
+      <rect x="240" y="48" width="190" height="42" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="335" y="75" text-anchor="middle">V ＝ I × R</text>
+      <rect x="240" y="102" width="190" height="42" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="335" y="129" text-anchor="middle">I ＝ V ÷ R</text>
+      <rect x="240" y="156" width="190" height="42" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="335" y="183" text-anchor="middle">R ＝ V ÷ I</text>
+    </g>
+    <g font-size="11" fill="#716C61">
+      <text x="335" y="44">電圧を求める</text>
+      <text x="335" y="98">電流を求める</text>
+      <text x="335" y="152">抵抗を求める</text>
+    </g>
+    <!-- 例題回路 -->
+    <path d="M490,60 H660 V170 H490 Z" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <rect x="478" y="95" width="24" height="40" fill="#FFFEFB"/>
+    <line x1="479" y1="108" x2="501" y2="108" stroke="#211F1A" stroke-width="3"/>
+    <line x1="484" y1="122" x2="496" y2="122" stroke="#211F1A" stroke-width="2"/>
+    <line x1="490" y1="60" x2="490" y2="108" stroke="#211F1A" stroke-width="2"/>
+    <line x1="490" y1="122" x2="490" y2="170" stroke="#211F1A" stroke-width="2"/>
+    <text x="470" y="120" text-anchor="end" font-size="13" fill="#211F1A">3V</text>
+    <rect x="650" y="90" width="20" height="50" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="644" y="120" text-anchor="end" font-size="13" fill="#211F1A">150Ω</text>
+    <path d="M565,54 l15,6 l-15,6 z" fill="#BE5A38"/>
+    <text x="570" y="46" text-anchor="middle" font-size="13" fill="#BE5A38" font-weight="700">I ＝ ?</text>
+    <text x="575" y="200" text-anchor="middle" font-size="13.5" fill="#211F1A" font-weight="600">I ＝ 3V ÷ 150Ω</text>
+    <text x="575" y="222" text-anchor="middle" font-size="13.5" fill="#BE5A38" font-weight="700">＝ 0.02A ＝ 20mA</text>
+  </svg>
+  <figcaption>図1-2　オームの法則の三角形と3つの形。右は「電圧と抵抗から電流を求める」例</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（単位換算に注意）</span>
+    9Vの電池に 4.7kΩ の抵抗をつなぐと、流れる電流は？
+    <details class="ans"><summary>答えを見る</summary>
+      I = V ÷ R = 9 ÷ 4700 ≒ <b>0.0019A ≒ 1.9mA</b>。<br>
+      kΩのまま計算すると「V ÷ kΩ = mA」になるので、9 ÷ 4.7 ≒ 1.9mA と一発で出せます。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>2つわかれば残り1つが出る。「何がわかっていて、何を求めたいか」を最初に書き出す。</li>
+      <li>単位をそろえてから計算（mA→A、kΩ→Ω）。<b>V ÷ kΩ = mA</b> の組み合わせは覚えると速い。</li>
+      <li>教科書によっては電源電圧を E と書く（E = I R）。意味は同じ。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-2">計算できるようになった</label>
+</section>
+
+<!-- ============ 3. 直列と並列 ============ -->
+<section class="item" id="s1-3">
+  <h2><span class="no">1-3</span>直列回路と並列回路</h2>
+  <p class="goal">🎯 ゴール：直列＝電流が共通、並列＝電圧が共通、を図で説明できる</p>
+  <p>部品のつなぎ方は大きく2通り。<b>道が1本</b>なら直列、<b>道が枝分かれ</b>していれば並列です。「何が共通になるか」がいちばん大事な違いです。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 330" width="700">
+    <text x="170" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">直列回路（道は1本）</text>
+    <text x="530" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">並列回路（道が分かれる）</text>
+    <line x1="350" y1="20" x2="350" y2="310" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- 直列 -->
+    <path d="M60,70 H130 M190,70 H290 V130 M290,190 V270 H60 V70" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <rect x="130" y="61" width="60" height="18" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="160" y="52" text-anchor="middle" font-size="12.5" fill="#211F1A">R1</text>
+    <rect x="281" y="130" width="18" height="60" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="308" y="164" font-size="12.5" fill="#211F1A">R2</text>
+    <rect x="48" y="145" width="24" height="44" fill="#FFFEFB"/>
+    <line x1="49" y1="159" x2="71" y2="159" stroke="#211F1A" stroke-width="3"/>
+    <line x1="54" y1="175" x2="66" y2="175" stroke="#211F1A" stroke-width="2"/>
+    <line x1="60" y1="70" x2="60" y2="159" stroke="#211F1A" stroke-width="2"/>
+    <line x1="60" y1="175" x2="60" y2="270" stroke="#211F1A" stroke-width="2"/>
+    <text x="40" y="171" text-anchor="end" font-size="12" fill="#211F1A">V</text>
+    <path d="M95,64 l14,6 l-14,6 z" fill="#BE5A38"/>
+    <path d="M235,64 l14,6 l-14,6 z" fill="#BE5A38"/>
+    <path d="M296,225 l-6,14 l-6,-14 z" fill="#BE5A38"/>
+    <path d="M180,276 l-14,-6 l14,-6 z" fill="#BE5A38"/>
+    <text x="102" y="55" font-size="12" fill="#BE5A38" font-weight="700">I</text>
+    <text x="242" y="55" font-size="12" fill="#BE5A38" font-weight="700">I</text>
+    <text x="170" y="302" text-anchor="middle" font-size="12.5" fill="#BE5A38" font-weight="600">電流 I はどこも同じ</text>
+    <text x="170" y="320" text-anchor="middle" font-size="12" fill="#716C61">電圧は分け合う（V ＝ V1 ＋ V2）</text>
+    <!-- 並列 -->
+    <path d="M420,70 H660 M420,270 H660 M550,70 V130 M550,190 V270 M660,70 V130 M660,190 V270" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <rect x="408" y="145" width="24" height="44" fill="#FFFEFB"/>
+    <line x1="409" y1="159" x2="431" y2="159" stroke="#211F1A" stroke-width="3"/>
+    <line x1="414" y1="175" x2="426" y2="175" stroke="#211F1A" stroke-width="2"/>
+    <line x1="420" y1="70" x2="420" y2="159" stroke="#211F1A" stroke-width="2"/>
+    <line x1="420" y1="175" x2="420" y2="270" stroke="#211F1A" stroke-width="2"/>
+    <text x="400" y="171" text-anchor="end" font-size="12" fill="#211F1A">V</text>
+    <rect x="541" y="130" width="18" height="60" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <rect x="651" y="130" width="18" height="60" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="533" y="164" text-anchor="end" font-size="12.5" fill="#211F1A">R1</text>
+    <text x="643" y="164" text-anchor="end" font-size="12.5" fill="#211F1A">R2</text>
+    <circle cx="550" cy="70" r="3.5" fill="#211F1A"/>
+    <circle cx="550" cy="270" r="3.5" fill="#211F1A"/>
+    <path d="M480,64 l14,6 l-14,6 z" fill="#BE5A38"/>
+    <text x="487" y="55" font-size="12" fill="#BE5A38" font-weight="700">I</text>
+    <path d="M556,100 l-6,14 l-6,-14 z" fill="#BE5A38"/>
+    <text x="565" y="112" font-size="12" fill="#BE5A38" font-weight="700">I1</text>
+    <path d="M666,100 l-6,14 l-6,-14 z" fill="#BE5A38"/>
+    <text x="675" y="112" font-size="12" fill="#BE5A38" font-weight="700">I2</text>
+    <text x="540" y="302" text-anchor="middle" font-size="12.5" fill="#4A6FA5" font-weight="600">電圧 V はどの枝も同じ</text>
+    <text x="540" y="320" text-anchor="middle" font-size="12" fill="#716C61">電流は分かれる（I ＝ I1 ＋ I2）</text>
+  </svg>
+  <figcaption>図1-3　直列は「電流が共通・電圧を分け合う」、並列は「電圧が共通・電流が分かれる」</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>直列：電流が共通。</b>電圧は各抵抗の大きさに比例して分かれる（分圧）。</li>
+      <li><b>並列：電圧が共通。</b>電流は抵抗が小さい枝ほど多く流れる（分流）。</li>
+      <li>家のコンセントは並列つなぎ。どの機器にも同じ100Vがかかる、と考えると納得しやすい。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-3">説明できるようになった</label>
+</section>
+
+<!-- ============ 4. 合成抵抗 ============ -->
+<section class="item" id="s1-4">
+  <h2><span class="no">1-4</span>合成抵抗の計算</h2>
+  <p class="goal">🎯 ゴール：直列・並列の合成抵抗を計算できる</p>
+  <p>複数の抵抗を「まとめて1本の抵抗とみなす」のが合成抵抗。直列は<b>足すだけ</b>、並列は<b>逆数の和の逆数</b>です。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 300" width="700">
+    <!-- 直列 -->
+    <text x="30" y="34" font-size="13.5" font-weight="700" fill="#211F1A">直列 ＝ 足すだけ</text>
+    <line x1="30" y1="80" x2="70" y2="80" stroke="#211F1A" stroke-width="2"/>
+    <rect x="70" y="71" width="62" height="18" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="101" y="62" text-anchor="middle" font-size="12" fill="#211F1A">100Ω</text>
+    <line x1="132" y1="80" x2="168" y2="80" stroke="#211F1A" stroke-width="2"/>
+    <rect x="168" y="71" width="62" height="18" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="199" y="62" text-anchor="middle" font-size="12" fill="#211F1A">220Ω</text>
+    <line x1="230" y1="80" x2="270" y2="80" stroke="#211F1A" stroke-width="2"/>
+    <path d="M292,74 l22,6 l-22,6 z" fill="#BE5A38"/>
+    <line x1="340" y1="80" x2="390" y2="80" stroke="#211F1A" stroke-width="2"/>
+    <rect x="390" y="71" width="70" height="18" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/>
+    <text x="425" y="62" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">320Ω</text>
+    <line x1="460" y1="80" x2="500" y2="80" stroke="#211F1A" stroke-width="2"/>
+    <text x="540" y="72" font-size="13" fill="#211F1A" font-weight="600">R ＝ R1 ＋ R2</text>
+    <text x="540" y="92" font-size="12" fill="#716C61">100 ＋ 220 ＝ 320Ω</text>
+    <line x1="30" y1="118" x2="670" y2="118" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- 並列 -->
+    <text x="30" y="146" font-size="13.5" font-weight="700" fill="#211F1A">並列 ＝ 逆数の和の逆数（2本なら「積÷和」）</text>
+    <path d="M40,215 H70 M70,180 V250 M70,180 H160 M70,250 H160 M160,180 V250 M160,215 H190" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <rect x="86" y="171" width="58" height="18" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <rect x="86" y="241" width="58" height="18" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <text x="115" y="164" text-anchor="middle" font-size="12" fill="#211F1A">100Ω</text>
+    <text x="115" y="277" text-anchor="middle" font-size="12" fill="#211F1A">100Ω</text>
+    <circle cx="70" cy="215" r="3.5" fill="#211F1A"/><circle cx="160" cy="215" r="3.5" fill="#211F1A"/>
+    <path d="M212,209 l22,6 l-22,6 z" fill="#BE5A38"/>
+    <line x1="258" y1="215" x2="300" y2="215" stroke="#211F1A" stroke-width="2"/>
+    <rect x="300" y="206" width="66" height="18" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/>
+    <text x="333" y="198" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">50Ω</text>
+    <line x1="366" y1="215" x2="404" y2="215" stroke="#211F1A" stroke-width="2"/>
+    <text x="440" y="188" font-size="13" fill="#211F1A" font-weight="600">1/R ＝ 1/R1 ＋ 1/R2</text>
+    <text x="440" y="212" font-size="12.5" fill="#211F1A">2本なら R ＝ (R1×R2)/(R1＋R2)</text>
+    <text x="440" y="234" font-size="12" fill="#716C61">(100×100)/(100＋100) ＝ 50Ω</text>
+    <text x="440" y="262" font-size="12" fill="#BE5A38" font-weight="600">✓ 並列は必ず「いちばん小さい</text>
+    <text x="454" y="280" font-size="12" fill="#BE5A38" font-weight="600">抵抗」より小さくなる</text>
+  </svg>
+  <figcaption>図1-4　合成抵抗：直列は和、並列は「積÷和」。同じ値2本の並列はちょうど半分</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題</span>
+    ① 470Ω と 330Ω の直列　② 300Ω と 600Ω の並列。それぞれ合成抵抗は？
+    <details class="ans"><summary>答えを見る</summary>
+      ① 470 ＋ 330 ＝ <b>800Ω</b><br>
+      ② (300×600)÷(300＋600) ＝ 180000÷900 ＝ <b>200Ω</b>（最小の300Ωより小さい → 検算OK）
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>並列の答えが「いちばん小さい抵抗」より大きくなったら計算ミス。必ず検算する。</li>
+      <li>同じ値をn本並列にすると <b>R÷n</b>（100Ωを2本で50Ω、4本で25Ω）。</li>
+      <li>直列と並列が混ざった回路は、<b>端っこの並列（または直列）から順に1本にまとめて</b>いく。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-4">計算できるようになった</label>
+</section>
+
+<!-- ============ 5. 図記号 ============ -->
+<section class="item" id="s1-5">
+  <h2><span class="no">1-5</span>回路図の記号（図記号）</h2>
+  <p class="goal">🎯 ゴール：図記号を見て部品の名称を答えられる</p>
+  <p>回路図は部品を記号で描いた「地図」。まずはこの12個を覚えれば、訓練で出てくる回路図はほぼ読めます。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 440" width="700">
+    <g font-size="12.5" fill="#211F1A" text-anchor="middle">
+      <!-- row1 -->
+      <rect x="4" y="4" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="27" y1="60" x2="57" y2="60" stroke="#211F1A" stroke-width="2"/>
+      <rect x="57" y="51" width="60" height="18" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <line x1="117" y1="60" x2="147" y2="60" stroke="#211F1A" stroke-width="2"/>
+      <text x="87" y="110">抵抗（新JIS）</text>
+      <rect x="178" y="4" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <path d="M201,60 h22 l6,-11 l11,22 l11,-22 l11,22 l11,-22 l6,11 h22" fill="none" stroke="#211F1A" stroke-width="2" stroke-linejoin="round"/>
+      <text x="261" y="110">抵抗（旧記号）</text>
+      <rect x="352" y="4" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="378" y1="60" x2="426" y2="60" stroke="#211F1A" stroke-width="2"/>
+      <line x1="426" y1="40" x2="426" y2="80" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="440" y1="40" x2="440" y2="80" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="440" y1="60" x2="490" y2="60" stroke="#211F1A" stroke-width="2"/>
+      <text x="435" y="110">コンデンサ</text>
+      <rect x="526" y="4" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="552" y1="60" x2="600" y2="60" stroke="#211F1A" stroke-width="2"/>
+      <line x1="600" y1="40" x2="600" y2="80" stroke="#211F1A" stroke-width="2.5"/>
+      <path d="M622,40 q-10,20 0,40" fill="none" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="618" y1="60" x2="666" y2="60" stroke="#211F1A" stroke-width="2"/>
+      <text x="590" y="32" font-size="13" font-weight="700">＋</text>
+      <text x="609" y="110">電解コンデンサ</text>
+      <text x="609" y="128" font-size="10.5" fill="#716C61">極性あり（向き注意）</text>
+      <!-- row2 -->
+      <rect x="4" y="152" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="24" y1="208" x2="62" y2="208" stroke="#211F1A" stroke-width="2"/>
+      <path d="M62,190 L98,208 L62,226 Z" fill="#211F1A"/>
+      <line x1="98" y1="190" x2="98" y2="226" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="98" y1="208" x2="140" y2="208" stroke="#211F1A" stroke-width="2"/>
+      <text x="46" y="182" font-size="11" fill="#716C61">A（アノード）</text>
+      <text x="112" y="182" font-size="11" fill="#716C61">K</text>
+      <text x="87" y="258">ダイオード</text>
+      <rect x="178" y="152" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="198" y1="216" x2="236" y2="216" stroke="#211F1A" stroke-width="2"/>
+      <path d="M236,198 L272,216 L236,234 Z" fill="#211F1A"/>
+      <line x1="272" y1="198" x2="272" y2="234" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="272" y1="216" x2="312" y2="216" stroke="#211F1A" stroke-width="2"/>
+      <path d="M252,192 l10,-14 M258,192 l10,-14" stroke="#BE5A38" stroke-width="2"/>
+      <path d="M262,178 l2,7 M262,178 l-7,-1" stroke="#BE5A38" stroke-width="2"/>
+      <path d="M268,178 l2,7 M268,178 l-7,-1" stroke="#BE5A38" stroke-width="2"/>
+      <text x="261" y="258">LED（発光ダイオード）</text>
+      <rect x="352" y="152" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <circle cx="435" cy="212" r="34" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <line x1="424" y1="192" x2="424" y2="232" stroke="#211F1A" stroke-width="3"/>
+      <line x1="388" y1="212" x2="424" y2="212" stroke="#211F1A" stroke-width="2"/>
+      <line x1="424" y1="202" x2="452" y2="184" stroke="#211F1A" stroke-width="2"/>
+      <line x1="452" y1="184" x2="452" y2="172" stroke="#211F1A" stroke-width="2"/>
+      <line x1="424" y1="222" x2="452" y2="240" stroke="#211F1A" stroke-width="2"/>
+      <line x1="452" y1="240" x2="452" y2="252" stroke="#211F1A" stroke-width="2"/>
+      <path d="M444,235 l9,4 l-3,-9 z" fill="#211F1A"/>
+      <text x="380" y="200" font-size="11" fill="#716C61">B</text>
+      <text x="462" y="180" font-size="11" fill="#716C61">C</text>
+      <text x="462" y="252" font-size="11" fill="#716C61">E</text>
+      <text x="435" y="276" font-size="12">トランジスタ（NPN）</text>
+      <rect x="526" y="152" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="548" y1="216" x2="580" y2="216" stroke="#211F1A" stroke-width="2"/>
+      <circle cx="584" cy="216" r="4" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <circle cx="638" cy="216" r="4" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <line x1="588" y1="214" x2="632" y2="192" stroke="#211F1A" stroke-width="2"/>
+      <line x1="642" y1="216" x2="672" y2="216" stroke="#211F1A" stroke-width="2"/>
+      <text x="609" y="258">スイッチ</text>
+      <!-- row3 -->
+      <rect x="4" y="300" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="30" y1="356" x2="72" y2="356" stroke="#211F1A" stroke-width="2"/>
+      <line x1="72" y1="334" x2="72" y2="378" stroke="#211F1A" stroke-width="3"/>
+      <line x1="86" y1="344" x2="86" y2="368" stroke="#211F1A" stroke-width="2"/>
+      <line x1="86" y1="356" x2="128" y2="356" stroke="#211F1A" stroke-width="2"/>
+      <text x="62" y="326" font-size="12" font-weight="700">＋</text>
+      <text x="96" y="326" font-size="12">−</text>
+      <text x="87" y="406">電池・直流電源</text>
+      <text x="87" y="424" font-size="10.5" fill="#716C61">長い線が＋極</text>
+      <rect x="178" y="300" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="261" y1="330" x2="261" y2="360" stroke="#211F1A" stroke-width="2"/>
+      <line x1="237" y1="360" x2="285" y2="360" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="245" y1="369" x2="277" y2="369" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="253" y1="378" x2="269" y2="378" stroke="#211F1A" stroke-width="2.5"/>
+      <text x="261" y="406">GND（接地）</text>
+      <text x="261" y="424" font-size="10.5" fill="#716C61">電圧の基準（0V）</text>
+      <rect x="352" y="300" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="435" y1="326" x2="435" y2="390" stroke="#211F1A" stroke-width="2"/>
+      <line x1="403" y1="358" x2="467" y2="358" stroke="#211F1A" stroke-width="2"/>
+      <circle cx="435" cy="358" r="5" fill="#211F1A"/>
+      <text x="435" y="406">接続する交差</text>
+      <text x="435" y="424" font-size="10.5" fill="#716C61">黒丸あり＝つながる</text>
+      <rect x="526" y="300" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <line x1="609" y1="326" x2="609" y2="390" stroke="#211F1A" stroke-width="2"/>
+      <line x1="577" y1="358" x2="641" y2="358" stroke="#211F1A" stroke-width="2"/>
+      <circle cx="609" cy="358" r="7" fill="#FCFBF7"/>
+      <line x1="577" y1="358" x2="602" y2="358" stroke="#211F1A" stroke-width="2"/>
+      <line x1="616" y1="358" x2="641" y2="358" stroke="#211F1A" stroke-width="2"/>
+      <text x="609" y="406">接続しない交差</text>
+      <text x="609" y="424" font-size="10.5" fill="#716C61">黒丸なし＝素通り</text>
+    </g>
+  </svg>
+  <figcaption>図1-5　基本の図記号12個。「接続点（黒丸）の有無」は配線ミスに直結するので特に注意</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>抵抗は<b>新JIS＝長方形</b>。ギザギザの旧記号も現場や海外資料では現役なので両方覚える。</li>
+      <li>ダイオード記号の<b>三角の向き＝電流が流れる向き</b>（A→K）。縦棒側がカソード。</li>
+      <li>交差の<b>黒丸あり＝接続、なし＝未接続</b>。回路図を読むときはまずここを見る。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-5">記号から部品名を言えるようになった</label>
+</section>
+
+<!-- ============ 6. テスタの測定対象 ============ -->
+<section class="item" id="s1-6">
+  <h2><span class="no">1-6</span>テスタ（マルチメータ）で測れるもの</h2>
+  <p class="goal">🎯 ゴール：テスタで測定できる項目を列挙できる</p>
+  <p>テスタ1台で「電圧・電流・抵抗・導通」が測れます。ダイヤルで<b>何を測るか</b>を選んでから使う道具です。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 310" width="700">
+    <!-- 本体 -->
+    <rect x="55" y="25" width="230" height="262" rx="16" fill="#F2EFE6" stroke="#211F1A" stroke-width="2"/>
+    <rect x="80" y="45" width="180" height="52" rx="6" fill="#E7EDDC" stroke="#716C61"/>
+    <text x="248" y="80" text-anchor="end" font-size="24" font-family="JetBrains Mono,monospace" fill="#211F1A">05.03</text>
+    <text x="92" y="63" font-size="10" fill="#4f6b3a">DC V</text>
+    <!-- ダイヤル -->
+    <circle cx="170" cy="180" r="47" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <line x1="170" y1="180" x2="145" y2="142" stroke="#BE5A38" stroke-width="4" stroke-linecap="round"/>
+    <text x="170" y="122" text-anchor="middle" font-size="11" fill="#716C61">OFF</text>
+    <text x="104" y="152" text-anchor="end" font-size="12" font-weight="700" fill="#BE5A38">V⎓</text>
+    <text x="98" y="186" text-anchor="end" font-size="12" fill="#211F1A">V〜</text>
+    <text x="104" y="222" text-anchor="end" font-size="12" fill="#211F1A">A⎓</text>
+    <text x="238" y="152" font-size="12" fill="#211F1A">Ω</text>
+    <text x="238" y="188" font-size="12" fill="#211F1A">•)))</text>
+    <text x="170" y="248" text-anchor="middle" font-size="10.5" fill="#716C61">ダイヤルで測定項目を選ぶ</text>
+    <!-- ジャック -->
+    <circle cx="130" cy="268" r="8" fill="#211F1A"/>
+    <circle cx="210" cy="268" r="8" fill="#FCFBF7" stroke="#BE5A38" stroke-width="3"/>
+    <text x="130" y="302" text-anchor="middle" font-size="10.5" fill="#211F1A">COM（黒）</text>
+    <text x="210" y="302" text-anchor="middle" font-size="10.5" fill="#BE5A38">VΩmA（赤）</text>
+    <!-- 測定項目リスト -->
+    <g font-size="13">
+      <rect x="340" y="38" width="330" height="40" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="358" y="64" font-weight="700" fill="#BE5A38">V⎓</text><text x="400" y="64" fill="#211F1A">直流電圧（電池・回路の電圧）</text>
+      <rect x="340" y="86" width="330" height="40" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="358" y="112" font-weight="700" fill="#211F1A">V〜</text><text x="400" y="112" fill="#211F1A">交流電圧（コンセントなど）</text>
+      <rect x="340" y="134" width="330" height="40" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="358" y="160" font-weight="700" fill="#211F1A">A⎓</text><text x="400" y="160" fill="#211F1A">直流電流（回路に流れる電流）</text>
+      <rect x="340" y="182" width="330" height="40" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="358" y="208" font-weight="700" fill="#211F1A">Ω</text><text x="400" y="208" fill="#211F1A">抵抗値（部品単体で測る）</text>
+      <rect x="340" y="230" width="330" height="40" rx="9" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="358" y="256" font-weight="700" fill="#211F1A">•)))</text><text x="400" y="256" fill="#211F1A">導通チェック（つながればピー音）</text>
+    </g>
+  </svg>
+  <figcaption>図1-6　デジタルテスタの基本。黒プローブはCOM、赤プローブはVΩmA端子へ</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>測れるのは主に <b>直流/交流電圧・直流電流・抵抗・導通</b>（機種によりダイオード・コンデンサ容量・周波数も）。</li>
+      <li><b>導通チェック</b>は「断線探し」「はんだ付けの確認」に大活躍。音が鳴れば繋がっている。</li>
+      <li>⎓は直流（DC）、〜は交流（AC）のマーク。測る対象に合わせて選ぶ。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-6">測定項目を言えるようになった</label>
+</section>
+
+<!-- ============ 7. オシロの測定対象 ============ -->
+<section class="item" id="s1-7">
+  <h2><span class="no">1-7</span>オシロスコープで測れるもの</h2>
+  <p class="goal">🎯 ゴール：オシロが「何を見る道具か」を説明できる</p>
+  <p>テスタは電圧を「1つの数字」で表示しますが、オシロスコープは<b>電圧が時間とともにどう変化するか＝波形</b>をグラフで見せてくれます。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 335" width="700">
+    <!-- 画面 -->
+    <rect x="58" y="38" width="402" height="242" fill="#FFFFFF" stroke="#211F1A" stroke-width="2"/>
+    <g stroke="#EAE4D5" stroke-width="1">
+      <line x1="98" y1="38" x2="98" y2="280"/><line x1="138" y1="38" x2="138" y2="280"/><line x1="178" y1="38" x2="178" y2="280"/><line x1="218" y1="38" x2="218" y2="280"/><line x1="258" y1="38" x2="258" y2="280"/><line x1="298" y1="38" x2="298" y2="280"/><line x1="338" y1="38" x2="338" y2="280"/><line x1="378" y1="38" x2="378" y2="280"/><line x1="418" y1="38" x2="418" y2="280"/>
+      <line x1="58" y1="79" x2="460" y2="79"/><line x1="58" y1="120" x2="460" y2="120"/><line x1="58" y1="200" x2="460" y2="200"/><line x1="58" y1="241" x2="460" y2="241"/>
+    </g>
+    <line x1="58" y1="160" x2="460" y2="160" stroke="#D9D2C0" stroke-width="1.5"/>
+    <!-- 波形 -->
+    <path d="M60,160 Q100,0 140,160 Q180,320 220,160 Q260,0 300,160 Q340,320 380,160 Q420,0 458,155" fill="none" stroke="#BE5A38" stroke-width="3"/>
+    <!-- Vpp 注釈 -->
+    <line x1="70" y1="80" x2="196" y2="80" stroke="#4A6FA5" stroke-dasharray="4 3" stroke-width="1.5"/>
+    <line x1="70" y1="240" x2="196" y2="240" stroke="#4A6FA5" stroke-dasharray="4 3" stroke-width="1.5"/>
+    <line x1="76" y1="86" x2="76" y2="234" stroke="#4A6FA5" stroke-width="2"/>
+    <path d="M76,80 l-5,10 h10 z M76,240 l-5,-10 h10 z" fill="#4A6FA5"/>
+    <text x="86" y="112" font-size="12.5" fill="#4A6FA5" font-weight="700">振幅 Vpp</text>
+    <text x="86" y="128" font-size="11" fill="#4A6FA5">（山から谷まで 4div）</text>
+    <!-- 周期 T -->
+    <line x1="220" y1="166" x2="220" y2="262" stroke="#4f6b3a" stroke-dasharray="4 3" stroke-width="1.5"/>
+    <line x1="380" y1="166" x2="380" y2="262" stroke="#4f6b3a" stroke-dasharray="4 3" stroke-width="1.5"/>
+    <line x1="226" y1="256" x2="374" y2="256" stroke="#4f6b3a" stroke-width="2"/>
+    <path d="M220,256 l10,-5 v10 z M380,256 l-10,-5 v10 z" fill="#4f6b3a"/>
+    <text x="300" y="248" text-anchor="middle" font-size="12.5" fill="#4f6b3a" font-weight="700">周期 T（4div）</text>
+    <!-- 読み取りパネル -->
+    <rect x="480" y="38" width="200" height="242" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+    <text x="580" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">画面の読み取り例</text>
+    <g font-size="12" fill="#211F1A">
+      <text x="496" y="98">縦軸：1V/div</text>
+      <text x="496" y="118" fill="#4A6FA5">→ Vpp＝4div×1V＝4V</text>
+      <text x="496" y="152">横軸：0.5ms/div</text>
+      <text x="496" y="172" fill="#4f6b3a">→ T＝4div×0.5ms＝2ms</text>
+      <text x="496" y="212" font-weight="700">周波数 f＝1/T</text>
+      <text x="496" y="234" fill="#BE5A38" font-weight="700">＝1/0.002s＝500Hz</text>
+      <text x="496" y="266" fill="#716C61" font-size="11">div＝画面のマス目1個</text>
+    </g>
+    <text x="259" y="312" text-anchor="middle" font-size="12" fill="#716C61">横方向＝時間の流れ、縦方向＝電圧。「電圧の時間変化」が見える</text>
+  </svg>
+  <figcaption>図1-7　オシロの画面。マス目（div）×つまみの設定値で振幅・周期を読み取り、f＝1/T で周波数を出す</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th></th><th>テスタ</th><th>オシロスコープ</th></tr>
+    <tr><td>得意なこと</td><td>電圧・電流・抵抗を数値で</td><td>波形の形・振幅・周期・周波数</td></tr>
+    <tr><td>時間変化</td><td>見えない（平均的な値）</td><td><b>見える</b>（グラフ表示）</td></tr>
+    <tr><td>使いどころ</td><td>電源電圧の確認、導通チェック</td><td>信号のひずみ・ノイズ・タイミング観察</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>オシロで測れる代表：<b>波形の形・振幅（Vpp）・周期 T・周波数 f（=1/T）</b>。</li>
+      <li>「動いている信号」「変化する電圧」はテスタでは追えない → オシロの出番。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-7">説明できるようになった</label>
+</section>
+
+<!-- ============ 8. 部品の極性 ============ -->
+<section class="item" id="s1-8">
+  <h2><span class="no">1-8</span>部品の極性を見分ける</h2>
+  <p class="goal">🎯 ゴール：ダイオード・LED・電解コンデンサの向きを実物で判断できる</p>
+  <p>「向きのある部品」を逆に付けると、動かないだけでなく壊れることがあります。見分け方は部品ごとにお決まりのマークがあります。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 290" width="700">
+    <g text-anchor="middle">
+      <!-- LED -->
+      <rect x="6" y="6" width="222" height="252" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="117" y="32" font-size="13.5" font-weight="700" fill="#211F1A">LED</text>
+      <path d="M87,110 a30,30 0 1 1 60,0 v14 h-60 z" fill="#F2B8B0" stroke="#b23a2e" stroke-width="2"/>
+      <line x1="147" y1="96" x2="147" y2="124" stroke="#b23a2e" stroke-width="3.5"/>
+      <line x1="102" y1="124" x2="102" y2="196" stroke="#211F1A" stroke-width="3"/>
+      <line x1="132" y1="124" x2="132" y2="178" stroke="#211F1A" stroke-width="3"/>
+      <text x="70" y="212" font-size="11.5" fill="#BE5A38" font-weight="600">長い足＝アノード（＋）</text>
+      <text x="160" y="196" font-size="11.5" fill="#716C61">短い足＝カソード（−）</text>
+      <text x="117" y="240" font-size="11" fill="#716C61">ふちが平らな側もカソード</text>
+      <path d="M152,88 l14,-8" stroke="#716C61" stroke-width="1.5"/>
+      <text x="182" y="76" font-size="10.5" fill="#716C61">平らな部分</text>
+      <!-- ダイオード -->
+      <rect x="239" y="6" width="222" height="252" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="350" y="32" font-size="13.5" font-weight="700" fill="#211F1A">ダイオード</text>
+      <line x1="264" y1="100" x2="436" y2="100" stroke="#211F1A" stroke-width="3"/>
+      <rect x="304" y="82" width="92" height="36" rx="6" fill="#3A362E"/>
+      <rect x="372" y="82" width="12" height="36" fill="#FCFBF7"/>
+      <text x="350" y="140" font-size="11.5" fill="#BE5A38" font-weight="600">帯（バンド）＝カソード側</text>
+      <!-- 記号対応 -->
+      <line x1="286" y1="196" x2="322" y2="196" stroke="#211F1A" stroke-width="2"/>
+      <path d="M322,180 L354,196 L322,212 Z" fill="#211F1A"/>
+      <line x1="354" y1="180" x2="354" y2="212" stroke="#211F1A" stroke-width="2.5"/>
+      <line x1="354" y1="196" x2="390" y2="196" stroke="#211F1A" stroke-width="2"/>
+      <text x="300" y="230" font-size="11" fill="#716C61">A（＋から）</text>
+      <text x="382" y="230" font-size="11" fill="#716C61">K（帯側）</text>
+      <path d="M372,118 L358,172" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="350" y="250" font-size="11" fill="#716C61">記号の「縦棒」＝実物の「帯」</text>
+      <!-- 電解コンデンサ -->
+      <rect x="472" y="6" width="222" height="252" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="583" y="32" font-size="13.5" font-weight="700" fill="#211F1A">電解コンデンサ</text>
+      <rect x="548" y="66" width="70" height="96" rx="8" fill="#4A6FA5"/>
+      <rect x="548" y="66" width="18" height="96" rx="6" fill="#E9EEF5"/>
+      <text x="557" y="120" font-size="15" font-weight="700" fill="#4A6FA5">−</text>
+      <ellipse cx="583" cy="66" rx="35" ry="8" fill="#7C97BC"/>
+      <line x1="566" y1="162" x2="566" y2="212" stroke="#211F1A" stroke-width="3"/>
+      <line x1="600" y1="162" x2="600" y2="230" stroke="#211F1A" stroke-width="3"/>
+      <text x="522" y="196" font-size="11.5" fill="#4A6FA5" font-weight="600" text-anchor="end">白帯＝−側</text>
+      <text x="628" y="222" font-size="11.5" fill="#BE5A38" font-weight="600">長い足＝＋</text>
+      <text x="583" y="250" font-size="11" fill="#b23a2e">逆接続は破裂の危険！</text>
+    </g>
+  </svg>
+  <figcaption>図1-8　極性の見分け方。「長い足が＋」はLEDも電解コンデンサも共通</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>ダイオード：帯＝カソード</b>（記号の縦棒側）。電流はA→Kの一方向のみ。</li>
+      <li><b>LED：長い足＝アノード（＋）</b>、平らなふち＝カソード。逆向きだと点灯しない。</li>
+      <li><b>電解コンデンサ：白帯＝マイナス</b>。逆接続・過電圧は破裂の危険があるので取り付け前に必ず確認。</li>
+      <li>迷ったらテスタのダイオードチェックで確認できる（順方向で電圧表示、逆方向でOL）。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-8">極性を判断できるようになった</label>
+</section>
+
+<!-- ============ 9. 結線する場所 ============ -->
+<section class="item" id="s1-9">
+  <h2><span class="no">1-9</span>結線する場所を判断する（回路図→実配線）</h2>
+  <p class="goal">🎯 ゴール：回路図を見てブレッドボードのどこに挿すか決められる</p>
+  <p>回路図とブレッドボードをつなぐカギは、<b>「ボードの中で最初からつながっている場所」</b>を知ること。あとは回路図の線を1本ずつ置き換えるだけです。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 345" width="700">
+    <rect x="40" y="44" width="480" height="270" rx="12" fill="#F7F5EE" stroke="#C9C2B0" stroke-width="1.5"/>
+    <!-- 電源レール -->
+    <line x1="60" y1="64" x2="500" y2="64" stroke="#b23a2e" stroke-width="3"/>
+    <line x1="60" y1="132" x2="500" y2="132" stroke="#4A6FA5" stroke-width="3"/>
+    <rect x="66" y="78" width="428" height="16" rx="8" fill="#BE5A38" opacity="0.14"/>
+    <g fill="#4a453a">
+      <circle cx="84" cy="86" r="4"/><circle cx="120" cy="86" r="4"/><circle cx="156" cy="86" r="4"/><circle cx="192" cy="86" r="4"/><circle cx="228" cy="86" r="4"/><circle cx="264" cy="86" r="4"/><circle cx="300" cy="86" r="4"/><circle cx="336" cy="86" r="4"/><circle cx="372" cy="86" r="4"/><circle cx="408" cy="86" r="4"/><circle cx="444" cy="86" r="4"/><circle cx="480" cy="86" r="4"/>
+      <circle cx="84" cy="112" r="4"/><circle cx="120" cy="112" r="4"/><circle cx="156" cy="112" r="4"/><circle cx="192" cy="112" r="4"/><circle cx="228" cy="112" r="4"/><circle cx="264" cy="112" r="4"/><circle cx="300" cy="112" r="4"/><circle cx="336" cy="112" r="4"/><circle cx="372" cy="112" r="4"/><circle cx="408" cy="112" r="4"/><circle cx="444" cy="112" r="4"/><circle cx="480" cy="112" r="4"/>
+    </g>
+    <text x="507" y="90" font-size="12" fill="#BE5A38" font-weight="700">＋</text>
+    <text x="507" y="117" font-size="12" fill="#4A6FA5" font-weight="700">−</text>
+    <!-- 縦列ハイライト -->
+    <rect x="466" y="158" width="28" height="122" rx="8" fill="#4f6b3a" opacity="0.15"/>
+    <!-- 端子盤の穴 -->
+    <g fill="#4a453a">
+      <circle cx="84" cy="170" r="4"/><circle cx="120" cy="170" r="4"/><circle cx="156" cy="170" r="4"/><circle cx="192" cy="170" r="4"/><circle cx="228" cy="170" r="4"/><circle cx="264" cy="170" r="4"/><circle cx="300" cy="170" r="4"/><circle cx="336" cy="170" r="4"/><circle cx="372" cy="170" r="4"/><circle cx="408" cy="170" r="4"/><circle cx="444" cy="170" r="4"/><circle cx="480" cy="170" r="4"/>
+      <circle cx="84" cy="194" r="4"/><circle cx="120" cy="194" r="4"/><circle cx="156" cy="194" r="4"/><circle cx="228" cy="194" r="4"/><circle cx="264" cy="194" r="4"/><circle cx="300" cy="194" r="4"/><circle cx="336" cy="194" r="4"/><circle cx="372" cy="194" r="4"/><circle cx="408" cy="194" r="4"/><circle cx="444" cy="194" r="4"/><circle cx="480" cy="194" r="4"/>
+      <circle cx="84" cy="218" r="4"/><circle cx="120" cy="218" r="4"/><circle cx="156" cy="218" r="4"/><circle cx="192" cy="218" r="4"/><circle cx="264" cy="218" r="4"/><circle cx="300" cy="218" r="4"/><circle cx="336" cy="218" r="4"/><circle cx="372" cy="218" r="4"/><circle cx="408" cy="218" r="4"/><circle cx="444" cy="218" r="4"/><circle cx="480" cy="218" r="4"/>
+      <circle cx="84" cy="242" r="4"/><circle cx="120" cy="242" r="4"/><circle cx="156" cy="242" r="4"/><circle cx="192" cy="242" r="4"/><circle cx="228" cy="242" r="4"/><circle cx="264" cy="242" r="4"/><circle cx="300" cy="242" r="4"/><circle cx="336" cy="242" r="4"/><circle cx="372" cy="242" r="4"/><circle cx="408" cy="242" r="4"/><circle cx="444" cy="242" r="4"/><circle cx="480" cy="242" r="4"/>
+      <circle cx="84" cy="266" r="4"/><circle cx="120" cy="266" r="4"/><circle cx="156" cy="266" r="4"/><circle cx="192" cy="266" r="4"/><circle cx="228" cy="266" r="4"/><circle cx="264" cy="266" r="4"/><circle cx="300" cy="266" r="4"/><circle cx="336" cy="266" r="4"/><circle cx="372" cy="266" r="4"/><circle cx="408" cy="266" r="4"/><circle cx="444" cy="266" r="4"/><circle cx="480" cy="266" r="4"/>
+    </g>
+    <!-- 中央の溝 -->
+    <rect x="52" y="284" width="456" height="18" rx="4" fill="#E2DCCD"/>
+    <!-- 配線例 -->
+    <line x1="16" y1="86" x2="80" y2="86" stroke="#b23a2e" stroke-width="3.5"/>
+    <line x1="16" y1="112" x2="80" y2="112" stroke="#211F1A" stroke-width="3.5"/>
+    <text x="14" y="74" font-size="10.5" fill="#716C61">電池から</text>
+    <line x1="156" y1="90" x2="156" y2="112" stroke="#211F1A" stroke-width="2.5"/>
+    <rect x="148" y="112" width="16" height="36" rx="7" fill="#EFDDBB" stroke="#8a7a55" stroke-width="1.5"/>
+    <line x1="156" y1="148" x2="156" y2="166" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="140" y="136" font-size="11" fill="#211F1A" text-anchor="end">抵抗</text>
+    <line x1="156" y1="196" x2="167" y2="181" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="192" y1="196" x2="181" y2="181" stroke="#211F1A" stroke-width="2.5"/>
+    <circle cx="174" cy="172" r="10" fill="#E05252" stroke="#b23a2e" stroke-width="1.5"/>
+    <text x="200" y="166" font-size="11" fill="#b23a2e">LED</text>
+    <path d="M192,220 Q230,200 228,116" fill="none" stroke="#211F1A" stroke-width="3"/>
+    <text x="240" y="150" font-size="10.5" fill="#716C61">ジャンプワイヤで−へ</text>
+    <!-- 注釈 -->
+    <g font-size="11.5">
+      <line x1="500" y1="86" x2="528" y2="76" stroke="#BE5A38" stroke-width="1.5"/>
+      <text x="533" y="72" fill="#BE5A38" font-weight="600">電源レール：</text>
+      <text x="533" y="88" fill="#BE5A38">横一列が中で</text>
+      <text x="533" y="104" fill="#BE5A38">つながっている</text>
+      <line x1="494" y1="219" x2="528" y2="200" stroke="#4f6b3a" stroke-width="1.5"/>
+      <text x="533" y="192" fill="#4f6b3a" font-weight="600">端子盤：</text>
+      <text x="533" y="208" fill="#4f6b3a">縦5穴が中で</text>
+      <text x="533" y="224" fill="#4f6b3a">つながっている</text>
+      <line x1="508" y1="293" x2="528" y2="284" stroke="#716C61" stroke-width="1.5"/>
+      <text x="533" y="278" fill="#716C61">中央の溝：</text>
+      <text x="533" y="294" fill="#716C61">上下は切れている</text>
+      <text x="533" y="310" fill="#716C61">（ICがまたぐ場所）</text>
+    </g>
+    <text x="280" y="334" text-anchor="middle" font-size="12" fill="#211F1A">電気の道：＋レール → 抵抗 → LED → ジャンプワイヤ → −レール</text>
+  </svg>
+  <figcaption>図1-9　ブレッドボードの内部接続と、LED点灯回路の配線例。「同じ縦列に挿した足はつながる」が基本ルール</figcaption>
+  </figure>
+  <p>回路図から配線に置き換える手順：</p>
+  <ol>
+    <li>回路図の<b>接続点（黒丸・線のつながり）ごとに</b>「この足とこの足は同じ列」とグループ分けする</li>
+    <li>電源（＋/−）はレールに割り当てる</li>
+    <li>グループごとに同じ縦列へ部品の足を挿す。届かない所はジャンプワイヤでつなぐ</li>
+    <li>最後に回路図と1本ずつ照合してから電源を入れる</li>
+  </ol>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「つながってほしい足＝同じ縦列」「つながってはいけない足＝別の列」。これだけで判断できる。</li>
+      <li>ICは中央の溝をまたいで挿す（またがないと左右の足が短絡する）。</li>
+      <li>練習には同じ置き場の <a href="breadboard-designer.html">ブレッドボード配置デザイナー</a> が使えます。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-9">結線場所を判断できるようになった</label>
+</section>
+
+<!-- ============ 10. テスタの使い方 ============ -->
+<section class="item" id="s1-10">
+  <h2><span class="no">1-10</span>テスタの使い方 — つなぎ方が3通り</h2>
+  <p class="goal">🎯 ゴール：電圧・電流・抵抗それぞれの正しい測り方ができる</p>
+  <p>テスタ操作の基本は「レンジ選択 → プローブの当て方」。特に<b>測るものによって「つなぎ方」が全く違う</b>ことが最重要ポイントです。</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 315" width="700">
+    <g text-anchor="middle">
+      <!-- 電圧 -->
+      <rect x="6" y="6" width="222" height="290" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="117" y="34" font-size="13.5" font-weight="700" fill="#4A6FA5">① 電圧 ＝ 並列に当てる</text>
+      <path d="M40,80 H160 V210 H40 Z" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <rect x="28" y="125" width="24" height="40" fill="#FCFBF7"/>
+      <line x1="29" y1="138" x2="51" y2="138" stroke="#211F1A" stroke-width="3"/>
+      <line x1="34" y1="152" x2="46" y2="152" stroke="#211F1A" stroke-width="2"/>
+      <rect x="151" y="118" width="18" height="54" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+      <circle cx="200" cy="145" r="17" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="2.5"/>
+      <text x="200" y="150" font-size="13" font-weight="700" fill="#4A6FA5">V</text>
+      <path d="M160,100 C196,100 200,112 200,128" fill="none" stroke="#4A6FA5" stroke-width="2"/>
+      <path d="M160,190 C196,190 200,178 200,162" fill="none" stroke="#4A6FA5" stroke-width="2"/>
+      <text x="117" y="242" font-size="11.5" fill="#211F1A">部品に「またがって」当てる</text>
+      <text x="117" y="262" font-size="11" fill="#716C61">回路は切らない・そのまま</text>
+      <!-- 電流 -->
+      <rect x="239" y="6" width="222" height="290" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="350" y="34" font-size="13.5" font-weight="700" fill="#BE5A38">② 電流 ＝ 直列に割り込む</text>
+      <path d="M272,80 H305 M272,80 V210 H392 V80" fill="none" stroke="#211F1A" stroke-width="2"/>
+      <rect x="260" y="125" width="24" height="40" fill="#FCFBF7"/>
+      <line x1="261" y1="138" x2="283" y2="138" stroke="#211F1A" stroke-width="3"/>
+      <line x1="266" y1="152" x2="278" y2="152" stroke="#211F1A" stroke-width="2"/>
+      <rect x="383" y="118" width="18" height="54" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+      <circle cx="333" cy="80" r="17" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2.5"/>
+      <text x="333" y="85" font-size="13" font-weight="700" fill="#BE5A38">A</text>
+      <line x1="350" y1="80" x2="392" y2="80" stroke="#211F1A" stroke-width="2"/>
+      <text x="333" y="55" font-size="10.5" fill="#BE5A38">回路を切って挿入</text>
+      <text x="350" y="242" font-size="11.5" fill="#211F1A">電流の通り道に入れる</text>
+      <text x="350" y="262" font-size="11" fill="#b23a2e">並列に当てるとほぼ短絡！危険</text>
+      <!-- 抵抗 -->
+      <rect x="472" y="6" width="222" height="290" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
+      <text x="583" y="34" font-size="13.5" font-weight="700" fill="#4f6b3a">③ 抵抗 ＝ 外して単体で</text>
+      <rect x="548" y="136" width="70" height="18" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+      <line x1="522" y1="145" x2="548" y2="145" stroke="#211F1A" stroke-width="2"/>
+      <line x1="618" y1="145" x2="644" y2="145" stroke="#211F1A" stroke-width="2"/>
+      <circle cx="583" cy="82" r="17" fill="#E7EDDC" stroke="#4f6b3a" stroke-width="2.5"/>
+      <text x="583" y="87" font-size="13" font-weight="700" fill="#4f6b3a">Ω</text>
+      <path d="M570,93 C540,110 524,125 522,143" fill="none" stroke="#4f6b3a" stroke-width="2"/>
+      <path d="M596,93 C626,110 642,125 644,143" fill="none" stroke="#4f6b3a" stroke-width="2"/>
+      <text x="583" y="200" font-size="11.5" fill="#211F1A">回路から外す or 電源OFFで測る</text>
+      <text x="583" y="220" font-size="11" fill="#716C61">通電中に測ると壊れる・誤表示</text>
+      <text x="583" y="262" font-size="11" fill="#716C61">導通チェックも同じ（電源OFF）</text>
+    </g>
+  </svg>
+  <figcaption>図1-10　測るものでつなぎ方が変わる：電圧＝並列、電流＝直列、抵抗＝電源を切って単体で</figcaption>
+  </figure>
+  <p>基本手順：<b>①ダイヤルで測定項目とレンジを選ぶ</b>（マニュアル機は大きめのレンジから）→ <b>②黒をCOM・赤をVΩmA端子に</b> → <b>③正しいつなぎ方で当てて読む</b>。直流はプローブの赤＋黒−が逆だとマイナス表示になるだけなので慌てない。</p>
+  <div class="caution"><span class="tt">⚠️ ありがちな事故</span>
+    電流レンジ（プローブがA端子）のまま電池や電源の両端に当てると、テスタ内部がほぼ導線なので<b>大電流が流れてヒューズが切れます</b>。測定の前に「ダイヤル」と「プローブの挿し位置」を毎回確認する癖をつける。
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-10">正しく測定できるようになった</label>
+</section>
+
+<!-- ============ 11. オシロの使い方 ============ -->
+<section class="item" id="s1-11">
+  <h2><span class="no">1-11</span>オシロスコープの使い方</h2>
+  <p class="goal">🎯 ゴール：プローブ接続→スケール調整→トリガ設定の流れで波形を表示できる</p>
+  <figure class="fig">
+  <svg viewBox="0 0 700 320" width="700">
+    <!-- 本体 -->
+    <rect x="40" y="30" width="330" height="210" rx="12" fill="#F2EFE6" stroke="#211F1A" stroke-width="2"/>
+    <rect x="60" y="52" width="160" height="120" fill="#FFFFFF" stroke="#716C61"/>
+    <path d="M65,112 Q85,72 105,112 Q125,152 145,112 Q165,72 185,112 Q200,142 215,116" fill="none" stroke="#BE5A38" stroke-width="2.5"/>
+    <circle cx="262" cy="90" r="18" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <line x1="262" y1="90" x2="262" y2="75" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="262" y="126" text-anchor="middle" font-size="10.5" fill="#211F1A">V/div</text>
+    <text x="262" y="140" text-anchor="middle" font-size="10" fill="#716C61">電圧軸</text>
+    <circle cx="326" cy="90" r="18" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <line x1="326" y1="90" x2="337" y2="79" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="326" y="126" text-anchor="middle" font-size="10.5" fill="#211F1A">TIME/div</text>
+    <text x="326" y="140" text-anchor="middle" font-size="10" fill="#716C61">時間軸</text>
+    <circle cx="294" cy="180" r="16" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <line x1="294" y1="180" x2="294" y2="167" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="294" y="216" text-anchor="middle" font-size="10.5" fill="#211F1A">TRIG LEVEL</text>
+    <rect x="60" y="196" width="66" height="24" rx="6" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="93" y="212" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6b3a">AUTO</text>
+    <circle cx="160" cy="208" r="9" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <text x="184" y="212" font-size="10.5" fill="#211F1A">CH1</text>
+    <!-- プローブ -->
+    <path d="M168,208 C240,262 330,268 420,240" fill="none" stroke="#211F1A" stroke-width="2.5"/>
+    <rect x="420" y="232" width="72" height="15" rx="7" fill="#3A362E"/>
+    <line x1="492" y1="239" x2="522" y2="239" stroke="#211F1A" stroke-width="2.5"/>
+    <circle cx="528" cy="239" r="4.5" fill="#BE5A38"/>
+    <text x="528" y="222" text-anchor="middle" font-size="11" fill="#BE5A38" font-weight="600">プローブ先端→測定点</text>
+    <path d="M444,247 C452,284 480,292 512,292" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <path d="M512,286 l20,6 l-20,6 z" fill="#211F1A"/>
+    <line x1="532" y1="292" x2="552" y2="292" stroke="#211F1A" stroke-width="2"/>
+    <line x1="552" y1="292" x2="552" y2="300" stroke="#211F1A" stroke-width="2"/>
+    <line x1="540" y1="300" x2="564" y2="300" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="544" y1="306" x2="560" y2="306" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="548" y1="312" x2="556" y2="312" stroke="#211F1A" stroke-width="2.5"/>
+    <text x="640" y="296" text-anchor="middle" font-size="11" fill="#716C61">GNDクリップは</text>
+    <text x="640" y="311" text-anchor="middle" font-size="11" fill="#716C61">回路のGNDへ</text>
+    <!-- 手順 -->
+    <g font-size="12" fill="#211F1A">
+      <text x="420" y="52" font-size="13" font-weight="700">基本手順</text>
+      <text x="420" y="78">① プローブをCH1へ・GNDクリップをGNDへ</text>
+      <text x="420" y="103">② まず AUTO（オートセット）で波形を出す</text>
+      <text x="420" y="128">③ V/div で縦の大きさを見やすく調整</text>
+      <text x="420" y="153">④ TIME/div で横（時間）の幅を調整</text>
+      <text x="420" y="178">⑤ トリガLEVELを波形の高さ内に → 波形が静止</text>
+    </g>
+  </svg>
+  <figcaption>図1-11　オシロの基本操作。トリガは「毎回同じ条件で描き始めるための目印」＝波形を止める仕組み</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><b>V/div（電圧軸）とTIME/div（時間軸）</b>は「1マスが何V・何秒か」を決めるつまみ。</li>
+      <li><b>トリガ</b>＝掃引を開始する条件（例：立ち上がりで2Vを横切ったら）。流れる波形はトリガで止める。</li>
+      <li>プローブの<b>×10設定</b>のときは読み値も10倍（機種が自動換算する場合もあるので表示を確認）。</li>
+      <li>GNDクリップの接続先を間違えると回路を短絡することがある。GND位置を確認してから。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-11">波形を表示・調整できるようになった</label>
+</section>
+
+<!-- ============ 12. 理論値と実測値 ============ -->
+<section class="item" id="s1-12">
+  <h2><span class="no">1-12</span>理論値と実測値を比較する</h2>
+  <p class="goal">🎯 ゴール：誤差率を計算し、ズレの原因を考察できる</p>
+  <p>計算どおりの値が出なくても、それは失敗ではありません。<b>どれくらいズレたか（誤差率）</b>を数字にして、<b>なぜズレたか</b>を考えるところまでが実験です。</p>
+  <div class="formula">誤差率〔%〕＝（実測値 − 理論値）÷ 理論値 × 100</div>
+  <figure class="fig">
+  <svg viewBox="0 0 700 220" width="700">
+    <line x1="50" y1="86" x2="145" y2="86" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="355" y1="86" x2="450" y2="86" stroke="#211F1A" stroke-width="2.5"/>
+    <rect x="145" y="60" width="210" height="52" rx="24" fill="#EFDDBB" stroke="#8a7a55" stroke-width="1.5"/>
+    <rect x="175" y="60" width="14" height="52" fill="#7B4A2D"/>
+    <rect x="210" y="60" width="14" height="52" fill="#211F1A"/>
+    <rect x="245" y="60" width="14" height="52" fill="#7B4A2D"/>
+    <rect x="315" y="60" width="14" height="52" fill="#C9A227"/>
+    <g font-size="11.5" fill="#211F1A" text-anchor="middle">
+      <text x="182" y="136">1</text>
+      <text x="217" y="136">0</text>
+      <text x="252" y="136">×10</text>
+      <text x="322" y="136">±5%</text>
+    </g>
+    <text x="250" y="168" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">茶・黒・茶・金 → 10×10 ＝ 100Ω ±5%</text>
+    <text x="250" y="192" text-anchor="middle" font-size="11.5" fill="#716C61">＝「95〜105Ωの範囲のどれか」という意味</text>
+    <line x1="490" y1="120" x2="670" y2="120" stroke="#716C61" stroke-width="2"/>
+    <line x1="490" y1="112" x2="490" y2="128" stroke="#716C61" stroke-width="2"/>
+    <line x1="580" y1="110" x2="580" y2="130" stroke="#BE5A38" stroke-width="2.5"/>
+    <line x1="670" y1="112" x2="670" y2="128" stroke="#716C61" stroke-width="2"/>
+    <g font-size="11.5" text-anchor="middle">
+      <text x="490" y="146" fill="#716C61">95Ω</text>
+      <text x="580" y="146" fill="#BE5A38" font-weight="700">100Ω</text>
+      <text x="670" y="146" fill="#716C61">105Ω</text>
+      <text x="580" y="90" fill="#4f6b3a" font-weight="600">公差の範囲＝正常</text>
+      <text x="580" y="176" fill="#211F1A">例：実測 103Ω → 誤差率 ＋3%</text>
+      <text x="580" y="196" fill="#4f6b3a">公差±5%以内 → 部品は正常 ✓</text>
+    </g>
+  </svg>
+  <figcaption>図1-12　カラーコードの最後の帯は公差。±5%品の100Ωは「95〜105Ω」なら仕様どおり</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題</span>
+    3Vと150Ωの回路。理論値 I＝20mA に対し、実測は 19.4mA だった。誤差率は？
+    <details class="ans"><summary>答えを見る</summary>
+      （19.4 − 20）÷ 20 × 100 ＝ <b>−3%</b>。<br>
+      抵抗の公差±5%やテスタを直列に入れたことによる影響で十分説明できる範囲 → 測定は妥当と考察できる。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント — ズレの主な原因</span>
+    <ul>
+      <li><b>部品公差</b>：抵抗の±5%（金帯）など、部品はもともと幅を持って作られている。</li>
+      <li><b>測定器の影響</b>：電流計を直列に入れるとその分抵抗が増える、電圧計にもわずかに電流が流れる。</li>
+      <li><b>接触抵抗・電池の内部抵抗・温度</b>なども効いてくる。</li>
+      <li>カラーコードの読み取りは <a href="resistor-calculator.html">抵抗値カラーコード計算機</a> で練習できます。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-12">誤差を計算・考察できるようになった</label>
+</section>
+
+<!-- ============ 13. 安全な操作 ============ -->
+<section class="item" id="s1-13">
+  <h2><span class="no">1-13</span>安全に測定器を操作する</h2>
+  <p class="goal">🎯 ゴール：感電・機器破損を防ぐ手順が身についている</p>
+  <p>安全のコツは「才能」ではなく<b>毎回同じ順序でやること</b>。特に「電源を入れる前・切った後」の確認を習慣にします。</p>
+  <div class="formula">配線する → 見直す → 電源ON ／ 電源OFF → 確認 → 配線を変える</div>
+  <div class="grid2">
+    <div class="do"><span class="tt">✅ やること</span>
+      <ul>
+        <li>電源ONの前に配線・極性・レンジを指差し確認</li>
+        <li>配線変更・部品交換は必ず電源OFFで</li>
+        <li>マニュアルレンジは<b>大きいレンジから</b>下げていく</li>
+        <li>測定前に「ダイヤル位置」と「プローブの挿し口」を確認</li>
+        <li>電解コンデンサは電源OFF後も放電してから触る</li>
+      </ul>
+    </div>
+    <div class="dont"><span class="tt">🚫 やらないこと</span>
+      <ul>
+        <li>電流レンジのまま電圧を測る（ほぼ短絡→ヒューズ断）</li>
+        <li>通電中の回路で抵抗・導通を測る</li>
+        <li>濡れた手で機器やプローブを扱う</li>
+        <li>定格（測れる上限）を超える電圧に当てる</li>
+        <li>ワニ口やGNDクリップの接続先を確認せずに挟む</li>
+      </ul>
+    </div>
+  </div>
+  <div class="caution"><span class="tt">⚠️ 感電について</span>
+    訓練で使う乾電池・5V程度は感電の危険は小さいですが、<b>AC100V・オシロ+商用電源まわりは別物</b>。交流を扱うときは指導員の手順に従い、片手操作・絶縁の確認を徹底する。
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-13">安全手順が身についた</label>
+</section>
+
+<!-- ============ 14. 整理整頓 ============ -->
+<section class="item" id="s1-14">
+  <h2><span class="no">1-14</span>作業台の整理整頓</h2>
+  <p class="goal">🎯 ゴール：作業スペースを安全・効率的に保てる</p>
+  <p>整理整頓は「きれい好き」の話ではなく、<b>安全（はんだごて・部品の踏み付け防止）と効率（探す時間ゼロ）</b>のための技術です。</p>
+  <div class="grid2">
+    <div class="do"><span class="tt">✅ 習慣にすること</span>
+      <ul>
+        <li>工具は<b>定位置管理</b>：使ったら元の場所へ戻す</li>
+        <li>部品は仕切りケースで分類（値・種類ごと）</li>
+        <li>はんだごては必ず専用スタンドへ。離席時は電源OFF</li>
+        <li>作業前後に机の上をリセット（始めと同じ状態に）</li>
+        <li>配線くず・切った足はこまめに捨てる（短絡の原因）</li>
+      </ul>
+    </div>
+    <div class="dont"><span class="tt">🚫 事故のもと</span>
+      <ul>
+        <li>通電中の基板の上に工具や導線を置く</li>
+        <li>床やイスに工具・部品を仮置きする</li>
+        <li>飲み物を機器のそばに置く</li>
+        <li>ケーブルを机から垂らしたまま作業する</li>
+      </ul>
+    </div>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>整頓の判断基準は「<b>次に使う人（未来の自分）がすぐ使える状態か</b>」。</li>
+      <li>切った部品の足やはんだくずは金属ゴミ。基板の下に残ると短絡・誤動作の原因になる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="s1-14">整理整頓が習慣になった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（セクション1）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+  <details><summary>Q1. オームの法則を3つの形で書くと？</summary><div class="a">V＝I×R、I＝V÷R、R＝V÷I。三角形（上V、下I・R）で覚えると変形しやすい。</div></details>
+  <details><summary>Q2. 9Vの電池に1.5kΩをつなぐと電流は？</summary><div class="a">I＝V÷R＝9÷1.5k＝<b>6mA</b>。（V÷kΩ＝mA）</div></details>
+  <details><summary>Q3. 直列回路で「どの部品も同じ」なのは電流？電圧？</summary><div class="a"><b>電流</b>。道が1本なので通る量はどこも同じ。電圧は各抵抗で分け合う。</div></details>
+  <details><summary>Q4. 並列回路で「どの枝も同じ」なのは？</summary><div class="a"><b>電圧</b>。同じ2点間につながっているため。電流は枝ごとに分かれる。</div></details>
+  <details><summary>Q5. ①100Ω＋150Ωの直列、②300Ωと600Ωの並列。合成抵抗は？</summary><div class="a">①250Ω　②(300×600)÷(300＋600)＝<b>200Ω</b>。並列は最小値（300Ω）より小さくなればOK。</div></details>
+  <details><summary>Q6. 電流を測るとき、テスタはどうつなぐ？</summary><div class="a">回路を切って<b>直列に割り込ませる</b>。並列に当てるとテスタ経由で大電流が流れて危険（ヒューズ断）。</div></details>
+  <details><summary>Q7. 抵抗を測る前に必ずやることは？</summary><div class="a"><b>電源を切る</b>（できれば部品を回路から外す）。通電中に測ると値が狂い、テスタを傷めることもある。</div></details>
+  <details><summary>Q8. LEDの長い足はアノード？カソード？</summary><div class="a"><b>アノード（＋側）</b>。短い足・ふちの平らな側がカソード（−側）。</div></details>
+  <details><summary>Q9. ダイオード本体の「帯」はどっち側？</summary><div class="a"><b>カソード側</b>。回路図記号の縦棒に対応する。電流はアノード→カソードにだけ流れる。</div></details>
+  <details><summary>Q10. オシロで周期が2msのとき、周波数は？</summary><div class="a">f＝1/T＝1/0.002s＝<b>500Hz</b>。</div></details>
+  <details><summary>Q11. ブレッドボードの縦5穴と電源レール、内部はどうつながっている？</summary><div class="a">縦5穴は<b>1グループとして内部で接続</b>、電源レールは<b>横一列が接続</b>。中央の溝で上下は切れている。</div></details>
+  <details><summary>Q12. 理論値100Ω・実測103Ωのとき誤差率は？考えられる原因は？</summary><div class="a">（103−100）÷100×100＝<b>＋3%</b>。抵抗の公差（金帯±5%）内なので部品は正常の範囲。ほかに接触抵抗・測定器の影響など。</div></details>
+  <details><summary>Q13. 「電源を入れる前」と「配線を変える前」、それぞれ何をする？</summary><div class="a">電源ON前＝配線・極性・レンジを見直す。配線変更前＝<b>電源を切る</b>。この順序を毎回守るのが安全操作の基本。</div></details>
+</section>
+
+<nav class="pager">
+  <a href="study-guide.html"><span class="dir">‹ もどる</span>学習ノート トップ</a>
+  <a href="study-analog.html" class="next"><span class="dir">つぎへ ›</span>セクション2：半導体・アナログ回路</a>
+</nav>
+
+<footer>電子回路 学習ノート ─ セクション1：電気回路基礎</footer>
+</div>
+
+<script>
+const KEY='denshiStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+</script>
+</body>
+</html>

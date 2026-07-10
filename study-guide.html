@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電子回路 学習ノート｜訓練校の振り返り</title>
+<meta name="description" content="電気回路基礎・半導体アナログ・デジタル回路の39項目を図解でおさらい。チェックとクイズで定着させる学習ノート。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --green:#4f6b3a; --green-soft:#E7EDDC;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.8;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  header.hero{background:var(--surface);border:1px solid var(--border);border-radius:20px;
+    padding:30px 24px 26px;margin-top:18px;text-align:center;box-shadow:0 12px 28px -24px rgba(50,38,24,.4)}
+  .hero .mark{display:block;margin:0 auto 12px}
+  .hero h1{font-size:1.55rem;font-weight:700}
+  .hero p{color:var(--ink-dim);font-size:.88rem;margin-top:8px}
+  .hero .rule{width:46px;height:3px;background:var(--accent);border-radius:2px;margin:16px auto 0}
+  main{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .card h2{font-size:1.05rem;margin-bottom:10px}
+  .card p{font-size:.9rem;margin:8px 0}
+  .card ol,.card ul{font-size:.9rem;padding-left:1.5em;margin:8px 0}
+  .card li{margin:5px 0}
+  /* 全体進捗 */
+  .total{display:flex;align-items:center;gap:18px}
+  .total .num{font-size:2rem;font-weight:700;color:var(--accent);white-space:nowrap}
+  .total .num small{font-size:.95rem;color:var(--ink-dim);font-weight:600}
+  .total .side{flex:1}
+  .bar{height:12px;background:var(--surface2);border:1px solid var(--border);border-radius:99px;overflow:hidden}
+  .bar .fill{height:100%;background:linear-gradient(90deg,var(--accent-dim),var(--accent));border-radius:99px;width:0%;transition:width .4s ease}
+  .total .msg{font-size:.8rem;color:var(--ink-dim);margin-top:7px}
+  /* セクションカード */
+  .sec{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:16px 18px;
+    transition:transform .12s,box-shadow .12s,border-color .12s}
+  .sec:hover{border-color:var(--accent-dim);box-shadow:0 7px 18px -9px rgba(60,45,28,.3);transform:translateY(-1px)}
+  .sec .ico{flex-shrink:0;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;
+    font-size:1.5rem;background:var(--accent-bg,#F2E9D8);border:1px solid rgba(80,60,30,.06)}
+  .sec .meta{min-width:0;flex:1}
+  .sec .t{display:block;font-weight:700;font-size:.98rem}
+  .sec .d{display:block;color:var(--ink-dim);font-size:.76rem;margin:2px 0 7px}
+  .sec .bar{display:block;height:8px;max-width:430px}
+  .sec .cnt{font-size:.74rem;color:var(--ink-dim);font-weight:600;white-space:nowrap;margin-left:6px}
+  .sec .cnt b{color:var(--accent)}
+  .sec .arrow{color:var(--accent-dim);font-size:1.25rem;flex-shrink:0}
+  /* 抜き打ちチェック */
+  .rndcheck{background:linear-gradient(135deg,#FCFBF7,#F3E5DA);border:1px solid var(--accent-line)}
+  .rndcheck .q{background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:18px 16px;margin:12px 0;text-align:center}
+  .rndcheck .q .sec-tag{font-size:.72rem;color:var(--ink-dim);letter-spacing:.04em}
+  .rndcheck .q .title{font-size:1.14rem;font-weight:700;margin:6px 0 4px}
+  .rndcheck .q .ask{font-size:.82rem;color:var(--ink-dim)}
+  .rndcheck .q .go{display:inline-block;margin-top:10px;font-size:.82rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btns button{flex:1;min-width:130px;border:none;border-radius:11px;padding:11px 14px;
+    font-family:var(--sans);font-weight:700;font-size:.88rem;cursor:pointer;transition:.12s}
+  .btn-draw{background:var(--accent);color:#fff}
+  .btn-draw:hover{background:#A84C2E}
+  .btn-ok{background:var(--green-soft);color:var(--green);border:1px solid #D5DFC6!important}
+  .btn-ng{background:#F7E3DE;color:#b23a2e;border:1px solid #E8C4BA!important}
+  .btn-ok:hover,.btn-ng:hover{filter:brightness(.97)}
+  .hidden{display:none}
+  .tips{font-size:.86rem}
+  .tips b{color:var(--accent)}
+  .related{display:flex;gap:10px;flex-wrap:wrap}
+  .related a{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;
+    background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;font-size:.84rem;font-weight:600;transition:.12s}
+  .related a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .reset{text-align:center;margin-top:4px}
+  .reset button{background:none;border:none;color:var(--ink-dim);font-size:.74rem;font-family:var(--sans);
+    text-decoration:underline;cursor:pointer}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="index.html">‹ ツール置き場</a>
+  <span class="prog">全体 <b id="total-mini">0</b> / 39</span>
+</header>
+
+<header class="hero">
+  <svg class="mark" width="54" height="28" viewBox="0 0 56 28" aria-hidden="true">
+    <line x1="9" y1="14" x2="47" y2="14" stroke="#BE5A38" stroke-width="2.6"/>
+    <circle cx="9" cy="14" r="5" fill="#BE5A38"/>
+    <circle cx="28" cy="14" r="5.6" fill="#FCFBF7" stroke="#BE5A38" stroke-width="2.6"/>
+    <circle cx="47" cy="14" r="5" fill="#BE5A38"/>
+  </svg>
+  <h1>電子回路 学習ノート</h1>
+  <p>訓練校の振り返り項目 全39項目を、図解×チェック×クイズで頭に定着させる</p>
+  <div class="rule"></div>
+</header>
+
+<main>
+
+<!-- 全体進捗 -->
+<section class="card">
+  <h2>📊 いまの定着度</h2>
+  <div class="total">
+    <div class="num"><span id="total-count">0</span><small> / 39 項目</small></div>
+    <div class="side">
+      <div class="bar"><div class="fill" id="total-fill"></div></div>
+      <div class="msg" id="total-msg">各ページの「できるようになった」チェックがここに集計されます（この端末に保存）。</div>
+    </div>
+  </div>
+</section>
+
+<!-- セクション -->
+<a class="sec" href="study-basics.html">
+  <span class="ico" style="--accent-bg:#F4E7DB">⚡</span>
+  <span class="meta">
+    <span class="t">セクション1：電気回路基礎 <span class="cnt"><b id="c1">0</b>/14</span></span>
+    <span class="d">電流・電圧・抵抗、オームの法則、直列並列、テスタ・オシロの使い方、安全</span>
+    <span class="bar"><span class="fill" id="f1" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="study-analog.html">
+  <span class="ico" style="--accent-bg:#E7EDDC">📻</span>
+  <span class="meta">
+    <span class="t">セクション2：半導体・アナログ回路 <span class="cnt"><b id="c2">0</b>/10</span></span>
+    <span class="d">半導体、ダイオードと整流、静特性、トランジスタ、オペアンプ、増幅回路</span>
+    <span class="bar"><span class="fill" id="f2" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="study-digital.html">
+  <span class="ico" style="--accent-bg:#E4ECDE">💡</span>
+  <span class="meta">
+    <span class="t">セクション3：デジタル回路 <span class="cnt"><b id="c3">0</b>/15</span></span>
+    <span class="d">論理式と真理値表、74シリーズIC、2進・16進、7seg、フリップフロップ、カウンタ</span>
+    <span class="bar"><span class="fill" id="f3" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+
+<!-- 抜き打ちチェック -->
+<section class="card rndcheck">
+  <h2>🎲 抜き打ちチェック（アクティブ・リコール）</h2>
+  <p style="font-size:.85rem;color:var(--ink-dim)">ランダムに1項目出題。<b>まず何も見ずに30秒、口に出して説明</b>してみてから判定しよう。「思い出そうとする」こと自体が最強の記憶術です。</p>
+  <div class="q hidden" id="q-box">
+    <div class="sec-tag" id="q-sec">セクション1</div>
+    <div class="title" id="q-title">オームの法則</div>
+    <div class="ask">→ 30秒で説明できる？ 式・図・例のどれかを使ってOK</div>
+    <br><a class="go" id="q-link" href="#">解説ページで確認する →</a>
+  </div>
+  <div class="btns" id="btns-draw">
+    <button class="btn-draw" id="btn-draw">出題する</button>
+  </div>
+  <div class="btns hidden" id="btns-judge">
+    <button class="btn-ok" id="btn-ok">✅ 説明できた</button>
+    <button class="btn-ng" id="btn-ng">🤔 まだあやしい</button>
+    <button class="btn-draw" id="btn-next">次の問題</button>
+  </div>
+</section>
+
+<!-- 使い方 -->
+<section class="card">
+  <h2>📖 このノートの使い方（おすすめの回し方）</h2>
+  <ol>
+    <li><b>1周目：</b>各セクションを図を眺めながら読む。理解できた項目は「✔ できるようになった」にチェック。</li>
+    <li><b>ふだんの振り返り（5分でOK）：</b>上の<b>抜き打ちチェック</b>か、各ページ末の<b>🎲ランダムクイズ</b>を数問。見ずに答える→答え合わせ。</li>
+    <li><b>忘れかけた頃にもう一度：</b>翌日→3日後→1週間後、と間隔をあけて繰り返すと長期記憶になる（間隔反復）。</li>
+    <li>あやしかった項目はチェックを外して、「まだ」リストとして管理する。</li>
+  </ol>
+  <p class="tips">💡 コツは「<b>読む」より「思い出す」</b>に時間を使うこと。クイズで間違えるのは失敗ではなく、記憶が強くなるチャンスです。</p>
+</section>
+
+<!-- 関連ツール -->
+<section class="card">
+  <h2>🔧 あわせて使う練習ツール</h2>
+  <div class="related">
+    <a href="resistor-calculator.html">🎨 抵抗カラーコード計算機<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">1-12「理論値と実測値」の公差の練習に</span></a>
+    <a href="breadboard-designer.html">🔌 ブレッドボード配置デザイナー<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">1-9「結線場所の判断」の練習に</span></a>
+  </div>
+  <div class="reset"><button id="btn-reset">チェック進捗をすべてリセットする</button></div>
+</section>
+
+</main>
+<footer>電子回路 学習ノート ─ made by nerun</footer>
+</div>
+
+<script>
+const KEY='denshiStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+
+const ITEMS=[
+ {id:'s1-1', t:'電流・電圧・抵抗（3つの量と単位）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-2', t:'オームの法則で計算する（V=IR）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-3', t:'直列回路と並列回路の違い', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-4', t:'合成抵抗の計算（直列・並列）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-5', t:'図記号から部品名を言う', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-6', t:'テスタで測れるもの', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-7', t:'オシロスコープで測れるもの', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-8', t:'部品の極性の見分け方（LED・ダイオード・電解コン）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-9', t:'結線する場所の判断（回路図→ブレッドボード）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-10', t:'テスタの使い方（電圧・電流・抵抗のつなぎ方）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-11', t:'オシロスコープの使い方（スケール・トリガ）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-12', t:'理論値と実測値の比較（誤差率・公差）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-13', t:'安全に測定器を操作する手順', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s1-14', t:'作業台の整理整頓', s:'セクション1：電気回路基礎', p:'study-basics.html'},
+ {id:'s2-1', t:'半導体とは（N型・P型）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-2', t:'ダイオードの性質（整流性・順方向電圧）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-3', t:'整流回路（半波・全波・平滑）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-4', t:'静特性（V-I特性）の読み方', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-5', t:'増幅度の計算（倍率とdB）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-6', t:'トランジスタの増幅作用とスイッチング作用', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-7', t:'オペアンプの基本動作（バーチャルショート）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-8', t:'基本増幅回路（反転・非反転・エミッタ接地）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-9', t:'増幅回路の製作手順とはんだ付け', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-10', t:'オシロで増幅回路を実測（増幅度・位相）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s3-1', t:'論理式（AND・OR・NOT）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-2', t:'真理値表の書き方', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-3', t:'各種ディジタルIC（74シリーズ）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-4', t:'ディジタルICを使った回路作成', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-5', t:'正論理とは', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-6', t:'負論理とは（アクティブ・ロー）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-7', t:'2進数の読み方（重み）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-8', t:'16進数（0〜Fと4ビット）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-9', t:'進数変換（2進⇄10進⇄16進）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-10', t:'7セグメントLED（a〜gと点灯パターン）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-11', t:'7segLEDを使った回路作成（デコーダIC）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-12', t:'フリップフロップ（RS・D・JK）', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-13', t:'フリップフロップでカウンタを作る', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-14', t:'カウンタICの役割と端子', s:'セクション3：デジタル回路', p:'study-digital.html'},
+ {id:'s3-15', t:'レジスタ・シフトレジスタ', s:'セクション3：デジタル回路', p:'study-digital.html'}
+];
+
+function counts(){
+  const s=loadState();
+  const c={s1:0,s2:0,s3:0,total:0};
+  ITEMS.forEach(it=>{if(s[it.id]){c.total++;c[it.id.split('-')[0]]++;}});
+  return c;
+}
+function render(){
+  const c=counts();
+  document.getElementById('total-count').textContent=c.total;
+  document.getElementById('total-mini').textContent=c.total;
+  document.getElementById('total-fill').style.width=(c.total/39*100)+'%';
+  document.getElementById('c1').textContent=c.s1;
+  document.getElementById('c2').textContent=c.s2;
+  document.getElementById('c3').textContent=c.s3;
+  document.getElementById('f1').style.width=(c.s1/14*100)+'%';
+  document.getElementById('f2').style.width=(c.s2/10*100)+'%';
+  document.getElementById('f3').style.width=(c.s3/15*100)+'%';
+  const msg=document.getElementById('total-msg');
+  if(c.total===39)msg.textContent='🎉 全項目クリア！ここからは間隔をあけて抜き打ちチェックで維持しよう。';
+  else if(c.total>=30)msg.textContent='あと少し！残りの項目を集中的に。';
+  else if(c.total>0)msg.textContent='いい調子。チェックは各ページの「できるようになった」と連動しています。';
+}
+
+let cur=null;
+function draw(){
+  cur=ITEMS[Math.floor(Math.random()*ITEMS.length)];
+  document.getElementById('q-sec').textContent=cur.s;
+  document.getElementById('q-title').textContent=cur.t;
+  document.getElementById('q-link').href=cur.p+'#'+cur.id;
+  document.getElementById('q-box').classList.remove('hidden');
+  document.getElementById('btns-draw').classList.add('hidden');
+  document.getElementById('btns-judge').classList.remove('hidden');
+}
+document.getElementById('btn-draw').addEventListener('click',draw);
+document.getElementById('btn-next').addEventListener('click',draw);
+document.getElementById('btn-ok').addEventListener('click',()=>{
+  if(!cur)return;const s=loadState();s[cur.id]=true;saveState(s);render();draw();
+});
+document.getElementById('btn-ng').addEventListener('click',()=>{
+  if(!cur)return;const s=loadState();delete s[cur.id];saveState(s);render();
+  location.href=cur.p+'#'+cur.id;
+});
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  if(confirm('チェック進捗をすべてリセットします。よろしいですか？')){saveState({});render();}
+});
+render();
+</script>
+</body>
+</html>
