@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション2：コンピュータシステム｜基本情報 学習ノート</title>
+<meta name="description" content="基本情報技術者試験 科目A対策。CPU・メモリ・OSのしくみと、稼働率などの定番計算をやさしく解説します。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
+  /* 疑似コード表示（科目B用） */
+  pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.7;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;text-align:left}
+  pre.code b{color:var(--accent);font-weight:700}
+  /* スマホ図解・スムーススクロール・目次ボタン */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">セクション2</span>
+  <span class="prog">できた <b id="done-count">0</b> / 12</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 2</div>
+  <h1>🖥️ コンピュータシステム</h1>
+  <p class="lead">CPU・メモリ・OSのしくみを土台に、稼働率や実行時間などの計算問題まで扱うセクションです。科目Aで「毎回出る」御三家の一つがこの稼働率計算で、ほかにもCPU性能・キャッシュ・待ち行列の計算が繰り返し出題される得点源になっています。</p>
+  <nav class="toc" id="toc">
+    <a href="#cs-1">1. 5大装置とCPU</a><a href="#cs-2">2. CPUの性能計算</a><a href="#cs-3">3. パイプライン処理</a><a href="#cs-4">4. メモリの階層</a><a href="#cs-5">5. キャッシュの実効アクセス時間</a><a href="#cs-6">6. 補助記憶とRAID</a><a href="#cs-7">7. OSとタスク管理</a><a href="#cs-8">8. 排他制御とデッドロック</a><a href="#cs-9">9. 仮想記憶</a><a href="#cs-10">10. 信頼性のシステム構成</a><a href="#cs-11">11. 稼働率の計算</a><a href="#cs-12">12. 待ち行列</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 2-1 ============ -->
+<section class="item" id="cs-1">
+  <h2><span class="no">2-1</span>コンピュータの5大装置とCPU — 会社組織にたとえると分かりやすい</h2>
+  <p class="goal">🎯 ゴール：5大装置の名前と役割、CPUの中身（演算+制御）と、なぜ命令が順番に実行されるかを説明できる</p>
+  <p>コンピュータは「入力装置」「出力装置」「記憶装置」「演算装置」「制御装置」という5つの装置の組み合わせでできています。これを会社にたとえると、入力装置はお客さんからの依頼を受け付ける窓口、出力装置は完成品を届ける配送係、記憶装置は書類を保管する棚、演算装置は実際に計算・加工をする担当者、制御装置は「次は何をするか」を指示する上司のような役割です。</p>
+  <p>このうち演算装置と制御装置をセットにしたものがCPU（中央処理装置）です。CPUは「命令を取り出す（フェッチ）→ 命令の内容を読み解く（デコード）→ 実行する」という3ステップを、ものすごい速さで繰り返しています。次にどこの命令を取り出せばよいかは、プログラムカウンタというCPU内部の場所（レジスタ）が常に指し示しています。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="5大装置の配置と、データの流れ・制御の流れを示す図" viewBox="0 0 700 300" width="700">
+    <rect x="205" y="150" width="290" height="100" rx="10" fill="none" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="350" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">CPU（中央処理装置）</text>
+    <rect x="30" y="40" width="140" height="56" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="100" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">入力装置</text>
+    <text x="100" y="82" text-anchor="middle" font-size="11" fill="#716C61">キーボード等</text>
+    <rect x="280" y="40" width="140" height="56" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="350" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">記憶装置</text>
+    <text x="350" y="82" text-anchor="middle" font-size="11" fill="#716C61">メモリ等</text>
+    <rect x="530" y="40" width="140" height="56" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="600" y="64" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">出力装置</text>
+    <text x="600" y="82" text-anchor="middle" font-size="11" fill="#716C61">ディスプレイ等</text>
+    <rect x="225" y="175" width="120" height="56" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="285" y="199" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">制御装置</text>
+    <text x="285" y="217" text-anchor="middle" font-size="11" fill="#716C61">指示を出す</text>
+    <rect x="355" y="175" width="120" height="56" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="415" y="199" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">演算装置</text>
+    <text x="415" y="217" text-anchor="middle" font-size="11" fill="#716C61">計算する</text>
+    <line x1="170" y1="68" x2="278" y2="68" stroke="#4A6FA5" stroke-width="2"/>
+    <polygon points="278,68 268,63 268,73" fill="#4A6FA5"/>
+    <line x1="420" y1="68" x2="528" y2="68" stroke="#4A6FA5" stroke-width="2"/>
+    <polygon points="528,68 518,63 518,73" fill="#4A6FA5"/>
+    <line x1="350" y1="96" x2="350" y2="173" stroke="#4A6FA5" stroke-width="2"/>
+    <polygon points="350,173 345,163 355,163" fill="#4A6FA5"/>
+    <text x="560" y="120" text-anchor="middle" font-size="11" fill="#4A6FA5">━ データの流れ</text>
+    <path d="M225,190 C130,190 100,140 100,98" fill="none" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <polygon points="100,98 95,108 105,108" fill="#BE5A38"/>
+    <path d="M285,175 C320,150 335,120 345,100" fill="none" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <polygon points="345,100 337,105 340,95" fill="#BE5A38"/>
+    <path d="M345,195 C450,195 550,150 590,98" fill="none" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <polygon points="590,98 582,102 587,92" fill="#BE5A38"/>
+    <text x="560" y="270" text-anchor="middle" font-size="11" fill="#BE5A38">┈┈ 制御の流れ（指示）</text>
+    <text x="350" y="292" text-anchor="middle" font-size="11" fill="#716C61">命令の実行順は「プログラムカウンタ」が指し示す</text>
+  </svg>
+  <figcaption>図2-1　5大装置とCPUの構成、データの流れと制御の流れ</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>CPU＝演算装置＋制御装置、とセットで覚える</li>
+      <li>命令実行は「フェッチ→デコード→実行」の繰り返し</li>
+      <li>次の命令の場所を指すのはプログラムカウンタ</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-1">5大装置とCPUの役割を説明できるようになった</label>
+</section>
+
+<!-- ============ 2-2 ============ -->
+<section class="item" id="cs-2">
+  <h2><span class="no">2-2</span>CPUの性能計算 — クロック・CPI・MIPSの関係</h2>
+  <p class="goal">🎯 ゴール：クロック周波数とCPIから、実行時間・MIPS値を計算できる</p>
+  <p>クロック周波数とは、CPUが1秒間に何回「拍（クロック）」を刻むかを表す値で、単位はHz（ヘルツ）です。2GHzなら1秒間に20億回、拍を刻んでいることになります。1回の拍にかかる時間（クロック周期）は「1 ÷ クロック周波数」で求められます。メトロノームに合わせて演奏するように、CPUもこの拍に合わせて動作しています。</p>
+  <p>CPI（Cycles Per Instruction）は、1つの命令を実行するのに平均何クロックかかるかを表す値です。1曲（1命令）を演奏するのに何拍必要かをイメージするとよいでしょう。</p>
+  <div class="formula">実行時間 ＝ 命令数 × CPI ÷ クロック周波数</div>
+  <p>MIPS（Million Instructions Per Second）は、1秒間に実行できる命令数を「百万」単位で表した性能指標です。数値が大きいほど処理が速いCPUだと分かります。1秒あたりの命令数は「クロック周波数 ÷ CPI」で求められるので、それを100万で割ればMIPS値になります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="クロックの拍と命令実行の対応図" viewBox="0 0 700 240" width="700">
+    <text x="350" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">クロック信号（1秒間に何回拍を刻むか＝クロック周波数）</text>
+    <polyline points="40,70 40,50 90,50 90,70 140,70 140,50 190,50 190,70 240,70 240,50 290,50 290,70 340,70 340,50 390,50 390,70 440,70 440,50 490,50 490,70 540,70 540,50 590,50 590,70 640,70 640,50 660,50" fill="none" stroke="#4A6FA5" stroke-width="2"/>
+    <text x="350" y="95" text-anchor="middle" font-size="11" fill="#716C61">1クロックの時間 ＝ 1 ÷ クロック周波数</text>
+    <path d="M40,120 L40,110 L340,110 L340,120" fill="none" stroke="#BE5A38" stroke-width="1.5"/>
+    <text x="190" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">命令①：CPI＝4（4クロック分）</text>
+    <path d="M340,120 L340,110 L640,110 L640,120" fill="none" stroke="#4f6b3a" stroke-width="1.5"/>
+    <text x="490" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#4f6b3a">命令②：CPI＝4（4クロック分）</text>
+    <rect x="40" y="160" width="620" height="56" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="350" y="184" text-anchor="middle" font-size="12" fill="#211F1A">実行時間 ＝ 命令数 × CPI ÷ クロック周波数</text>
+    <text x="350" y="203" text-anchor="middle" font-size="12" fill="#211F1A">MIPS ＝（クロック周波数 ÷ CPI）÷ 10の6乗</text>
+  </svg>
+  <figcaption>図2-2　クロックの拍と命令実行（CPI＝4）の対応</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    クロック周波数2GHz、CPI（1命令あたりの平均クロック数）が4のCPUがある。このCPUのMIPS値を求めよ。
+    <details class="ans"><summary>答えを見る</summary>
+    1秒あたりの命令数 ＝ クロック周波数 ÷ CPI ＝ 2×10⁹ ÷ 4 ＝ 5×10⁸命令／秒。<br>
+    MIPS ＝ 5×10⁸ ÷ 10⁶ ＝ <b>500 MIPS</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>実行時間＝命令数×CPI÷クロック周波数、を丸暗記</li>
+      <li>CPIは小さいほど高性能（1命令にかかる手間が少ない）</li>
+      <li>単位換算（GHz→Hz、MIPSの10⁶）のケタ違いに注意</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-2">クロック周波数とCPIからMIPSを計算できるようになった</label>
+</section>
+
+<!-- ============ 2-3 ============ -->
+<section class="item" id="cs-3">
+  <h2><span class="no">2-3</span>パイプライン処理 — 流れ作業でスループットを上げる</h2>
+  <p class="goal">🎯 ゴール：パイプライン処理で全体の処理量が上がる理由と、乱れる原因を説明できる</p>
+  <p>パイプライン処理とは、1つの命令の実行を「フェッチ・デコード・実行」のような工程に分け、複数の命令を少しずつタイミングをずらしながら重ねて流していく方式です。1つの命令が終わるまで待つのではなく、次々と後続の命令を工程に流し込むことで、全体としての処理量（スループット）を大きく上げることができます。</p>
+  <p>洗濯を「洗う→干す→たたむ」の3工程に分けて考えてみましょう。1着ずつ順番に全部の工程を済ませてから次の服に取りかかると、3着で9工程分の時間がかかります。しかし、1着目が「干す」工程に進んだタイミングで2着目を「洗う」工程に入れれば、全体はずっと早く終わります。これがパイプライン処理の考え方です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="パイプライン処理の図。洗濯の3工程を3人分ずらして重ねて処理する" viewBox="0 0 700 300" width="700">
+    <text x="350" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">洗濯のたとえ：洗う→干す→たたむ を3人分、少しずつずらして進める</text>
+    <text x="150" y="50" text-anchor="middle" font-size="11" fill="#716C61">t1</text>
+    <text x="230" y="50" text-anchor="middle" font-size="11" fill="#716C61">t2</text>
+    <text x="310" y="50" text-anchor="middle" font-size="11" fill="#716C61">t3</text>
+    <text x="390" y="50" text-anchor="middle" font-size="11" fill="#716C61">t4</text>
+    <text x="470" y="50" text-anchor="middle" font-size="11" fill="#716C61">t5</text>
+    <text x="70" y="90" font-size="12" font-weight="700" fill="#211F1A">服1</text>
+    <rect x="110" y="66" width="70" height="34" fill="#E3EAF3" stroke="#4A6FA5"/><text x="145" y="88" text-anchor="middle" font-size="11" fill="#211F1A">洗う</text>
+    <rect x="190" y="66" width="70" height="34" fill="#E7EDDC" stroke="#4f6b3a"/><text x="225" y="88" text-anchor="middle" font-size="11" fill="#211F1A">干す</text>
+    <rect x="270" y="66" width="70" height="34" fill="#F3E5DA" stroke="#BE5A38"/><text x="305" y="88" text-anchor="middle" font-size="11" fill="#211F1A">たたむ</text>
+    <text x="70" y="140" font-size="12" font-weight="700" fill="#211F1A">服2</text>
+    <rect x="190" y="116" width="70" height="34" fill="#E3EAF3" stroke="#4A6FA5"/><text x="225" y="138" text-anchor="middle" font-size="11" fill="#211F1A">洗う</text>
+    <rect x="270" y="116" width="70" height="34" fill="#E7EDDC" stroke="#4f6b3a"/><text x="305" y="138" text-anchor="middle" font-size="11" fill="#211F1A">干す</text>
+    <rect x="350" y="116" width="70" height="34" fill="#F3E5DA" stroke="#BE5A38"/><text x="385" y="138" text-anchor="middle" font-size="11" fill="#211F1A">たたむ</text>
+    <text x="70" y="190" font-size="12" font-weight="700" fill="#211F1A">服3</text>
+    <rect x="270" y="166" width="70" height="34" fill="#E3EAF3" stroke="#4A6FA5"/><text x="305" y="188" text-anchor="middle" font-size="11" fill="#211F1A">洗う</text>
+    <rect x="350" y="166" width="70" height="34" fill="#E7EDDC" stroke="#4f6b3a"/><text x="385" y="188" text-anchor="middle" font-size="11" fill="#211F1A">干す</text>
+    <rect x="430" y="166" width="70" height="34" fill="#F3E5DA" stroke="#BE5A38"/><text x="465" y="188" text-anchor="middle" font-size="11" fill="#211F1A">たたむ</text>
+    <text x="350" y="240" text-anchor="middle" font-size="12" fill="#716C61">1人ずつ順番なら9工程分の時間 → ずらして重ねると5工程分の時間で完了</text>
+    <text x="350" y="270" text-anchor="middle" font-size="11" fill="#BE5A38" font-weight="700">分岐命令が来ると先読みしていた分がムダになり乱れる（→分岐予測で軽減）</text>
+  </svg>
+  <figcaption>図2-3　洗濯のたとえとパイプライン処理のずらし方</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>パイプライン＝流れ作業でスループット（全体の処理量）を上げる</li>
+      <li>1命令あたりの時間が短くなるわけではない、というひっかけに注意</li>
+      <li>分岐命令で先読みがムダになる乱れ→分岐予測で軽減する</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-3">パイプライン処理のしくみと乱れる原因を説明できるようになった</label>
+</section>
+
+<!-- ============ 2-4 ============ -->
+<section class="item" id="cs-4">
+  <h2><span class="no">2-4</span>メモリの階層 — 速いほど高くて小さい</h2>
+  <p class="goal">🎯 ゴール：メモリの階層構造と「速い/高い/小さい」の関係を説明できる</p>
+  <p>コンピュータの記憶装置は、レジスタ・キャッシュ・主記憶・補助記憶という階層構造になっています。CPUに近いレジスタが最も速く動きますが容量は最小で、いちばん遠い補助記憶（SSD/HDD）は大容量ですが速度は遅くなります。「速いものほど高くて小さい、遅いものほど安くて大きい」という原則を、机の上（レジスタ）・よく使う本を置く棚（キャッシュ）・部屋の本棚（主記憶）・地下倉庫（補助記憶）にたとえて覚えると分かりやすいでしょう。</p>
+  <p>キャッシュ（SRAM）は、CPUの処理速度と主記憶（DRAM）のアクセス速度の差を埋めるための中継地点として置かれています。よく使うデータをあらかじめキャッシュに置いておくことで、主記憶まで取りに行く回数を減らせるのです。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="メモリ階層のピラミッド図。上に行くほど速く高価で小容量" viewBox="0 0 700 300" width="700">
+    <polygon points="300,20 400,20 430,80 270,80" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="350" y="55" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">レジスタ</text>
+    <polygon points="270,80 430,80 460,140 240,140" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="350" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">キャッシュ（SRAM）</text>
+    <polygon points="240,140 460,140 490,200 210,200" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="350" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">主記憶（DRAM／メモリ）</text>
+    <polygon points="210,200 490,200 520,260 180,260" fill="#F2EFE6" stroke="#716C61"/>
+    <text x="350" y="235" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">補助記憶（SSD／HDD）</text>
+    <line x1="550" y1="30" x2="550" y2="250" stroke="#716C61" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="565" y="45" font-size="11" fill="#716C61">速い・高い・小さい</text>
+    <text x="565" y="255" font-size="11" fill="#716C61">遅い・安い・大きい</text>
+    <text x="350" y="285" text-anchor="middle" font-size="11" fill="#716C61">キャッシュ＝CPUと主記憶の速度差を埋める中継地点</text>
+  </svg>
+  <figcaption>図2-4　メモリ階層のピラミッド（速度・価格・容量の関係）</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>上に行くほど速い・高い・小さい、下に行くほど逆</li>
+      <li>キャッシュ＝CPUと主記憶の速度差を埋める中継地点</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-4">メモリ階層のピラミッドを言えるようになった</label>
+</section>
+
+<!-- ============ 2-5 ============ -->
+<section class="item" id="cs-5">
+  <h2><span class="no">2-5</span>キャッシュの実効アクセス時間 — ヒット率で計算する</h2>
+  <p class="goal">🎯 ゴール：ヒット率から実効アクセス時間を計算できる</p>
+  <p>CPUが欲しいデータがキャッシュの中にある状態を「ヒット」、無くて主記憶まで取りに行く必要がある状態を「ミス」と呼びます。ヒットする確率（ヒット率）が分かれば、平均的に見たアクセス時間（実効アクセス時間）を計算できます。</p>
+  <div class="formula">実効アクセス時間 ＝ ヒット率 × キャッシュのアクセス時間 ＋（1－ヒット率）× 主記憶のアクセス時間</div>
+  <p>ミスした場合は結局主記憶まで見に行くことになるので、その分だけ余計に時間がかかる、という考え方です。「1－ヒット率」を掛け忘れるのが定番のミスなので注意しましょう。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="キャッシュのヒットとミスの分岐によるアクセス時間の図" viewBox="0 0 700 260" width="700">
+    <rect x="30" y="90" width="140" height="56" rx="10" fill="#F2EFE6" stroke="#716C61"/>
+    <text x="100" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">アクセス要求</text>
+    <polygon points="260,60 340,118 260,176 180,118" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="260" y="114" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">キャッシュに</text>
+    <text x="260" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">あるか？</text>
+    <line x1="170" y1="118" x2="178" y2="118" stroke="#716C61" stroke-width="2"/>
+    <line x1="340" y1="100" x2="440" y2="55" stroke="#4A6FA5" stroke-width="2"/>
+    <polygon points="440,55 428,54 434,64" fill="#4A6FA5"/>
+    <text x="400" y="45" text-anchor="middle" font-size="11" fill="#4A6FA5" font-weight="700">Yes（ヒット）</text>
+    <rect x="440" y="30" width="220" height="50" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="550" y="52" text-anchor="middle" font-size="12" fill="#211F1A">キャッシュから取得</text>
+    <text x="550" y="70" text-anchor="middle" font-size="11" fill="#716C61">＝キャッシュのアクセス時間</text>
+    <line x1="340" y1="140" x2="440" y2="185" stroke="#BE5A38" stroke-width="2"/>
+    <polygon points="440,185 428,180 432,192" fill="#BE5A38"/>
+    <text x="400" y="205" text-anchor="middle" font-size="11" fill="#BE5A38" font-weight="700">No（ミス）</text>
+    <rect x="440" y="160" width="230" height="60" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="555" y="182" text-anchor="middle" font-size="12" fill="#211F1A">主記憶まで取りに行く</text>
+    <text x="555" y="200" text-anchor="middle" font-size="11" fill="#716C61">＝主記憶のアクセス時間（+キャッシュに格納）</text>
+    <text x="350" y="248" text-anchor="middle" font-size="11" fill="#716C61">実効アクセス時間＝ヒット率×キャッシュ時間+（1－ヒット率）×主記憶時間</text>
+  </svg>
+  <figcaption>図2-5　キャッシュのヒット／ミスと実効アクセス時間</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    キャッシュのヒット率が90%、キャッシュのアクセス時間が10ナノ秒、主記憶のアクセス時間が100ナノ秒のとき、実効アクセス時間を求めよ。
+    <details class="ans"><summary>答えを見る</summary>
+    実効アクセス時間 ＝ 0.9×10 ＋（1－0.9）×100 ＝ 9 ＋ 10 ＝ <b>19ナノ秒</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>ヒット率が高いほど実効アクセス時間はキャッシュ時間に近づく</li>
+      <li>「1－ヒット率」を掛け忘れないこと</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-5">ヒット率から実効アクセス時間を計算できるようになった</label>
+</section>
+
+<!-- ============ 2-6 ============ -->
+<section class="item" id="cs-6">
+  <h2><span class="no">2-6</span>補助記憶とRAID — 0/1/5の違いを区別する</h2>
+  <p class="goal">🎯 ゴール：RAID0・RAID1・RAID5の違いと実効容量を説明できる</p>
+  <p>補助記憶には、半導体メモリを使うSSD（高速・衝撃に強い）と、磁気ディスクを使うHDD（大容量・安価）があります。RAIDとは、複数台のディスクをまとめて1台のように扱うことで、速度や信頼性を高める技術です。</p>
+  <ul>
+    <li><b>RAID0（ストライピング）</b>：データを分散して複数台に同時に書き込むことで高速化する。ただし冗長性がなく、1台でも故障すると全データを失う。</li>
+    <li><b>RAID1（ミラーリング）</b>：同じデータを2台に鏡写しのように書き込む。片方が壊れても大丈夫だが、実効容量は半分になる。</li>
+    <li><b>RAID5（分散パリティ）</b>：データと、復元用の情報（パリティ）を分散して複数台に書き込む。1台故障までなら復旧でき、実効容量はn台中n－1台分になる。</li>
+  </ul>
+  <figure class="fig">
+  <svg role="img" aria-label="RAID0・RAID1・RAID5のデータ配置比較図" viewBox="0 0 700 280" width="700">
+    <text x="110" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">RAID0（ストライピング）</text>
+    <rect x="40" y="40" width="60" height="150" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <rect x="120" y="40" width="60" height="150" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="70" y="65" text-anchor="middle" font-size="11" fill="#211F1A">A1</text><text x="70" y="95" text-anchor="middle" font-size="11" fill="#211F1A">A3</text>
+    <text x="150" y="65" text-anchor="middle" font-size="11" fill="#211F1A">A2</text><text x="150" y="95" text-anchor="middle" font-size="11" fill="#211F1A">A4</text>
+    <text x="110" y="210" text-anchor="middle" font-size="11" fill="#716C61">高速化のみ／1台故障で全滅</text>
+    <text x="350" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">RAID1（ミラーリング）</text>
+    <rect x="280" y="40" width="60" height="150" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <rect x="360" y="40" width="60" height="150" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="310" y="65" text-anchor="middle" font-size="11" fill="#211F1A">A1</text><text x="310" y="95" text-anchor="middle" font-size="11" fill="#211F1A">A2</text>
+    <text x="390" y="65" text-anchor="middle" font-size="11" fill="#211F1A">A1</text><text x="390" y="95" text-anchor="middle" font-size="11" fill="#211F1A">A2</text>
+    <text x="350" y="210" text-anchor="middle" font-size="11" fill="#716C61">同じ内容を複製／容量は半分</text>
+    <text x="590" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">RAID5（分散パリティ）</text>
+    <rect x="520" y="40" width="55" height="150" fill="#F3E5DA" stroke="#BE5A38"/>
+    <rect x="585" y="40" width="55" height="150" fill="#F3E5DA" stroke="#BE5A38"/>
+    <rect x="650" y="40" width="45" height="150" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="547" y="65" text-anchor="middle" font-size="10" fill="#211F1A">A1</text><text x="547" y="95" text-anchor="middle" font-size="10" fill="#211F1A">A2</text><text x="547" y="125" text-anchor="middle" font-size="10" fill="#BE5A38">P3</text>
+    <text x="612" y="65" text-anchor="middle" font-size="10" fill="#211F1A">A3</text><text x="612" y="95" text-anchor="middle" font-size="10" fill="#BE5A38">P2</text><text x="612" y="125" text-anchor="middle" font-size="10" fill="#211F1A">A5</text>
+    <text x="672" y="65" text-anchor="middle" font-size="10" fill="#BE5A38">P1</text><text x="672" y="95" text-anchor="middle" font-size="10" fill="#211F1A">A4</text><text x="672" y="125" text-anchor="middle" font-size="10" fill="#211F1A">A6</text>
+    <text x="600" y="210" text-anchor="middle" font-size="11" fill="#716C61">P＝復元用パリティ／1台故障まで復旧可</text>
+    <text x="350" y="250" text-anchor="middle" font-size="11" fill="#716C61">実効容量の目安：RAID0＝n台分／RAID1＝1台分／RAID5＝n－1台分</text>
+  </svg>
+  <figcaption>図2-6　RAID0・RAID1・RAID5のデータ配置比較</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>RAID0＝速度だけ（冗長性なし）</li>
+      <li>RAID1＝容量半分の完全複製</li>
+      <li>RAID5＝n－1台分の容量＋1台故障まで耐えられる</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-6">RAID0/1/5の違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 2-7 ============ -->
+<section class="item" id="cs-7">
+  <h2><span class="no">2-7</span>OSの役割とタスク管理 — 資源管理係としてのOS</h2>
+  <p class="goal">🎯 ゴール：OSの役割とタスクスケジューリング方式（ラウンドロビン・優先度）を説明できる</p>
+  <p>OS（オペレーティングシステム）は、CPUやメモリといったハードウェアの資源をアプリに割り振る「資源管理係」です。パソコンで複数のアプリを同時に使えるのは、OSが裏でこの割り振りをうまくやってくれているからです。</p>
+  <p>マルチタスクとは、1つのCPUで複数のプログラムが同時に動いているように見せる仕組みのことです。実際には、CPUの処理時間を細切れにして、複数のタスクへ順番に割り当てています。スーパーのレジ担当が複数のお客さんを少しずつ順番に対応しているように見えて、実際は1人ずつ短時間で切り替えているのと同じイメージです。</p>
+  <p>割り当て方の代表が、各タスクに一定時間（タイムスライス）ずつ順番に割り当てる「ラウンドロビン方式」と、優先度が高いタスクを先に実行する「優先度方式」です。また、入力やエラーなど急ぎの処理が発生したときは、今実行中の処理を一時中断して先にそちらを処理します。これを割り込みと呼びます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>OS＝資源管理係、マルチタスク＝CPU時間を細切れに配る</li>
+      <li>ラウンドロビン＝順番に一定時間ずつ、優先度方式＝優先度が高い順</li>
+      <li>割り込み＝今の作業を中断して緊急対応</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-7">OSのタスク管理方式を説明できるようになった</label>
+</section>
+
+<!-- ============ 2-8 ============ -->
+<section class="item" id="cs-8">
+  <h2><span class="no">2-8</span>排他制御とデッドロック — お互い待ちで永久停止</h2>
+  <p class="goal">🎯 ゴール：排他制御の目的と、デッドロックの発生条件・防止策を説明できる</p>
+  <p>複数のタスクが同じデータを同時に書き換えようとすると、内容が壊れてしまうことがあります。これを防ぐために、資源に「鍵」をかけて一度に1つのタスクしか使えないようにする仕組みが排他制御です。ロックやセマフォという仕組みで実現されます。</p>
+  <p>デッドロックとは、2つ以上のタスクが、お互いに相手が持っている資源が解放されるのを待ち続け、永久に処理が進まなくなってしまう状態のことです。たとえば、タスクAが資源1を持ちながら資源2を待ち、タスクBが資源2を持ちながら資源1を待つ、という状況で発生します。防止策としては、すべてのタスクで資源を確保する順序をそろえることが有効です（順序がバラバラだと、お互い待ちの状態になりやすいのです）。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="2つのタスクが互いに相手の資源を待ち合うデッドロックの図" viewBox="0 0 700 270" width="700">
+    <rect x="80" y="40" width="140" height="56" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="150" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">タスクA</text>
+    <rect x="480" y="40" width="140" height="56" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="550" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">タスクB</text>
+    <rect x="80" y="170" width="140" height="56" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="150" y="195" text-anchor="middle" font-size="12" fill="#211F1A">資源1</text>
+    <text x="150" y="213" text-anchor="middle" font-size="10" fill="#716C61">（Aが確保済み）</text>
+    <rect x="480" y="170" width="140" height="56" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="550" y="195" text-anchor="middle" font-size="12" fill="#211F1A">資源2</text>
+    <text x="550" y="213" text-anchor="middle" font-size="10" fill="#716C61">（Bが確保済み）</text>
+    <line x1="150" y1="96" x2="150" y2="168" stroke="#4A6FA5" stroke-width="2"/>
+    <text x="118" y="135" font-size="11" fill="#4A6FA5">確保</text>
+    <line x1="550" y1="96" x2="550" y2="168" stroke="#4f6b3a" stroke-width="2"/>
+    <text x="565" y="135" font-size="11" fill="#4f6b3a">確保</text>
+    <path d="M220,60 C400,20 480,20 560,38" fill="none" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <polygon points="560,38 549,36 553,46" fill="#BE5A38"/>
+    <text x="390" y="30" text-anchor="middle" font-size="11" fill="#BE5A38">Aが資源2を待つ</text>
+    <path d="M480,210 C300,250 220,250 150,228" fill="none" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <polygon points="150,228 161,224 158,235" fill="#BE5A38"/>
+    <text x="310" y="256" text-anchor="middle" font-size="11" fill="#BE5A38">Bが資源1を待つ</text>
+    <text x="350" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">互いに待ち続けて永久停止</text>
+  </svg>
+  <figcaption>図2-8　2つのタスクが互いの資源を待ち合うデッドロック</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>デッドロック＝お互いに相手の資源待ちで永久停止</li>
+      <li>防止策＝資源の確保順序をすべてのタスクでそろえる</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-8">デッドロックの発生条件と防止策を説明できるようになった</label>
+</section>
+
+<!-- ============ 2-9 ============ -->
+<section class="item" id="cs-9">
+  <h2><span class="no">2-9</span>仮想記憶（ページング） — 主記憶より大きなプログラムを動かす</h2>
+  <p class="goal">🎯 ゴール：仮想記憶のしくみとページフォールト、LRUによる置き換えを説明できる</p>
+  <p>仮想記憶とは、実際の主記憶（メモリ）より大きなプログラムでも動かせるようにする仕組みです。プログラムを「ページ」という一定サイズの単位に分割し、必要なページだけを主記憶に読み込んで実行します。</p>
+  <p>実行に必要なページが主記憶に無い状態を「ページフォールト」と呼びます。この場合、補助記憶（ディスク）から該当ページを読み込む必要があり、その分だけ処理が止まります。主記憶がいっぱいの場合は、どれかのページを追い出す必要がありますが、そのとき「最も長い間使われていないページ」を追い出す方式をLRU（Least Recently Used）と呼びます。ページの出し入れがあまりに頻発しすぎて、本来の処理がほとんど進まなくなる状態をスラッシングと呼びます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="主記憶と補助記憶の間でページが出し入れされる仮想記憶の図" viewBox="0 0 700 260" width="700">
+    <rect x="60" y="40" width="260" height="170" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="190" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">主記憶（実際に読み書きできる場所）</text>
+    <rect x="80" y="60" width="90" height="40" fill="#FFFEFB" stroke="#4A6FA5"/><text x="125" y="85" text-anchor="middle" font-size="11" fill="#211F1A">ページ1</text>
+    <rect x="190" y="60" width="90" height="40" fill="#FFFEFB" stroke="#4A6FA5"/><text x="235" y="85" text-anchor="middle" font-size="11" fill="#211F1A">ページ3</text>
+    <rect x="80" y="110" width="90" height="40" fill="#FFFEFB" stroke="#4A6FA5"/><text x="125" y="135" text-anchor="middle" font-size="11" fill="#211F1A">ページ5</text>
+    <rect x="190" y="110" width="90" height="40" fill="#F3E5DA" stroke="#BE5A38" stroke-dasharray="3 3"/><text x="235" y="135" text-anchor="middle" font-size="10" fill="#716C61">空き</text>
+    <rect x="420" y="40" width="240" height="170" rx="10" fill="#F2EFE6" stroke="#716C61"/>
+    <text x="540" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">補助記憶（ディスク）</text>
+    <rect x="440" y="60" width="90" height="40" fill="#FFFEFB" stroke="#716C61"/><text x="485" y="85" text-anchor="middle" font-size="11" fill="#211F1A">ページ2</text>
+    <rect x="540" y="60" width="90" height="40" fill="#FFFEFB" stroke="#716C61"/><text x="585" y="85" text-anchor="middle" font-size="11" fill="#211F1A">ページ4</text>
+    <rect x="440" y="110" width="90" height="40" fill="#FFFEFB" stroke="#716C61"/><text x="485" y="135" text-anchor="middle" font-size="11" fill="#211F1A">ページ6</text>
+    <line x1="320" y1="80" x2="418" y2="80" stroke="#4A6FA5" stroke-width="2"/>
+    <polygon points="418,80 408,75 408,85" fill="#4A6FA5"/>
+    <text x="370" y="70" text-anchor="middle" font-size="10" fill="#4A6FA5">ページアウト</text>
+    <line x1="418" y1="120" x2="320" y2="120" stroke="#BE5A38" stroke-width="2"/>
+    <polygon points="320,120 330,115 330,125" fill="#BE5A38"/>
+    <text x="370" y="112" text-anchor="middle" font-size="10" fill="#BE5A38">ページイン（ページフォールト時）</text>
+    <text x="350" y="235" text-anchor="middle" font-size="11" fill="#716C61">主記憶が満杯なら、最も長く使われていないページ（LRU）から追い出す</text>
+  </svg>
+  <figcaption>図2-9　主記憶と補助記憶の間のページ出し入れ</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>仮想記憶＝主記憶より大きいプログラムを動かす仕組み、単位はページ</li>
+      <li>ページフォールト＝必要なページが主記憶に無い状態</li>
+      <li>LRU＝最も長く使われていないページを追い出す</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-9">仮想記憶とページ置き換え(LRU)を説明できるようになった</label>
+</section>
+
+<!-- ============ 2-10 ============ -->
+<section class="item" id="cs-10">
+  <h2><span class="no">2-10</span>信頼性のシステム構成 — 似た用語をひっかけに注意</h2>
+  <p class="goal">🎯 ゴール：デュプレックス/デュアル、フォールトトレラント系の用語を正しく区別できる</p>
+  <p>システムの信頼性を高めるために、複数の装置や系統を用意する構成方法があります。デュプレックスシステムは、本番系（現用系）と待機系の2系統を用意し、普段は本番系だけが動く構成です。待機系がすぐに動ける状態を保つホットスタンバイ、電源は入っているが起動に少し時間がかかるウォームスタンバイ、電源すら切ってあるコールドスタンバイに分かれます。デュアルシステムは、2系統が常に同じ処理を行い、結果を照合しながら運用する構成です。</p>
+  <p>「フォールト〇〇」「フール〇〇」のように似た名前が並ぶので、事例とセットで覚えるのがコツです。</p>
+  <table class="tbl">
+    <tr><th>用語</th><th>意味</th><th>具体例</th></tr>
+    <tr><td>フォールトトレラント</td><td>壊れても全体としては動き続ける性質</td><td>航空機の制御系</td></tr>
+    <tr><td>フェールセーフ</td><td>故障時に安全な方向へ制御する考え方</td><td>信号機が故障したら全灯を赤にする</td></tr>
+    <tr><td>フェールソフト</td><td>故障部分を切り離し、機能を落として運転を続ける（縮退運転）</td><td>一部機能を止めてでもシステム全体は継続</td></tr>
+    <tr><td>フールプルーフ</td><td>人が誤操作しても事故につながらない設計</td><td>フタを閉じないと動かない電子レンジ</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>デュプレックス＝本番系＋待機系、デュアル＝2系統で常時同じ処理＋照合</li>
+      <li>フェールセーフ＝安全側、フェールソフト＝縮退運転、フールプルーフ＝誤操作対策</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-10">信頼性設計の用語を区別できるようになった</label>
+</section>
+
+<!-- ============ 2-11 ============ -->
+<section class="item" id="cs-11">
+  <h2><span class="no">2-11</span>稼働率の計算 — 直列と並列、毎回出る最重要計算</h2>
+  <p class="goal">🎯 ゴール：稼働率の意味と、直列/並列構成での計算ができる（毎回出る最重要計算）</p>
+  <p>稼働率とは、あるシステムが正常に動いている時間の割合のことです。次の式で求められます。</p>
+  <div class="formula">稼働率 ＝ MTBF ÷（MTBF ＋ MTTR）</div>
+  <p>MTBF（Mean Time Between Failures：平均故障間隔）は、どのくらいの間隔で壊れずに動き続けられるかを表し、MTTR（Mean Time To Repair：平均修理時間）は、壊れてから直るまでの平均時間を表します。</p>
+  <p>複数の装置を組み合わせたときの計算は、直列構成と並列構成で式が変わります。直列構成は、バケツリレーのように1人でも手を止めたら全体が止まる構成で、どちらの装置も動いていないとシステム全体が動きません。並列構成は、道が2本あって片方が通行止めでももう片方が通れれば大丈夫、というように、どちらか一方でも動いていればシステム全体は動く構成です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="稼働率の直列構成と並列構成を比較する図。それぞれ対応する計算式を示す" viewBox="0 0 700 320" width="700">
+    <text x="195" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">直列構成</text>
+    <text x="195" y="42" text-anchor="middle" font-size="10" fill="#716C61">どちらかが止まると全体が止まる</text>
+    <circle cx="40" cy="90" r="8" fill="#FFFEFB" stroke="#211F1A"/>
+    <line x1="48" y1="90" x2="90" y2="90" stroke="#211F1A" stroke-width="2"/>
+    <rect x="90" y="62" width="90" height="56" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="135" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">装置A</text>
+    <text x="135" y="104" text-anchor="middle" font-size="10" fill="#716C61">稼働率A1</text>
+    <line x1="180" y1="90" x2="220" y2="90" stroke="#211F1A" stroke-width="2"/>
+    <rect x="220" y="62" width="90" height="56" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="265" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">装置B</text>
+    <text x="265" y="104" text-anchor="middle" font-size="10" fill="#716C61">稼働率A2</text>
+    <line x1="310" y1="90" x2="345" y2="90" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="353" cy="90" r="8" fill="#FFFEFB" stroke="#211F1A"/>
+    <rect x="30" y="145" width="330" height="70" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="195" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">システム稼働率 ＝ A1 × A2</text>
+    <text x="195" y="192" text-anchor="middle" font-size="12" fill="#716C61">例：0.9 × 0.9 ＝ 0.81</text>
+    <line x1="390" y1="10" x2="390" y2="310" stroke="#E2DCCD" stroke-width="1"/>
+    <text x="545" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">並列構成</text>
+    <text x="545" y="42" text-anchor="middle" font-size="10" fill="#716C61">両方止まって初めて全体が止まる</text>
+    <circle cx="420" cy="90" r="8" fill="#FFFEFB" stroke="#211F1A"/>
+    <path d="M428,90 C450,90 460,62 480,62" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <rect x="480" y="34" width="90" height="56" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="525" y="58" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">装置A</text>
+    <text x="525" y="76" text-anchor="middle" font-size="10" fill="#716C61">稼働率A1</text>
+    <path d="M570,62 C595,62 610,90 630,90" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <path d="M428,90 C450,90 460,118 480,118" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <rect x="480" y="90" width="90" height="56" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="525" y="114" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">装置B</text>
+    <text x="525" y="132" text-anchor="middle" font-size="10" fill="#716C61">稼働率A2</text>
+    <path d="M570,118 C595,118 610,90 630,90" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="638" cy="90" r="8" fill="#FFFEFB" stroke="#211F1A"/>
+    <rect x="400" y="145" width="270" height="70" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="535" y="167" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">システム稼働率 ＝</text>
+    <text x="535" y="185" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">1 －（1－A1）（1－A2）</text>
+    <text x="535" y="204" text-anchor="middle" font-size="12" fill="#716C61">例：1 －（0.1×0.1）＝ 0.99</text>
+    <text x="350" y="245" text-anchor="middle" font-size="12" fill="#716C61">直列＝掛け算するほど小さくなる／並列＝「両方故障」の確率を1から引く</text>
+    <text x="350" y="268" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">並列にすると信頼性は上がるが、装置が2台分必要でコストも上がる</text>
+  </svg>
+  <figcaption>図2-11　直列構成と並列構成の稼働率計算（最重要図解）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    稼働率0.9の装置を2台使う。(1)直列構成、(2)並列構成、それぞれのシステム稼働率を求めよ。
+    <details class="ans"><summary>答えを見る</summary>
+    (1) 直列：0.9 × 0.9 ＝ <b>0.81</b><br>
+    (2) 並列：1 －（1－0.9）×（1－0.9）＝ 1 － 0.1×0.1 ＝ 1 － 0.01 ＝ <b>0.99</b>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>直列＝かけ算（小さくなる）、並列＝「両方故障の確率」を1から引く（大きくなる）</li>
+      <li>並列は信頼性が上がる代わりに装置が2台分必要でコストも上がる</li>
+      <li>図を描く習慣をつけると直列/並列の混同を防げる</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-11">直列/並列構成の稼働率を計算できるようになった</label>
+</section>
+
+<!-- ============ 2-12 ============ -->
+<section class="item" id="cs-12">
+  <h2><span class="no">2-12</span>待ち行列（M/M/1） — レジの行列で考える</h2>
+  <p class="goal">🎯 ゴール：利用率ρから平均待ち時間を計算できる</p>
+  <p>待ち行列理論とは、窓口（サーバ）に対してお客（処理要求）がランダムに到着し、順番に処理されていく様子をモデル化したものです。M/M/1は「到着もランダム・処理時間もランダム・窓口1つ」という一番シンプルなモデルです。</p>
+  <div class="formula">利用率ρ ＝ 到着率 ÷ 処理率<br>平均待ち時間 ＝ ρ ÷（1－ρ）× 平均処理時間</div>
+  <p>応答時間（お客が並んでから処理が終わるまでの合計時間）は「待ち時間＋処理時間」です。レジの行列を思い浮かべてみましょう。お客が来るペース（到着率）がレジの処理ペース（処理率）に近づく、つまりρが1に近づくほど、行列はどんどん伸びていきます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="窓口に並ぶお客の待ち行列モデルの図" viewBox="0 0 700 260" width="700">
+    <text x="350" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">M/M/1モデル：ランダムに到着 → 1つの窓口で順番に処理</text>
+    <text x="60" y="120" font-size="20">🧍</text>
+    <text x="100" y="120" font-size="20">🧍</text>
+    <text x="140" y="120" font-size="20">🧍</text>
+    <text x="180" y="120" font-size="20">🧍</text>
+    <text x="120" y="150" text-anchor="middle" font-size="11" fill="#716C61">待ち行列（到着率λ）</text>
+    <line x1="220" y1="105" x2="270" y2="105" stroke="#211F1A" stroke-width="2"/>
+    <polygon points="270,105 260,100 260,110" fill="#211F1A"/>
+    <rect x="270" y="75" width="120" height="60" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="330" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">窓口</text>
+    <text x="330" y="118" text-anchor="middle" font-size="10" fill="#716C61">処理率μ</text>
+    <line x1="390" y1="105" x2="440" y2="105" stroke="#211F1A" stroke-width="2"/>
+    <polygon points="440,105 430,100 430,110" fill="#211F1A"/>
+    <text x="470" y="112" font-size="20">✅</text>
+    <text x="480" y="150" text-anchor="middle" font-size="11" fill="#716C61">処理完了</text>
+    <rect x="30" y="180" width="640" height="60" rx="10" fill="#F2EFE6" stroke="#716C61"/>
+    <text x="350" y="203" text-anchor="middle" font-size="12" fill="#211F1A">利用率ρ＝到着率÷処理率　　平均待ち時間＝ρ÷（1－ρ）×平均処理時間</text>
+    <text x="350" y="225" text-anchor="middle" font-size="11" fill="#716C61">ρが1に近づくほど、行列は爆発的に伸びる</text>
+  </svg>
+  <figcaption>図2-12　窓口の待ち行列モデル（M/M/1）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    利用率ρ＝0.5、平均処理時間2秒のとき、平均待ち時間を求めよ。
+    <details class="ans"><summary>答えを見る</summary>
+    平均待ち時間 ＝ 0.5 ÷（1－0.5）× 2 ＝ 0.5 ÷ 0.5 × 2 ＝ 1 × 2 ＝ <b>2秒</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>ρが1に近づくほど待ち時間は爆発的に伸びる</li>
+      <li>応答時間＝待ち時間＋処理時間、の混同に注意</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="cs-12">待ち行列の平均待ち時間を計算できるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（コンピュータシステム）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+
+  <details><summary>Q1. クロック周波数1GHz、CPI（1命令あたりの平均クロック数）が5のCPUのMIPS値を求めよ。</summary><div class="a">1秒あたりの命令数＝1×10⁹÷5＝2×10⁸命令/秒。MIPS＝2×10⁸÷10⁶＝<b>200 MIPS</b>。 <a class="qref" href="#cs-2">→ 解説 2-2 に戻る</a></div></details>
+
+  <details><summary>Q2. キャッシュのヒット率80%、キャッシュのアクセス時間20ナノ秒、主記憶のアクセス時間220ナノ秒のとき、実効アクセス時間を求めよ。</summary><div class="a">0.8×20＋0.2×220＝16＋44＝<b>60ナノ秒</b>。 <a class="qref" href="#cs-5">→ 解説 2-5 に戻る</a></div></details>
+
+  <details><summary>Q3. 1台のディスクが故障してもデータを復元でき、実効容量がn－1台分になるRAIDレベルはどれか。</summary><div class="a"><b>RAID5</b>（分散パリティ）。データと復元用のパリティを分散して書き込むため、1台の故障までなら復旧できる。 <a class="qref" href="#cs-6">→ 解説 2-6 に戻る</a></div></details>
+
+  <details><summary>Q4. 稼働率0.8の装置を2台、直列に接続したときのシステム稼働率を求めよ。</summary><div class="a">直列＝掛け算なので、0.8×0.8＝<b>0.64</b>。 <a class="qref" href="#cs-11">→ 解説 2-11 に戻る</a></div></details>
+
+  <details><summary>Q5. 稼働率0.9の装置を3台、並列に接続したときのシステム稼働率を求めよ。</summary><div class="a">並列＝「全部故障」の確率を1から引く。1－（1－0.9）³＝1－0.1³＝1－0.001＝<b>0.999</b>。 <a class="qref" href="#cs-11">→ 解説 2-11 に戻る</a></div></details>
+
+  <details><summary>Q6. 利用率ρ＝0.8、平均処理時間3秒のときの平均待ち時間を求めよ。</summary><div class="a">0.8÷（1－0.8）×3＝0.8÷0.2×3＝4×3＝<b>12秒</b>。ρが1に近いので待ち時間が大きく伸びる。 <a class="qref" href="#cs-12">→ 解説 2-12 に戻る</a></div></details>
+
+  <details><summary>Q7. デッドロックを防ぐための対策として適切なものはどれか。</summary><div class="a">すべてのタスクで<b>資源を確保する順序を統一する</b>こと。順序がバラバラだと、お互いが相手の資源を待ち合う状態になりやすい。 <a class="qref" href="#cs-8">→ 解説 2-8 に戻る</a></div></details>
+
+  <details><summary>Q8. 仮想記憶方式で、最も長い間参照されていないページを優先して追い出すアルゴリズムを何と呼ぶか。</summary><div class="a"><b>LRU（Least Recently Used）</b>。主記憶が満杯のとき、使われていない時間が最も長いページから追い出す。 <a class="qref" href="#cs-9">→ 解説 2-9 に戻る</a></div></details>
+
+</section>
+
+</main>
+
+<nav class="pager">
+  <a href="fe-basics.html"><span class="dir">‹ もどる</span>セクション1：基礎理論</a>
+  <a href="fe-network.html" class="next"><span class="dir">つぎへ ›</span>セクション3：ネットワーク</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ セクション2：コンピュータシステム</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
+</script>
+</body>
+</html>

@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション8：ストラテジ｜基本情報 学習ノート</title>
+<meta name="description" content="基本情報技術者試験 科目A対策。経営戦略・会計（損益分岐点）・法務・新しい技術を、たとえ話つきでやさしく解説します。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
+  /* 疑似コード表示（科目B用） */
+  pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.7;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;text-align:left}
+  pre.code b{color:var(--accent);font-weight:700}
+  /* スマホ図解・スムーススクロール・目次ボタン */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">セクション8</span>
+  <span class="prog">できた <b id="done-count">0</b> / 10</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 8</div>
+  <h1>📈 ストラテジ</h1>
+  <p class="lead">科目Aでは約12問出題される、テクノロジ系に次ぐ得点源のジャンルです。経営分析の用語を知っているだけで解ける問題と、損益分岐点や期待値のように公式に数字を当てはめれば解ける計算問題が中心なので、丸暗記が苦手な人でも「型」さえ覚えれば十分に取り切れます。</p>
+  <nav class="toc" id="toc">
+    <a href="#st-1">1. 経営戦略の分析手法</a><a href="#st-2">2. マーケティングの基礎</a><a href="#st-3">3. 意思決定と在庫管理</a><a href="#st-4">4. 会計の基本</a><a href="#st-5">5. 損益分岐点</a><a href="#st-6">6. 財務諸表の読み方</a><a href="#st-7">7. 知的財産権</a><a href="#st-8">8. IT関連の法律</a><a href="#st-9">9. 企業活動と組織</a><a href="#st-10">10. 新しい技術とDX</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 8-1 ============ -->
+<section class="item" id="st-1">
+  <h2><span class="no">8-1</span>経営戦略の分析手法 — SWOTとPPM、まず立ち位置を整理する</h2>
+  <p class="goal">🎯 ゴール：事例を読んでSWOTの4つのどれかに分類できる。PPMの4象限の名前と位置を言えるようになる</p>
+  <p>経営戦略の分析手法は、「今の自分たちの立ち位置を整理するための道具」だと思ってください。試験でも「この事例はSWOTのどれに当たるか」という形でよく出題されます。</p>
+  <p>SWOT分析は、<b>内部要因（自社でコントロールできること）</b>と<b>外部要因（自社では変えられない環境）</b>、そして<b>プラス材料</b>と<b>マイナス材料</b>を掛け合わせて4つに分ける手法です。内部×プラス＝強み（Strength）、内部×マイナス＝弱み（Weakness）、外部×プラス＝機会（Opportunity）、外部×マイナス＝脅威（Threat）。この頭文字を取ってSWOTと呼びます。</p>
+  <p>PPM（プロダクト・ポートフォリオ・マネジメント）は、<b>市場成長率</b>と<b>市場シェア</b>の2軸で自社の事業を4つに分類する手法です。たとえるなら「おこづかいの投資先」を考えるようなもの。今も安定して稼いでくれる「金のなる木」（成長は鈍いがシェアが高い）で得たお金を、これから伸びるかもしれない「問題児」（成長率は高いがまだシェアが低い）に投資する、というのが定石の流れです。「花形」は成長・シェアともに高い主力事業、「負け犬」は成長もシェアも低く見切りをつける候補の事業です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="SWOT分析の4象限（強み・弱み・機会・脅威）とPPMの4象限（花形・金のなる木・問題児・負け犬）を並べた図" viewBox="0 0 700 360" width="700">
+    <text x="175" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">SWOT分析</text>
+    <text x="175" y="40" text-anchor="middle" font-size="11" fill="#716C61">内部要因×外部要因／プラス要因×マイナス要因</text>
+    <text x="122" y="58" text-anchor="middle" font-size="11" fill="#716C61">内部要因（自社）</text>
+    <text x="247" y="58" text-anchor="middle" font-size="11" fill="#716C61">外部要因（環境）</text>
+
+    <rect x="60" y="65" width="125" height="115" rx="6" fill="#E7EDDC" stroke="#D5DFC6"/>
+    <text x="122" y="112" text-anchor="middle" font-size="14" font-weight="700" fill="#4f6b3a">強み</text>
+    <text x="122" y="130" text-anchor="middle" font-size="11" fill="#4f6b3a">Strength</text>
+
+    <rect x="185" y="65" width="125" height="115" rx="6" fill="#E3EAF3" stroke="#C7D6E8"/>
+    <text x="247" y="112" text-anchor="middle" font-size="14" font-weight="700" fill="#4A6FA5">機会</text>
+    <text x="247" y="130" text-anchor="middle" font-size="11" fill="#4A6FA5">Opportunity</text>
+
+    <rect x="60" y="180" width="125" height="115" rx="6" fill="#F5E8D4" stroke="#E8D3B0"/>
+    <text x="122" y="227" text-anchor="middle" font-size="14" font-weight="700" fill="#9a5a22">弱み</text>
+    <text x="122" y="245" text-anchor="middle" font-size="11" fill="#9a5a22">Weakness</text>
+
+    <rect x="185" y="180" width="125" height="115" rx="6" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <text x="247" y="227" text-anchor="middle" font-size="14" font-weight="700" fill="#BE5A38">脅威</text>
+    <text x="247" y="245" text-anchor="middle" font-size="11" fill="#BE5A38">Threat</text>
+
+    <text x="175" y="320" text-anchor="middle" font-size="11" fill="#716C61">プラス要因は上段／マイナス要因は下段</text>
+
+    <line x1="345" y1="10" x2="345" y2="340" stroke="#E2DCCD" stroke-width="1"/>
+
+    <text x="530" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">PPM</text>
+    <text x="530" y="40" text-anchor="middle" font-size="11" fill="#716C61">市場成長率×市場シェア</text>
+
+    <rect x="405" y="65" width="125" height="115" rx="6" fill="#E3EAF3" stroke="#C7D6E8"/>
+    <text x="467" y="110" text-anchor="middle" font-size="13" font-weight="700" fill="#4A6FA5">花形</text>
+    <text x="467" y="127" text-anchor="middle" font-size="11" fill="#4A6FA5">成長・シェアとも高い</text>
+
+    <rect x="530" y="65" width="125" height="115" rx="6" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <text x="592" y="110" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">問題児</text>
+    <text x="592" y="127" text-anchor="middle" font-size="11" fill="#BE5A38">成長高いがシェア低い</text>
+
+    <rect x="405" y="180" width="125" height="115" rx="6" fill="#E7EDDC" stroke="#D5DFC6"/>
+    <text x="467" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#4f6b3a">金のなる木</text>
+    <text x="467" y="242" text-anchor="middle" font-size="11" fill="#4f6b3a">成長鈍いが稼ぎ頭</text>
+
+    <rect x="530" y="180" width="125" height="115" rx="6" fill="#F5E8D4" stroke="#E8D3B0"/>
+    <text x="592" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#9a5a22">負け犬</text>
+    <text x="592" y="242" text-anchor="middle" font-size="11" fill="#9a5a22">成長・シェアとも低い</text>
+
+    <path d="M467,178 C467,155 550,145 588,120" fill="none" stroke="#211F1A" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#mk-st1)"/>
+    <text x="530" y="150" text-anchor="middle" font-size="11" fill="#211F1A">資金を投資</text>
+
+    <text x="530" y="320" text-anchor="middle" font-size="11" fill="#716C61">おこづかいの投資先。金のなる木→問題児に投資</text>
+
+    <defs>
+      <marker id="mk-st1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#211F1A"/></marker>
+    </defs>
+  </svg>
+  <figcaption>図8-1　SWOTの4象限とPPMの4象限（頻出図解）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    あるコンビニは、24時間営業でいつでも買い物できることが強みだったが、近隣に大型スーパーが開店し、価格競争で来客数が減っている。この2つの事実は、それぞれSWOTのどれに分類されるか。
+    <details class="ans"><summary>答えを見る</summary>
+    「24時間営業できる」＝内部要因×プラス材料なので<b>強み（Strength）</b>。「近隣に大型スーパーが開店した」＝外部要因×マイナス材料なので<b>脅威（Threat）</b>。自社でコントロールできるかどうかで内部/外部を見分けるのがコツです。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>内部要因か外部要因かは「自社でコントロールできるか」で見分ける</li>
+      <li>PPMは「金のなる木→問題児」への資金移動が定番の出題パターン</li>
+      <li>3C（自社・競合・顧客）は環境を3つの視点で整理するだけのシンプルな枠組み</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-1">SWOTの4象限とPPMの4象限を説明できるようになった</label>
+</section>
+
+<!-- ============ 8-2 ============ -->
+<section class="item" id="st-2">
+  <h2><span class="no">8-2</span>マーケティングの基礎 — 4Pと4C、売り手と買い手のことば</h2>
+  <p class="goal">🎯 ゴール：事例が4Pのどの要素かを判断できる。4Pと4Cの対応関係、STPの3ステップを言えるようになる</p>
+  <p>マーケティングの4Pは、Product（製品）・Price（価格）・Place（流通・場所）・Promotion（販促）の頭文字で、<b>売り手側から見た</b>整理の仕方です。これを<b>買い手側から見た</b>言葉に置き換えたのが4C（Customer Value・Cost・Convenience・Communication）です。売っている側の言葉と、お客さんの言葉で同じ現象を裏表から見ていると考えると覚えやすくなります。</p>
+  <table class="tbl">
+    <tr><th>4P（売り手視点）</th><th>4C（買い手視点）</th><th>意味</th></tr>
+    <tr><td>Product（製品）</td><td>Customer Value（顧客価値）</td><td>お客さんにとっての価値があるか</td></tr>
+    <tr><td>Price（価格）</td><td>Cost（顧客の負担）</td><td>お客さんが払う金額・手間</td></tr>
+    <tr><td>Place（流通）</td><td>Convenience（利便性）</td><td>どこでどれだけ手に入りやすいか</td></tr>
+    <tr><td>Promotion（販促）</td><td>Communication（対話）</td><td>お客さんとの情報のやりとり</td></tr>
+  </table>
+  <p>STPは、市場を切り分けて（セグメンテーション）→狙う層を決めて（ターゲティング）→自社をどう位置づけるか決める（ポジショニング）という3ステップの流れです。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>4Pは作る側の言葉、4Cはお客さんの言葉。同じ現象の裏表と意識する</li>
+      <li>STPは「切る→狙う→位置づける」の順番で覚える</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-2">4Pと4Cの対応関係を説明できるようになった</label>
+</section>
+
+<!-- ============ 8-3 ============ -->
+<section class="item" id="st-3">
+  <h2><span class="no">8-3</span>意思決定と在庫管理 — 決定木の期待値とABC分析</h2>
+  <p class="goal">🎯 ゴール：決定木から期待値を計算して、どちらの案を選ぶべきか判断できるようになる。パレート図/ABC分析の考え方を言えるようになる</p>
+  <p>決定木は、先の読めない選択を「確率×金額」の掛け算（期待値）で比較するための道具です。期待値は、起こりうる結果それぞれの「値×確率」を全部足したもので求めます。</p>
+  <div class="formula">期待値 ＝ Σ（結果の値 × その確率）</div>
+  <p>たとえば新商品への投資を考えるとき、成功したときの利益と失敗したときの損失、それぞれが起こる確率が分かっていれば、「投資する」場合の期待値と「投資しない（確実に0円）」場合を比べて、どちらが得かを数字で判断できます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="決定木で期待値を計算する例の図。投資するかしないかを、成功・失敗の確率と金額から比較する" viewBox="0 0 700 250" width="700">
+    <circle cx="55" cy="140" r="7" fill="#211F1A"/>
+    <text x="55" y="120" text-anchor="middle" font-size="11" fill="#716C61">意思決定</text>
+
+    <line x1="62" y1="140" x2="250" y2="60" stroke="#4A6FA5" stroke-width="2"/>
+    <text x="150" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#4A6FA5">投資する</text>
+
+    <line x1="62" y1="140" x2="250" y2="220" stroke="#716C61" stroke-width="2"/>
+    <text x="150" y="238" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">投資しない</text>
+    <text x="255" y="224" font-size="11" fill="#716C61">確実に 0万円</text>
+
+    <circle cx="256" cy="60" r="6" fill="#4A6FA5"/>
+
+    <line x1="262" y1="60" x2="465" y2="20" stroke="#4f6b3a" stroke-width="2"/>
+    <text x="470" y="18" font-size="11" fill="#4f6b3a">成功 60%：利益 ＋500万円</text>
+
+    <line x1="262" y1="60" x2="465" y2="100" stroke="#BE5A38" stroke-width="2"/>
+    <text x="470" y="104" font-size="11" fill="#BE5A38">失敗 40%：損失 －100万円</text>
+
+    <rect x="330" y="150" width="330" height="70" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="495" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">期待値 ＝ 500×0.6 － 100×0.4 ＝ 260万円</text>
+    <text x="495" y="197" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">260万円 ＞ 0万円 → 投資する</text>
+  </svg>
+  <figcaption>図8-3　決定木による期待値の計算例</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    新商品Xに投資すると、成功確率60%で利益500万円、失敗確率40%で損失100万円になる。投資しない場合は確実に0万円である。期待値で比較すると、どちらを選ぶべきか。
+    <details class="ans"><summary>答えを見る</summary>
+    投資する場合の期待値＝500×0.6－100×0.4＝300－40＝<b>260万円</b>。投資しない場合の0万円より大きいので、<b>投資する</b>方を選ぶのが合理的です。
+    </details>
+  </div>
+  <p>在庫管理では、パレート図（売上の大きい順に品目を並べて、累積比率を折れ線で重ねたグラフ）を使って、全体の大部分の売上を占めるごく一部の品目（Aランク）を重点的に管理する<b>ABC分析</b>という考え方もよく出ます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>期待値は「値×確率」を全部足すだけ。計算自体はシンプル</li>
+      <li>期待値がプラスでも、必ずしも「安全」とは限らない点には注意（あくまで平均の話）</li>
+      <li>ABC分析は「売上の大半を占める一部の品目」を重点管理する考え方</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-3">決定木で期待値を計算して意思決定できるようになった</label>
+</section>
+
+<!-- ============ 8-4 ============ -->
+<section class="item" id="st-4">
+  <h2><span class="no">8-4</span>会計の基本 — 固定費と変動費を仕分ける</h2>
+  <p class="goal">🎯 ゴール：費用を固定費と変動費に分けられる。変動費率を計算できるようになる</p>
+  <p>利益は「売上－費用」で求まります。この費用は、性質の違う2種類に分けて考えるのがポイントです。<b>固定費</b>は、売れても売れなくても出ていくお金（家賃、正社員の給料など）。<b>変動費</b>は、売れた分だけ増えるお金（材料費、仕入原価など）です。</p>
+  <div class="formula">変動費率 ＝ 変動費 ÷ 売上高</div>
+  <p>変動費率は「売上のうち何割が変動費に化けるか」を表す割合です。次の項目（損益分岐点）の計算に直結する材料になるので、ここでしっかり区別しておきましょう。</p>
+  <div class="grid2">
+    <div class="do"><span class="tt">固定費の例</span>
+      <ul><li>家賃・地代</li><li>正社員の給料</li><li>保険料・減価償却費</li></ul>
+    </div>
+    <div class="dont"><span class="tt">変動費の例</span>
+      <ul><li>材料費・仕入原価</li><li>販売数に応じた手数料</li><li>出来高払いの外注費</li></ul>
+    </div>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>固定費＝売上に関係なく一定、変動費＝売上に比例して増減</li>
+      <li>「変動費」と「変動費率」は別物。変動費率は必ず売上高で割った割合</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-4">固定費と変動費を区別できるようになった</label>
+</section>
+
+<!-- ============ 8-5 ============ -->
+<section class="item" id="st-5">
+  <h2><span class="no">8-5</span>損益分岐点 — 文化祭の屋台が黒字になるライン</h2>
+  <p class="goal">🎯 ゴール：固定費と変動費率から損益分岐点売上高を計算できる。グラフの交点の意味を説明できるようになる（よく出る最重要計算）</p>
+  <p>損益分岐点とは、利益がちょうどゼロになる売上高のラインのことです。文化祭の屋台で考えてみましょう。テント代や机代など、お客さんが何人来ても先に払わなければいけないお金が「固定費」。材料費のように売った分だけかかるお金が「変動費」です。売上がこの損益分岐点を超えたところで、ようやく屋台は黒字に転じます。</p>
+  <div class="formula">損益分岐点売上高 ＝ 固定費 ÷（1 － 変動費率）</div>
+  <figure class="fig">
+  <svg role="img" aria-label="損益分岐点グラフ。売上高線と総費用線の交点、固定費の領域を示す" viewBox="0 0 700 380" width="700">
+    <line x1="70" y1="20" x2="70" y2="340" stroke="#211F1A" stroke-width="1.4"/>
+    <line x1="70" y1="340" x2="645" y2="340" stroke="#211F1A" stroke-width="1.4"/>
+    <text x="45" y="30" font-size="11" fill="#716C61">金額</text>
+    <text x="45" y="43" font-size="11" fill="#716C61">(万円)</text>
+    <text x="645" y="362" text-anchor="end" font-size="11" fill="#716C61">売上高（万円）</text>
+
+    <line x1="70" y1="340" x2="70" y2="345" stroke="#716C61"/><text x="70" y="357" text-anchor="middle" font-size="11" fill="#716C61">0</text>
+    <line x1="162" y1="340" x2="162" y2="345" stroke="#716C61"/><text x="162" y="357" text-anchor="middle" font-size="11" fill="#716C61">100</text>
+    <line x1="253" y1="340" x2="253" y2="345" stroke="#716C61"/><text x="253" y="357" text-anchor="middle" font-size="11" fill="#716C61">200</text>
+    <line x1="345" y1="340" x2="345" y2="345" stroke="#716C61"/><text x="345" y="357" text-anchor="middle" font-size="11" fill="#716C61">300</text>
+    <line x1="437" y1="340" x2="437" y2="345" stroke="#716C61"/><text x="437" y="357" text-anchor="middle" font-size="11" fill="#716C61">400</text>
+    <line x1="528" y1="340" x2="528" y2="345" stroke="#716C61"/><text x="528" y="357" text-anchor="middle" font-size="11" fill="#716C61">500</text>
+    <line x1="620" y1="340" x2="620" y2="345" stroke="#716C61"/><text x="620" y="357" text-anchor="middle" font-size="11" fill="#716C61">600</text>
+
+    <rect x="70" y="190" width="550" height="150" fill="#F5E8D4" opacity="0.75"/>
+    <polygon points="70,190 620,190 620,70" fill="#E3EAF3" opacity="0.8"/>
+    <polygon points="70,190 70,340 528,90" fill="#BE5A38" opacity="0.12"/>
+    <polygon points="528,90 620,40 620,70" fill="#4f6b3a" opacity="0.15"/>
+
+    <line x1="70" y1="190" x2="620" y2="190" stroke="#9a5a22" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <line x1="70" y1="190" x2="620" y2="70" stroke="#BE5A38" stroke-width="2.6"/>
+    <line x1="70" y1="340" x2="620" y2="40" stroke="#4A6FA5" stroke-width="2.6"/>
+
+    <circle cx="528" cy="90" r="5.5" fill="#211F1A"/>
+    <line x1="528" y1="90" x2="528" y2="62" stroke="#211F1A" stroke-width="1" stroke-dasharray="2 2"/>
+    <text x="528" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">損益分岐点</text>
+    <text x="528" y="62" text-anchor="middle" font-size="11" fill="#211F1A">売上高500万円</text>
+
+    <text x="150" y="315" text-anchor="middle" font-size="11" fill="#9a5a22">固定費 300万円</text>
+    <text x="588" y="128" text-anchor="middle" font-size="11" fill="#4A6FA5">変動費</text>
+    <text x="625" y="74" text-anchor="start" font-size="11" fill="#BE5A38">総費用線</text>
+    <text x="625" y="42" text-anchor="start" font-size="11" fill="#4A6FA5">売上線</text>
+    <text x="250" y="207" text-anchor="middle" font-size="11" font-weight="700" fill="#BE5A38">赤字（損失あり）</text>
+    <text x="600" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6b3a">黒字（利益あり）</text>
+  </svg>
+  <figcaption>図8-5　損益分岐点グラフ（売上線・総費用線・交点・固定費の領域／最重要計算）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    固定費300万円、変動費率0.4の事業がある。損益分岐点売上高はいくらか。
+    <details class="ans"><summary>答えを見る</summary>
+    損益分岐点売上高＝固定費÷（1－変動費率）＝300÷（1－0.4）＝300÷0.6＝<b>500万円</b>。<br>
+    検算：売上500万円のとき、変動費＝500×0.4＝200万円、総費用＝固定費300万円＋変動費200万円＝500万円。売上500万円＝総費用500万円で、たしかに利益ゼロになっています。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>グラフの交点より右側が黒字、左側が赤字</li>
+      <li>固定費が高いほど交点は右にずれる（黒字化に時間がかかる）</li>
+      <li>「変動費率」を「変動費」と読み違えるのが定番のひっかけ</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-5">損益分岐点売上高を計算して黒字ラインを説明できるようになった</label>
+</section>
+
+<!-- ============ 8-6 ============ -->
+<section class="item" id="st-6">
+  <h2><span class="no">8-6</span>財務諸表の読み方 — BSとPL、会社の健康診断書</h2>
+  <p class="goal">🎯 ゴール：貸借対照表と損益計算書の違いを説明できる。自己資本比率とROEを計算できるようになる</p>
+  <p>貸借対照表（BS：Balance Sheet）は、<b>ある一時点</b>での会社の財産状況のスナップショットです。「資産＝負債＋純資産」という等式が必ず成り立つため、左右のバランスが取れている、という意味でバランスシートと呼ばれます。損益計算書（PL：Profit and Loss statement）は、<b>一定期間</b>（1年間など）の収益と費用をまとめた、いわば会社の通信簿です。</p>
+  <table class="tbl">
+    <tr><th></th><th>貸借対照表（BS）</th><th>損益計算書（PL）</th></tr>
+    <tr><td>見ているもの</td><td>ある時点の財産状況</td><td>一定期間の儲け</td></tr>
+    <tr><td>たとえ</td><td>健康診断の検査結果（今の状態）</td><td>通信簿（期間の成績）</td></tr>
+    <tr><td>基本の式</td><td>資産＝負債＋純資産</td><td>収益－費用＝利益</td></tr>
+  </table>
+  <div class="formula">自己資本比率 ＝ 純資産 ÷ 総資産<br>ROE（自己資本利益率） ＝ 純利益 ÷ 自己資本</div>
+  <p>自己資本比率は、返さなくてよいお金（純資産）が総資産のうちどれくらいの割合を占めるかを表し、高いほど倒産しにくく安定していると言えます。ROEは、株主から預かったお金（自己資本）を使って、どれだけ効率よく利益を生み出したかを表す指標です。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>BS＝時点、PL＝期間。この違いを取り違えないこと</li>
+      <li>自己資本比率が高い＝安定性が高い、と覚える</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-6">BSとPLの違い、自己資本比率とROEを説明できるようになった</label>
+</section>
+
+<!-- ============ 8-7 ============ -->
+<section class="item" id="st-7">
+  <h2><span class="no">8-7</span>知的財産権 — 著作権は請負なら作った側、派遣なら派遣先</h2>
+  <p class="goal">🎯 ゴール：著作権の保護対象・対象外を言える。請負と派遣で著作権が誰に帰属するか判断できるようになる（毎回出る）</p>
+  <p>著作権は、作品を創作した瞬間に自動的に発生する権利です（特許のように出願・登録の手続きは不要）。プログラムも著作物として保護の対象になりますが、<b>アルゴリズム・プログラム言語・規約（決まりごと）そのものは保護の対象外</b>です。これらは作品というより「道具」や「考え方」そのものだから、と理解しておきましょう。</p>
+  <p>試験で特によく問われるのが、契約形態によって著作権の帰属先が変わるという点です。<b>請負契約</b>（A社がB社に開発を発注するような形）の場合、契約で特に定めがない限り、著作権は<b>実際に作った受託者（B社）</b>に帰属します。一方、<b>労働者派遣</b>の場合は、派遣社員が派遣先の指揮命令のもとで作成した著作物の著作権は、指揮命令をしていた<b>派遣先</b>に帰属します。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="著作権の帰属先の違い。請負では受託者に、労働者派遣では派遣先に著作権が帰属する" viewBox="0 0 700 300" width="700">
+    <text x="175" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">請負契約</text>
+    <rect x="30" y="40" width="120" height="50" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="90" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">発注者</text>
+
+    <rect x="220" y="40" width="130" height="50" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="285" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">受託者</text>
+    <text x="285" y="80" text-anchor="middle" font-size="11" fill="#4f6b3a">（開発した会社）</text>
+
+    <line x1="150" y1="65" x2="215" y2="65" stroke="#211F1A" stroke-width="2" marker-end="url(#mk-st7a)"/>
+    <text x="182" y="55" text-anchor="middle" font-size="11" fill="#716C61">請負契約</text>
+
+    <line x1="285" y1="90" x2="285" y2="125" stroke="#211F1A" stroke-width="2" marker-end="url(#mk-st7a)"/>
+    <rect x="220" y="130" width="130" height="45" rx="8" fill="#FFFEFB" stroke="#E2DCCD"/>
+    <text x="285" y="153" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">成果物</text>
+    <text x="285" y="168" text-anchor="middle" font-size="11" fill="#716C61">（プログラム）</text>
+
+    <line x1="285" y1="175" x2="285" y2="205" stroke="#211F1A" stroke-width="2" marker-end="url(#mk-st7a)"/>
+    <rect x="180" y="210" width="210" height="55" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="285" y="233" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">★著作権は受託者に帰属</text>
+    <text x="285" y="250" text-anchor="middle" font-size="11" fill="#716C61">（実際に作った側）</text>
+
+    <line x1="368" y1="10" x2="368" y2="280" stroke="#E2DCCD" stroke-width="1"/>
+
+    <text x="530" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">労働者派遣</text>
+    <rect x="385" y="40" width="120" height="50" rx="8" fill="#F5E8D4" stroke="#9a5a22"/>
+    <text x="445" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">派遣元</text>
+    <text x="445" y="80" text-anchor="middle" font-size="11" fill="#9a5a22">（雇用主）</text>
+
+    <rect x="555" y="40" width="120" height="50" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="615" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">派遣先</text>
+    <text x="615" y="80" text-anchor="middle" font-size="11" fill="#4A6FA5">（勤務先）</text>
+
+    <rect x="470" y="130" width="130" height="45" rx="8" fill="#FFFEFB" stroke="#E2DCCD"/>
+    <text x="535" y="157" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">派遣社員</text>
+
+    <line x1="445" y1="90" x2="500" y2="125" stroke="#9a5a22" stroke-width="2" marker-end="url(#mk-st7c)"/>
+    <text x="425" y="112" text-anchor="middle" font-size="11" fill="#9a5a22">雇用契約</text>
+
+    <line x1="600" y1="90" x2="565" y2="125" stroke="#4A6FA5" stroke-width="2.4" marker-end="url(#mk-st7b)"/>
+    <text x="625" y="112" text-anchor="middle" font-size="11" font-weight="700" fill="#4A6FA5">指揮命令</text>
+
+    <line x1="535" y1="175" x2="535" y2="205" stroke="#211F1A" stroke-width="2" marker-end="url(#mk-st7a)"/>
+    <rect x="425" y="210" width="220" height="55" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="535" y="233" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">★著作権は派遣先に帰属</text>
+    <text x="535" y="250" text-anchor="middle" font-size="11" fill="#716C61">（指揮命令した側）</text>
+
+    <text x="350" y="292" text-anchor="middle" font-size="11" fill="#716C61">※契約で別段の定めがあれば、そちらが優先されます</text>
+
+    <defs>
+      <marker id="mk-st7a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#211F1A"/></marker>
+      <marker id="mk-st7b" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#4A6FA5"/></marker>
+      <marker id="mk-st7c" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9a5a22"/></marker>
+    </defs>
+  </svg>
+  <figcaption>図8-7　著作権の帰属（請負vs派遣）の対比図（毎回出る）</figcaption>
+  </figure>
+  <p>ほかに知っておきたい権利として、<b>特許</b>（発明を出願し、審査を経て登録することで得られる権利。著作権と違い自動発生ではない）と、<b>営業秘密</b>（不正競争防止法で保護され、秘密管理性・有用性・非公知性の3条件を満たす必要がある）があります。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    A社がB社と請負契約を結び、B社の社員がプログラムを開発した。契約書に著作権についての特段の定めはない。このプログラムの著作権は、原則としてどちらに帰属するか。
+    <details class="ans"><summary>答えを見る</summary>
+    請負契約では、契約で別段の定めがない限り、著作権は<b>実際に開発した受託者（B社）</b>に帰属します。発注者であるA社ではない点に注意しましょう。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>請負＝受託者（作った側）に帰属、派遣＝派遣先（指揮命令した側）に帰属</li>
+      <li>アルゴリズム・プログラム言語・規約そのものは著作権の対象外</li>
+      <li>特許は出願・登録が必要、著作権は創作した瞬間に自動発生という違いに注意</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-7">請負と派遣で著作権の帰属先が違うことを説明できるようになった</label>
+</section>
+
+<!-- ============ 8-8 ============ -->
+<section class="item" id="st-8">
+  <h2><span class="no">8-8</span>IT関連の法律 — 派遣と請負、指揮命令はどっちから</h2>
+  <p class="goal">🎯 ゴール：派遣と請負の指揮命令の違いを言える。偽装請負がなぜ問題になるか説明できるようになる</p>
+  <p><b>不正アクセス禁止法</b>は、他人のID・パスワードを勝手に使ってログインする行為を禁止する法律で、他人にそれを教えて手助けする行為（助長行為）も処罰の対象になります。<b>個人情報保護法</b>は、氏名などから特定の個人を識別できる情報を保護する法律で、人種・病歴・犯罪歴などは特に慎重に扱うべき「要配慮個人情報」として扱われます。</p>
+  <p>試験で頻出なのが、労働者派遣と請負における<b>指揮命令の違い</b>です。派遣は、派遣元（雇用主）と契約した労働者が、実際には<b>派遣先の指揮命令</b>を受けて働きます。一方、請負は、発注元は「仕事を完成させること」だけを依頼するもので、実際に働く人への指揮命令は<b>受託会社自身</b>が行います。もし発注元が受託会社の社員に直接指示を出してしまうと、契約上は請負なのに実態は派遣のような働き方になってしまう「<b>偽装請負</b>」という違法な状態になります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="請負と労働者派遣における指揮命令の違いを示す図。請負は自社の管理下、派遣は派遣先が指揮命令する" viewBox="0 0 700 320" width="700">
+    <text x="175" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">請負</text>
+    <rect x="30" y="40" width="110" height="50" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="85" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">発注者</text>
+
+    <rect x="215" y="40" width="120" height="50" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="275" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">受託会社</text>
+
+    <rect x="215" y="155" width="120" height="50" rx="8" fill="#FFFEFB" stroke="#E2DCCD"/>
+    <text x="275" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">受託会社の社員</text>
+
+    <line x1="140" y1="65" x2="210" y2="65" stroke="#211F1A" stroke-width="2" marker-end="url(#mk-st8a)"/>
+    <text x="175" y="55" text-anchor="middle" font-size="11" fill="#716C61">契約（完成を依頼）</text>
+
+    <line x1="275" y1="90" x2="275" y2="150" stroke="#211F1A" stroke-width="2" marker-end="url(#mk-st8a)"/>
+    <text x="340" y="118" text-anchor="middle" font-size="11" fill="#211F1A">指揮命令</text>
+    <text x="340" y="132" text-anchor="middle" font-size="11" fill="#211F1A">（自社管理下）</text>
+
+    <line x1="65" y1="90" x2="225" y2="160" stroke="#BE5A38" stroke-width="1.8" stroke-dasharray="5 4"/>
+    <line x1="72" y1="118" x2="92" y2="138" stroke="#BE5A38" stroke-width="2.4"/>
+    <line x1="92" y1="118" x2="72" y2="138" stroke="#BE5A38" stroke-width="2.4"/>
+    <text x="60" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#BE5A38">×直接指示は禁止</text>
+    <text x="60" y="236" text-anchor="middle" font-size="11" fill="#BE5A38">（すると偽装請負）</text>
+
+    <line x1="360" y1="10" x2="360" y2="300" stroke="#E2DCCD" stroke-width="1"/>
+
+    <text x="530" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">労働者派遣</text>
+    <rect x="390" y="40" width="120" height="50" rx="8" fill="#F5E8D4" stroke="#9a5a22"/>
+    <text x="450" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">派遣元</text>
+
+    <rect x="555" y="40" width="120" height="50" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="615" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">派遣先</text>
+
+    <rect x="470" y="155" width="120" height="50" rx="8" fill="#FFFEFB" stroke="#E2DCCD"/>
+    <text x="530" y="185" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">派遣社員</text>
+
+    <line x1="450" y1="90" x2="500" y2="150" stroke="#9a5a22" stroke-width="2" marker-end="url(#mk-st8c)"/>
+    <text x="420" y="118" text-anchor="middle" font-size="11" fill="#9a5a22">雇用契約</text>
+    <text x="420" y="132" text-anchor="middle" font-size="11" fill="#9a5a22">（給与を払う）</text>
+
+    <line x1="615" y1="90" x2="565" y2="150" stroke="#4A6FA5" stroke-width="2.6" marker-end="url(#mk-st8b)"/>
+    <text x="640" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#4A6FA5">指揮命令</text>
+    <text x="640" y="132" text-anchor="middle" font-size="11" fill="#4A6FA5">（ここからが正しい）</text>
+
+    <text x="530" y="235" text-anchor="middle" font-size="11" fill="#4A6FA5">派遣は「派遣先」が直接指示してOK</text>
+
+    <text x="350" y="300" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">指揮命令の出どころが違う＝ここが試験のひっかけポイント</text>
+
+    <defs>
+      <marker id="mk-st8a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#211F1A"/></marker>
+      <marker id="mk-st8b" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#4A6FA5"/></marker>
+      <marker id="mk-st8c" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9a5a22"/></marker>
+    </defs>
+  </svg>
+  <figcaption>図8-8　派遣と請負の指揮命令の違い（頻出図解）</figcaption>
+  </figure>
+  <p><b>中小受託取引適正化法</b>（旧・下請法。2026年に改称）は、大企業が中小の受託者に対して代金の不当な減額や支払い遅延などをしないよう定めた法律です。</p>
+  <table class="tbl">
+    <tr><th></th><th>請負</th><th>労働者派遣</th></tr>
+    <tr><td>指揮命令を出すのは</td><td>受託会社自身</td><td>派遣先</td></tr>
+    <tr><td>発注元・派遣先が直接指示すると</td><td>偽装請負（違法）</td><td>正しい働き方</td></tr>
+    <tr><td>契約の目的</td><td>仕事の完成</td><td>労働力の提供</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>請負＝指揮命令は受託側の中で完結、発注元は直接指示しない</li>
+      <li>派遣＝指揮命令は派遣先から出る（これが正しい働き方）</li>
+      <li>請負契約なのに発注元が直接指示＝偽装請負という違法状態</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-8">派遣と請負の指揮命令の違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 8-9 ============ -->
+<section class="item" id="st-9">
+  <h2><span class="no">8-9</span>企業活動と組織 — 株式会社のしくみと組織のかたち</h2>
+  <p class="goal">🎯 ゴール：株式会社の意思決定の流れを言える。CSR・コンプライアンス・コーポレートガバナンスの違いをイメージできる。代表的な組織形態を区別できるようになる</p>
+  <p>株式会社は、<b>株主総会</b>（株主が集まって取締役の選任などの重要事項を決める最高意思決定機関）で決まったことをもとに、<b>取締役会</b>が経営の実務を進めていく、という流れで動いています。</p>
+  <p>企業の姿勢を表す言葉もよく問われます。<b>CSR</b>（企業の社会的責任。利益だけでなく社会や環境に配慮する活動）、<b>コンプライアンス</b>（法令遵守。ルールを守ること）、<b>コーポレートガバナンス</b>（経営が暴走しないよう監視・統制するしくみ全体）は、それぞれ視点の広さが違う言葉として区別しておきましょう。</p>
+  <p>組織形態では、<b>事業部制組織</b>（製品や地域ごとに独立採算の部門を作る形。権限が現場に移り意思決定が早くなる）と、<b>マトリックス組織</b>（職能軸と事業軸を掛け合わせた二重の指揮系統を持つ形。専門性と機動力を両立できる一方、指示系統が複雑になりやすい）が代表的です。BCP（事業継続計画）についても、ストラテジの視点では「災害時にも重要な業務を止めない」という経営判断として位置づけられています。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>株主総会→取締役会の順で意思決定が流れる</li>
+      <li>コンプライアンス（法令遵守）⊂ コーポレートガバナンス（統制のしくみ全体）とイメージすると整理しやすい</li>
+      <li>マトリックス組織は「二重の指揮系統」がキーワード</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-9">会社の意思決定の流れと組織形態を説明できるようになった</label>
+</section>
+
+<!-- ============ 8-10 ============ -->
+<section class="item" id="st-10">
+  <h2><span class="no">8-10</span>新しい技術とDX — DXと生成AIを新傾向としておさえる</h2>
+  <p class="goal">🎯 ゴール：DXと単なるIT化の違いを説明できる。生成AI・ハルシネーション・説明可能なAIの意味を言えるようになる</p>
+  <p>DX（デジタルトランスフォーメーション）は、ITを使ってビジネスモデルや働き方そのものを変えていくことを指します。紙の書類をパソコンに置き換えるだけの「単なるIT化」とは違う、という点が定番のひっかけポイントです。</p>
+  <p>クラウド（IaaS/PaaS/SaaSの役割分担はセクション4-12で解説済み）、IoT（モノがインターネットにつながるしくみ）、ビッグデータ（桁違いに大きく多様なデータ）も基礎用語として押さえておきましょう。AIについては、<b>機械学習</b>（データからルールやパターンを学ぶ技術）、<b>ディープラーニング</b>（人間の神経回路をまねたしくみで、より複雑な特徴を学習する機械学習の一種）という位置づけを理解しておくと整理しやすくなります。</p>
+  <p>そして、シラバスVer.9.0で新しく試験範囲に加わったのが<b>生成AI</b>まわりの用語です。生成AIは文章や画像などを新しく作り出すAIですが、便利な一方で、もっともらしいけれど事実とは異なる内容を作り出してしまう「<b>ハルシネーション</b>」に注意が必要です。また、AIがなぜその判断をしたのかを人間にも分かるようにする取り組みを「<b>説明可能なAI</b>（XAI）」と呼びます。</p>
+  <p>ほかに、取引記録を鎖のようにつなげて改ざんを困難にする分散型の台帳技術である<b>ブロックチェーン</b>、定型的なパソコン作業をソフトウェアロボットに任せて自動化する<b>RPA</b>も、用語のイメージだけ掴んでおけば得点できます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>DX＝ビジネスモデルの変革、IT化＝単なる置き換え。ここを混同しない</li>
+      <li>生成AI関連（ハルシネーション・説明可能なAI）はVer.9.0の新傾向、今後も出題が増えそう</li>
+      <li>機械学習の一種がディープラーニング、という包含関係で覚える</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="st-10">DXと生成AI関連の新しい用語を説明できるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（ストラテジ）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+
+  <details><summary>Q1. PPMにおいて、市場成長率は低いが自社の市場シェアが高い事業を何と呼ぶか。</summary><div class="a">「<b>金のなる木</b>」と呼ぶ。今後の伸びしろは大きくないが、高いシェアで安定して稼いでくれる事業のこと。ここで得た資金を、成長率は高いがシェアの低い「問題児」に投資するのが定石。 <a class="qref" href="#st-1">→ 解説 8-1 に戻る</a></div></details>
+
+  <details><summary>Q2. マーケティングの4Pのうち「Price（価格）」は、買い手視点の4Cではどの要素に対応するか。</summary><div class="a">「<b>Cost（顧客の負担するコスト）</b>」に対応する。4Pは売り手側の言葉、4Cはそれをお客さん側の言葉に置き換えたものになっている。 <a class="qref" href="#st-2">→ 解説 8-2 に戻る</a></div></details>
+
+  <details><summary>Q3. 新商品Xへの投資は、成功確率70%で利益400万円、失敗確率30%で損失100万円になる。投資したときの期待値はいくらか。</summary><div class="a">400×0.7－100×0.3＝280－30＝<b>250万円</b>。値×確率を全部足すだけで求められる。 <a class="qref" href="#st-3">→ 解説 8-3 に戻る</a></div></details>
+
+  <details><summary>Q4. 固定費200万円、変動費率0.5の事業の損益分岐点売上高はいくらか。</summary><div class="a">200÷（1－0.5）＝200÷0.5＝<b>400万円</b>。 <a class="qref" href="#st-5">→ 解説 8-5 に戻る</a></div></details>
+
+  <details><summary>Q5. 固定費150万円、変動費率0.25の事業で、売上高が300万円だったときの利益はいくらか。</summary><div class="a">総費用＝150＋0.25×300＝150＋75＝225万円。利益＝300－225＝<b>75万円</b>。 <a class="qref" href="#st-5">→ 解説 8-5 に戻る</a></div></details>
+
+  <details><summary>Q6. C社から派遣された社員が、派遣先D社の指揮命令のもとでプログラムを開発した。このプログラムの著作権は原則どちらに帰属するか。</summary><div class="a">指揮命令をしていた<b>派遣先のD社</b>に帰属する。請負なら作った側、派遣なら指揮命令した派遣先、という違いに注意。 <a class="qref" href="#st-7">→ 解説 8-7 に戻る</a></div></details>
+
+  <details><summary>Q7. 請負契約で働く受託会社の社員に対して、発注者側の担当者が直接作業指示を行っていた。これは何にあたるか。</summary><div class="a"><b>偽装請負</b>にあたる。契約上は請負なのに、実態としては派遣のような指揮命令が行われている違法な状態のこと。指揮命令は受託会社自身が行うのが正しい形。 <a class="qref" href="#st-8">→ 解説 8-8 に戻る</a></div></details>
+
+  <details><summary>Q8. AIが、もっともらしいが事実とは異なる内容を作り出してしまう現象を何と呼ぶか。</summary><div class="a">「<b>ハルシネーション</b>」と呼ぶ。生成AIとあわせてシラバスVer.9.0で新しく試験範囲に加わった用語。 <a class="qref" href="#st-10">→ 解説 8-10 に戻る</a></div></details>
+
+</section>
+
+</main>
+
+<nav class="pager">
+  <a href="fe-manage.html"><span class="dir">‹ もどる</span>セクション7：マネジメント</a>
+  <a href="fe-algo.html" class="next"><span class="dir">つぎへ ›</span>セクション9：科目B アルゴリズム</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ セクション8：ストラテジ</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
+</script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション6：開発技術｜基本情報 学習ノート</title>
+<meta name="description" content="基本情報技術者試験 科目A対策。V字モデル・アジャイル・オブジェクト指向・テスト技法（境界値分析）・見積り(FP法)など、開発技術分野をやさしく解説します。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
+  /* 疑似コード表示（科目B用） */
+  pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.7;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;text-align:left}
+  pre.code b{color:var(--accent);font-weight:700}
+  /* スマホ図解・スムーススクロール・目次ボタン */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">セクション6</span>
+  <span class="prog">できた <b id="done-count">0</b> / 9</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 6</div>
+  <h1>🛠️ 開発技術</h1>
+  <p class="lead">開発の流れとテスト用語は、科目Aで毎回どこかに顔を出す得点源です。実務の経験がなくても、V字モデルや表で工程の対応関係を押さえれば、初見の問題でも確実に得点できます。</p>
+  <nav class="toc" id="toc">
+    <a href="#dv-1">1. 開発の流れ</a><a href="#dv-2">2. WF/アジャイル</a><a href="#dv-3">3. オブジェクト指向</a><a href="#dv-4">4. テスト技法</a><a href="#dv-5">5. テストの工程</a><a href="#dv-6">6. レビュー/品質</a><a href="#dv-7">7. 見積り(FP法)</a><a href="#dv-8">8. 言語/データ記述</a><a href="#dv-9">9. 保守/構成管理</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 6-1 ============ -->
+<section class="item" id="dv-1">
+  <h2><span class="no">6-1</span>ソフトウェア開発の流れ ― 家づくりの手順とV字モデル</h2>
+  <p class="goal">🎯 ゴール：開発の5つの工程の順番と、V字モデルで「どの設計工程がどのテスト工程に対応するか」を答えられるようになる。</p>
+  <p>ソフトウェアづくりは、家を建てるのと同じで工程の順番があります。まず<b>要件定義</b>で「何を作るか」を決め、続く<b>設計</b>で「どう作るか」を詰めます。設計には、利用者から見える画面や操作といった見た目を決める<b>外部設計</b>と、プログラムの内部構造を決める<b>内部設計</b>があります。そのあと<b>実装</b>（プログラミング）でコードを書き、<b>テスト</b>で動作を確認し、最後に<b>運用・保守</b>で使い続けます。</p>
+  <p>この流れを図にすると、下り坂（設計をだんだん細かくしていく）と上り坂（テストで一つずつ確認していく）がアルファベットの「V」の形に並びます。これを<b>V字モデル</b>と呼び、「行きの登山道で決めたことを、帰りの登山道で一つずつ確認する」とイメージすると覚えやすいです。行きで詳しく決めたことほど、帰りでも早い段階（下流）で確認します。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="V字モデル。左側に要件定義・外部設計・内部設計・プログラミングが下向きに並び、右側に単体テスト・結合テスト・システムテストが上向きに並ぶ。要件定義とシステムテスト、内部設計と単体テストが対応することを示す図" viewBox="0 0 700 380" width="700">
+    <polyline points="110,60 190,145 270,230 350,300 430,230 510,145 590,60" fill="none" stroke="#716C61" stroke-width="2"/>
+    <line x1="170" y1="60" x2="530" y2="60" stroke="#BE5A38" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <line x1="250" y1="145" x2="450" y2="145" stroke="#BE5A38" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <line x1="330" y1="230" x2="370" y2="230" stroke="#BE5A38" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <text x="350" y="45" text-anchor="middle" font-size="12" fill="#BE5A38" font-weight="700">対応</text>
+    <text x="350" y="132" text-anchor="middle" font-size="11" fill="#BE5A38">対応</text>
+    <text x="350" y="222" text-anchor="middle" font-size="11" fill="#BE5A38">対応</text>
+    <rect x="50" y="40" width="120" height="40" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="110" y="65" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">要件定義</text>
+    <rect x="130" y="125" width="120" height="40" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="190" y="150" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">外部設計</text>
+    <rect x="210" y="210" width="120" height="40" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="270" y="235" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">内部設計</text>
+    <rect x="280" y="280" width="140" height="40" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="350" y="305" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">プログラミング</text>
+    <rect x="370" y="210" width="120" height="40" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="430" y="235" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">単体テスト</text>
+    <rect x="450" y="125" width="120" height="40" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="510" y="150" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">結合テスト</text>
+    <rect x="530" y="40" width="120" height="40" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="590" y="65" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">システムテスト</text>
+    <text x="110" y="25" text-anchor="middle" font-size="12" fill="#4A6FA5" font-weight="700">◀ 設計（行き）</text>
+    <text x="590" y="25" text-anchor="middle" font-size="12" fill="#4f6b3a" font-weight="700">テスト（帰り） ▶</text>
+    <text x="350" y="352" text-anchor="middle" font-size="11" fill="#716C61">谷底のプログラミングの後、テスト側で1段ずつ、対応する設計どおりに動くか確認していきます</text>
+  </svg>
+  <figcaption>図6-1　V字モデル──設計工程とテスト工程の対応（行きは設計、帰りはテストの登山道）</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>試験で断言できる対応は「要件定義⇔システムテスト」「内部設計（詳細設計）⇔単体テスト」の2つ。</li>
+      <li>V字の谷底はプログラミング（実装）。ここから右側（テスト側）が始まる。</li>
+      <li>「外部＝見た目、内部＝中身」で外部設計と内部設計を混同しないこと。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-1">開発の流れとV字モデルの対応を説明できるようになった</label>
+</section>
+
+<!-- ============ 6-2 ============ -->
+<section class="item" id="dv-2">
+  <h2><span class="no">6-2</span>ウォーターフォールとアジャイル ― 一方通行の滝と、繰り返す反復</h2>
+  <p class="goal">🎯 ゴール：ウォーターフォールとアジャイルの違い、スクラムの役割名を選べるようになる。</p>
+  <p><b>ウォーターフォール（WF）</b>は、水が滝を流れ落ちるように、要件定義→設計→実装→テスト→運用・保守を上から順番に進める方法です。後戻りが前提になっていないため手戻りのコストが大きく、最初から全体像が見えている大規模なシステム向きです。</p>
+  <p>一方<b>アジャイル</b>は、「計画→設計→実装→テスト」という短い反復（<b>スプリント</b>、1〜4週間程度）を何度も繰り返し、そのたびに動くソフトウェアを少しずつ育てていく方法です。最初に全部を決めきらず、途中の変化に合わせて作り直せるのが強みです。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="左にウォーターフォールの5工程が上から下へ一方通行で並ぶ図、右にアジャイルの計画・設計・実装・テストがループする図" viewBox="0 0 700 300" width="700">
+    <defs>
+      <marker id="arrBlue" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4A6FA5"/></marker>
+      <marker id="arrGreen" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4f6b3a"/></marker>
+    </defs>
+    <text x="150" y="18" text-anchor="middle" font-size="14" fill="#4A6FA5" font-weight="700">ウォーターフォール</text>
+    <rect x="60" y="34" width="180" height="32" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="150" y="55" text-anchor="middle" font-size="13" fill="#211F1A">要件定義</text>
+    <rect x="60" y="79" width="180" height="32" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="150" y="100" text-anchor="middle" font-size="13" fill="#211F1A">設計</text>
+    <rect x="60" y="124" width="180" height="32" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="150" y="145" text-anchor="middle" font-size="13" fill="#211F1A">実装</text>
+    <rect x="60" y="169" width="180" height="32" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="150" y="190" text-anchor="middle" font-size="13" fill="#211F1A">テスト</text>
+    <rect x="60" y="214" width="180" height="32" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="150" y="235" text-anchor="middle" font-size="13" fill="#211F1A">運用・保守</text>
+    <line x1="150" y1="66" x2="150" y2="78" stroke="#4A6FA5" stroke-width="2" marker-end="url(#arrBlue)"/>
+    <line x1="150" y1="111" x2="150" y2="123" stroke="#4A6FA5" stroke-width="2" marker-end="url(#arrBlue)"/>
+    <line x1="150" y1="156" x2="150" y2="168" stroke="#4A6FA5" stroke-width="2" marker-end="url(#arrBlue)"/>
+    <line x1="150" y1="201" x2="150" y2="213" stroke="#4A6FA5" stroke-width="2" marker-end="url(#arrBlue)"/>
+    <text x="255" y="150" font-size="11" fill="#BE5A38">◀ 後戻り</text>
+    <text x="255" y="164" font-size="11" fill="#BE5A38">しにくい</text>
+    <text x="520" y="18" text-anchor="middle" font-size="14" fill="#4f6b3a" font-weight="700">アジャイル</text>
+    <rect x="465" y="43" width="110" height="34" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="520" y="65" text-anchor="middle" font-size="13" fill="#211F1A">計画</text>
+    <rect x="555" y="133" width="110" height="34" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="610" y="155" text-anchor="middle" font-size="13" fill="#211F1A">設計</text>
+    <rect x="465" y="223" width="110" height="34" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="520" y="245" text-anchor="middle" font-size="13" fill="#211F1A">実装</text>
+    <rect x="375" y="133" width="110" height="34" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="430" y="155" text-anchor="middle" font-size="13" fill="#211F1A">テスト</text>
+    <path d="M575,77 L555,133" fill="none" stroke="#4f6b3a" stroke-width="2" marker-end="url(#arrGreen)"/>
+    <path d="M580,167 L560,223" fill="none" stroke="#4f6b3a" stroke-width="2" marker-end="url(#arrGreen)"/>
+    <path d="M465,223 L465,167" fill="none" stroke="#4f6b3a" stroke-width="2" marker-end="url(#arrGreen)"/>
+    <path d="M460,133 L465,77" fill="none" stroke="#4f6b3a" stroke-width="2" marker-end="url(#arrGreen)"/>
+    <text x="520" y="103" text-anchor="middle" font-size="11" fill="#4f6b3a">スプリントを繰り返す ↻</text>
+  </svg>
+  <figcaption>図6-2　ウォーターフォール（一方通行）とアジャイル（反復）の違い</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th>スクラムの役割</th><th>役目</th></tr>
+    <tr><td>プロダクトオーナー</td><td>「何を作るか」（価値・優先順位）を決める</td></tr>
+    <tr><td>スクラムマスター</td><td>チームがうまく回るように支援する</td></tr>
+    <tr><td>開発者</td><td>実際に設計・実装・テストを行う</td></tr>
+  </table>
+  <p>毎日短時間で進捗を確認する会議を<b>デイリースクラム</b>と呼びます。似た考え方の手法に、2人1組で1台のPCに向かって書く<b>ペアプログラミング</b>や、先にテストを書いてから実装する<b>テスト駆動開発</b>を特徴とする<b>XP（エクストリームプログラミング）</b>があります。また、開発チーム（Dev）と運用チーム（Ops）が一体になって素早くリリースし続ける文化・体制を<b>DevOps</b>と呼びます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「何を作るか決める人＝プロダクトオーナー」「チームを支援する人＝スクラムマスター」を逆にしない。</li>
+      <li>WF＝計画重視・大規模向き、アジャイル＝小刻み・変化への対応力、という対比で覚える。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-2">ウォーターフォールとアジャイルの違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 6-3 ============ -->
+<section class="item" id="dv-3">
+  <h2><span class="no">6-3</span>オブジェクト指向の基礎 ― 自販機に学ぶカプセル化</h2>
+  <p class="goal">🎯 ゴール：カプセル化・継承・ポリモーフィズムの違いと、代表的なUML図の種類を区別できるようになる。</p>
+  <p>オブジェクト指向では、モノや概念を「データ（属性）」と「動作（操作）」をひとまとめにした<b>クラス</b>という設計図で表します。クラスから実際に作られた実体を<b>インスタンス</b>と呼びます。</p>
+  <p><b>カプセル化</b>は、自動販売機をイメージするとわかりやすいです。私たちは「お金を入れてボタンを押す」という決まった窓口しか使いませんが、機械の中で硬貨を識別したり在庫を管理したりする仕組みは見えません。このように内部のしくみを隠し、外部には決まった窓口（操作）だけを見せることをカプセル化と呼びます。中身の作りを後から変えても、窓口さえ変わらなければ周りに影響しません。</p>
+  <p><b>継承</b>は、親クラスの性質を子クラスがそのまま受け継ぐ仕組みです（例：「乗り物」クラスの性質を「車」クラスが受け継ぐ）。<b>ポリモーフィズム</b>は、同じ呼び出し方でもクラスによって違う動きになる性質です（例：「鳴け」という同じ指示でも、犬クラスは「ワン」、猫クラスは「ニャー」と違う動きをする）。</p>
+  <table class="tbl">
+    <tr><th>UML図</th><th>何を描く図か</th></tr>
+    <tr><td>クラス図</td><td>クラス同士の関係（構造）</td></tr>
+    <tr><td>シーケンス図</td><td>オブジェクト間のやり取りの時間的な流れ</td></tr>
+    <tr><td>ユースケース図</td><td>利用者（アクター）とシステムの機能の関係</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>カプセル化＝「隠す」、継承＝「受け継ぐ」、ポリモーフィズム＝「同じ呼び出しで違う動き」の3語をセットで覚える。</li>
+      <li>「時間的な流れ」と出てきたらシーケンス図、と一言キーワードで見分ける。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-3">カプセル化・継承・ポリモーフィズムを説明できるようになった</label>
+</section>
+
+<!-- ============ 6-4 ============ -->
+<section class="item" id="dv-4">
+  <h2><span class="no">6-4</span>テスト技法 ― 境目を狙って撃つ境界値分析</h2>
+  <p class="goal">🎯 ゴール：ブラックボックステストとホワイトボックステストの違いを理解し、境界値分析でテストすべき具体的な値を計算できるようになる。</p>
+  <p>テストには大きく2つの見方があります。<b>ブラックボックステスト</b>は中身を見ずに仕様（入出力の対応）だけを見てテストする方法で、代表値を1つ選ぶ<b>同値分割</b>と、範囲の境目の前後を狙って試す<b>境界値分析</b>が代表技法です。<b>ホワイトボックステスト</b>はプログラムの中身（通り道）を見てテストする方法で、すべての命令を1回は通す<b>命令網羅</b>、すべての分岐を1回は通る<b>分岐網羅</b>が代表です。</p>
+  <p>境界値分析は「服のサイズ試着」に似ています。Mサイズの人が試着するとき、Mだけでなく境目にあたるSやLも試して、境目でちゃんと切り替わるかを確認しますよね。プログラムのバグは、ちょうど境目の処理（以上・以下・未満の取り違えなど）に集中して出やすいので、境目を重点的に狙うのが効率的です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="入力範囲1から100の境界値分析。0と1が下限の境目、100と101が上限の境目としてテスト対象になることを示す数直線図" viewBox="0 0 700 220" width="700">
+    <text x="350" y="28" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">入力範囲「1〜100」の境界値分析</text>
+    <text x="350" y="46" text-anchor="middle" font-size="11" fill="#716C61">境目の前後（内側1・外側1）をテストする</text>
+    <rect x="90" y="95" width="110" height="30" fill="#F3E5DA"/>
+    <rect x="200" y="95" width="300" height="30" fill="#E7EDDC"/>
+    <rect x="500" y="95" width="110" height="30" fill="#F3E5DA"/>
+    <line x1="90" y1="110" x2="610" y2="110" stroke="#716C61" stroke-width="2"/>
+    <line x1="270" y1="100" x2="280" y2="120" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="290" y1="100" x2="300" y2="120" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="140" y1="95" x2="140" y2="125" stroke="#211F1A" stroke-width="1.5"/>
+    <circle cx="140" cy="110" r="5" fill="#BE5A38"/>
+    <text x="140" y="145" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">0</text>
+    <text x="140" y="160" text-anchor="middle" font-size="11" fill="#BE5A38">範囲外</text>
+    <line x1="200" y1="95" x2="200" y2="125" stroke="#211F1A" stroke-width="1.5"/>
+    <circle cx="200" cy="110" r="5" fill="#4f6b3a"/>
+    <text x="200" y="145" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">1</text>
+    <text x="200" y="160" text-anchor="middle" font-size="11" fill="#4f6b3a">下限(有効)</text>
+    <line x1="500" y1="95" x2="500" y2="125" stroke="#211F1A" stroke-width="1.5"/>
+    <circle cx="500" cy="110" r="5" fill="#4f6b3a"/>
+    <text x="500" y="145" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">100</text>
+    <text x="500" y="160" text-anchor="middle" font-size="11" fill="#4f6b3a">上限(有効)</text>
+    <line x1="560" y1="95" x2="560" y2="125" stroke="#211F1A" stroke-width="1.5"/>
+    <circle cx="560" cy="110" r="5" fill="#BE5A38"/>
+    <text x="560" y="145" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">101</text>
+    <text x="560" y="160" text-anchor="middle" font-size="11" fill="#BE5A38">範囲外</text>
+  </svg>
+  <figcaption>図6-4　境界値の数直線（0・1・100・101をテスト）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    入力欄が「1以上100以下の整数」だけを受け付ける仕様である。境界値分析の考え方に基づいてテストすべき入力値を、次の中からすべて選べ。<br>
+    ア. 0　イ. 1　ウ. 50　エ. 100　オ. 101
+    <details class="ans"><summary>答えを見る</summary>
+    答え：ア・イ・エ・オ（0, 1, 100, 101）<br>
+    境界値分析は「範囲の内側の端」と「範囲のすぐ外側」をペアで確認します。下限「1」については、有効な内側の端の1と、無効な外側の0をペアで確認。上限「100」については、有効な内側の端の100と、無効な外側の101をペアで確認します。ウの50は範囲の真ん中の代表値なので、こちらは同値分割（代表値を1つ選ぶ技法）の考え方にあたります。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>同値分割＝代表値を1つ、境界値分析＝境目の前後をペアで、と使い分ける。</li>
+      <li>境界値は「上限・下限それぞれ2つずつ（内側1・外側1）」＝範囲なら合計4つが基本形。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-4">同値分割と境界値分析を区別し、境界値を計算できるようになった</label>
+</section>
+
+<!-- ============ 6-5 ============ -->
+<section class="item" id="dv-5">
+  <h2><span class="no">6-5</span>テストの工程 ― 単体から受入まで、スタブとドライバの取り違え注意</h2>
+  <p class="goal">🎯 ゴール：テスト工程の順番と、トップダウン/ボトムアップ統合でのスタブ・ドライバの違いを取り違えずに答えられるようになる。</p>
+  <p>テストは、小さい範囲から大きい範囲へと段階的に進めます。順番は<b>単体テスト</b>（部品1つずつ）→<b>結合テスト</b>（部品同士のつなぎ目）→<b>システムテスト</b>（システム全体）→<b>受入テスト</b>（発注者が実際に確認）です。また、どこかを直した後に、その修正が別の場所へ悪い影響を与えていないかを確認するテストを<b>回帰テスト（リグレッションテスト）</b>と呼びます。</p>
+  <p>結合テストの進め方には2通りあります。上位モジュールから先に結合する<b>トップダウン</b>では、まだできていない下位モジュールの代わりに簡単な返事だけする代役が必要で、これを<b>スタブ</b>と呼びます。逆に下位モジュールから先に結合する<b>ボトムアップ</b>では、まだできていない上位モジュール（呼び出す側）の代わりが必要で、これを<b>ドライバ</b>と呼びます。この2つは名前が似ていて取り違えやすい定番のひっかけです。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="テスト工程は単体・結合・システム・受入の順に段階を上がっていく。下にトップダウン統合ではスタブが下位の代役になり、ボトムアップ統合ではドライバが上位の代役になることを示す図" viewBox="0 0 700 480" width="700">
+    <defs>
+      <marker id="arrAcc5" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#BE5A38"/></marker>
+    </defs>
+    <text x="350" y="20" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">テスト工程は範囲を広げながら段階的に進む</text>
+    <line x1="40" y1="280" x2="660" y2="280" stroke="#E2DCCD" stroke-width="1.5"/>
+    <line x1="110" y1="250" x2="110" y2="280" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="280" y1="190" x2="280" y2="280" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="450" y1="130" x2="450" y2="280" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="620" y1="75" x2="620" y2="280" stroke="#716C61" stroke-width="1.5"/>
+    <path d="M175,210 L215,190" fill="none" stroke="#BE5A38" stroke-width="2" marker-end="url(#arrAcc5)"/>
+    <path d="M345,150 L385,130" fill="none" stroke="#BE5A38" stroke-width="2" marker-end="url(#arrAcc5)"/>
+    <path d="M515,90 L555,75" fill="none" stroke="#BE5A38" stroke-width="2" marker-end="url(#arrAcc5)"/>
+    <rect x="45" y="210" width="130" height="40" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="110" y="235" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">単体テスト</text>
+    <rect x="215" y="150" width="130" height="40" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="280" y="175" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">結合テスト</text>
+    <rect x="385" y="90" width="130" height="40" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="450" y="115" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">システムテスト</text>
+    <rect x="555" y="35" width="130" height="40" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="620" y="60" text-anchor="middle" font-size="13" fill="#211F1A" font-weight="700">受入テスト</text>
+
+    <text x="175" y="325" text-anchor="middle" font-size="12" fill="#4A6FA5" font-weight="700">トップダウン統合（上から作る）</text>
+    <rect x="100" y="345" width="150" height="36" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="175" y="368" text-anchor="middle" font-size="12" fill="#211F1A" font-weight="700">上位モジュール（完成）</text>
+    <line x1="175" y1="381" x2="110" y2="410" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="175" y1="381" x2="240" y2="410" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="55" y="410" width="110" height="36" rx="8" fill="#F3E5DA" stroke="#BE5A38" stroke-dasharray="4,3"/>
+    <text x="110" y="430" text-anchor="middle" font-size="11" fill="#BE5A38" font-weight="700">スタブ</text>
+    <text x="110" y="442" text-anchor="middle" font-size="10" fill="#716C61">(下位の代役)</text>
+    <rect x="185" y="410" width="110" height="36" rx="8" fill="#F3E5DA" stroke="#BE5A38" stroke-dasharray="4,3"/>
+    <text x="240" y="430" text-anchor="middle" font-size="11" fill="#BE5A38" font-weight="700">スタブ</text>
+    <text x="240" y="442" text-anchor="middle" font-size="10" fill="#716C61">(下位の代役)</text>
+
+    <text x="525" y="325" text-anchor="middle" font-size="12" fill="#4f6b3a" font-weight="700">ボトムアップ統合（下から作る）</text>
+    <rect x="450" y="345" width="150" height="36" rx="10" fill="#F3E5DA" stroke="#BE5A38" stroke-dasharray="4,3"/>
+    <text x="525" y="365" text-anchor="middle" font-size="11" fill="#BE5A38" font-weight="700">ドライバ</text>
+    <text x="525" y="377" text-anchor="middle" font-size="10" fill="#716C61">(上位の代役)</text>
+    <line x1="525" y1="381" x2="460" y2="410" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="525" y1="381" x2="590" y2="410" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="405" y="410" width="110" height="36" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="460" y="430" text-anchor="middle" font-size="11" fill="#211F1A" font-weight="700">下位モジュール</text>
+    <text x="460" y="442" text-anchor="middle" font-size="10" fill="#716C61">(完成)</text>
+    <rect x="535" y="410" width="110" height="36" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="590" y="430" text-anchor="middle" font-size="11" fill="#211F1A" font-weight="700">下位モジュール</text>
+    <text x="590" y="442" text-anchor="middle" font-size="10" fill="#716C61">(完成)</text>
+
+    <text x="350" y="470" text-anchor="middle" font-size="11" fill="#716C61">覚え方：スタブ＝下にいる代役／ドライバ＝上から操縦する運転手</text>
+  </svg>
+  <figcaption>図6-5　テスト工程の順番と、トップダウン／ボトムアップ統合の代役（スタブ・ドライバ）</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>スタブ＝下位（した）の代役、ドライバ＝上位（うえ）の代役。「した」「うえ」で位置を思い出す。</li>
+      <li>順番は「単体→結合→システム→受入」。範囲がだんだん広がっていく。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-5">テストの工程順とスタブ・ドライバの違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 6-6 ============ -->
+<section class="item" id="dv-6">
+  <h2><span class="no">6-6</span>レビューと品質管理 ― 会議の厳しさとバグの収束曲線</h2>
+  <p class="goal">🎯 ゴール：ウォークスルーとインスペクションの違い、信頼度成長曲線の意味を説明できるようになる。</p>
+  <p>プログラムやドキュメントを複数人の目でチェックする活動を<b>レビュー</b>と呼びます。代表的な方法が2つあり、違いは「誰が主導するか」と「厳しさ」です。</p>
+  <table class="tbl">
+    <tr><th>手法</th><th>主催者</th><th>厳しさ</th></tr>
+    <tr><td>ウォークスルー</td><td>作成者自身</td><td>比較的やわらかい説明会</td></tr>
+    <tr><td>インスペクション</td><td>第三者のモデレータ（進行役）</td><td>最も厳格</td></tr>
+  </table>
+  <p>テスト工程では、見つかったバグの累積件数を時間の経過とともにグラフにした<b>バグ管理図（信頼度成長曲線）</b>を使うことがあります。テストを進めるとバグの発見件数が増えていきますが、やがてカーブがなだらかになり収束していきます。この「収束したかどうか」を、リリースしてよいかの判断材料の一つにします。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>作成者本人が主導＝ウォークスルー、第三者が主導＝インスペクション、という「誰が主導するか」で区別する。</li>
+      <li>信頼度成長曲線が収束＝バグが出尽くした目安、と覚える。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-6">ウォークスルーとインスペクションの違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 6-7 ============ -->
+<section class="item" id="dv-7">
+  <h2><span class="no">6-7</span>見積り ― 機能の数で規模を測るファンクションポイント法</h2>
+  <p class="goal">🎯 ゴール：ファンクションポイント法の考え方を理解し、簡易計算ができるようになる。</p>
+  <p>開発の規模（＝どれくらい大変か）を見積もる方法には、コードの行数を基準にする<b>LOC法</b>と、画面や帳票といった「機能の数」を基準にする<b>ファンクションポイント法（FP法）</b>があります。FP法は、機能ごとに決められた重み（複雑さの点数）を掛けて、全部足し合わせることで規模（FP値）を求めます。コードの書き方や言語に左右されにくいのが利点です。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    あるシステムには、入力画面が3つ（1画面あたりの重み5）、出力帳票が2つ（1帳票あたりの重み7）ある。このシステムのファンクションポイント値を求めよ。
+    <details class="ans"><summary>答えを見る</summary>
+    入力画面：3 × 5 = 15<br>
+    出力帳票：2 × 7 = 14<br>
+    合計（FP値）：15 + 14 = <b>29</b>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>FP法の計算は「機能の数 × 重み」を機能の種類ごとに求めて、最後に全部足すだけ。重みは問題文に与えられる。</li>
+      <li>LOC法（行数ベース）と混同しない。FP法は「行数によらない」のが特徴。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-7">ファンクションポイント法で規模を計算できるようになった</label>
+</section>
+
+<!-- ============ 6-8 ============ -->
+<section class="item" id="dv-8">
+  <h2><span class="no">6-8</span>プログラム言語とデータ記述 ― 翻訳の仕方とデータの書き方</h2>
+  <p class="goal">🎯 ゴール：コンパイラとインタプリタの違い、HTML/XML/JSON/CSVそれぞれの用途を区別できるようになる。</p>
+  <p>人間が書いたプログラム（ソースコード）を、コンピュータが実行できる形に変換する方式には2通りあります。</p>
+  <table class="tbl">
+    <tr><th>方式</th><th>翻訳のタイミング</th><th>特徴</th></tr>
+    <tr><td>コンパイラ</td><td>実行前にまとめて全部翻訳</td><td>翻訳に時間がかかるが、実行は速い</td></tr>
+    <tr><td>インタプリタ</td><td>1行ずつその場で翻訳しながら実行</td><td>手軽だが、実行はやや遅い</td></tr>
+  </table>
+  <p>データを表現する記述形式にも用途の違いがあります。</p>
+  <table class="tbl">
+    <tr><th>形式</th><th>書き方の特徴</th><th>主な用途</th></tr>
+    <tr><td>HTML</td><td>タグで文書の構造を表す</td><td>Webページの構造</td></tr>
+    <tr><td>XML</td><td>タグを自分で自由に定義できる</td><td>データの構造化・システム間の交換</td></tr>
+    <tr><td>JSON</td><td>{ }とキー:値の組、配列は[ ]</td><td>軽量なデータ交換（Web APIなど）</td></tr>
+    <tr><td>CSV</td><td>カンマ区切りの単純な表形式</td><td>表形式データの受け渡し</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「{ }とキー:値」が出てきたらJSON、「タグを自分で定義できる」が出てきたらXML、と特徴語で見分ける。</li>
+      <li>コンパイラ＝先にまとめて翻訳、インタプリタ＝その場で1行ずつ、と翻訳のタイミングで区別する。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-8">コンパイラ/インタプリタとデータ記述形式を区別できるようになった</label>
+</section>
+
+<!-- ============ 6-9 ============ -->
+<section class="item" id="dv-9">
+  <h2><span class="no">6-9</span>保守と構成管理 ― 動きを変えずに中身を整える</h2>
+  <p class="goal">🎯 ゴール：バージョン管理・リファクタリング・リバースエンジニアリングなど保守関連の用語を区別できるようになる。</p>
+  <p>リリース後のプログラムは、修正や機能追加をしながら使い続けます。この段階を支える用語をまとめて押さえます。</p>
+  <ul>
+    <li><b>バージョン管理</b>：誰が・いつ・何を変更したかの履歴を残す仕組み。複数人での同時編集や、過去の状態への巻き戻しができる。</li>
+    <li><b>回帰（リグレッション）防止</b>：修正が別の場所に悪影響を与えていないか、回帰テストで確認すること（6-5と関連）。</li>
+    <li><b>リファクタリング</b>：外から見た動き（機能）は変えずに、プログラムの中身だけを整理整頓してわかりやすくすること。</li>
+    <li><b>リバースエンジニアリング</b>：すでに動いているプログラムを解析して、設計書やしくみを逆にたどって明らかにすること。</li>
+    <li><b>マイグレーション</b>：古い環境（言語・OS・DBなど）から新しい環境へシステムを移行すること。</li>
+  </ul>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>リファクタリングは「動きは変えない」が絶対条件。機能が変わったらそれは修正であってリファクタリングではない。</li>
+      <li>リバースエンジニアリングは名前の通り「逆に（リバース）」たどる＝完成品から設計を推測する。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="dv-9">保守・構成管理の用語を区別できるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（開発技術）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+  <details><summary>Q1. V字モデルにおいて、要件定義に対応するテスト工程はどれか。また、内部設計（詳細設計）に対応するテスト工程はどれか。</summary><div class="a">要件定義⇔システムテスト、内部設計（詳細設計）⇔単体テスト。行きの設計で詳しく決めた内容ほど、帰りの早い段階（下流）のテストで確認する。 <a class="qref" href="#dv-1">→ 解説 6-1 に戻る</a></div></details>
+  <details><summary>Q2. スクラムで、「何を作るか」（価値・優先順位）を決める役割の名前は何か。</summary><div class="a">プロダクトオーナー。チームがうまく回るように支援するスクラムマスターと混同しないこと。 <a class="qref" href="#dv-2">→ 解説 6-2 に戻る</a></div></details>
+  <details><summary>Q3. オブジェクト指向の「カプセル化」とは何か、自動販売機を例に説明せよ。</summary><div class="a">硬貨の識別や在庫管理など内部のしくみを隠し、外部には「お金を入れてボタンを押す」という決まった窓口だけを見せること。中身の実装を変えても、窓口が変わらなければ周りに影響しない。 <a class="qref" href="#dv-3">→ 解説 6-3 に戻る</a></div></details>
+  <details><summary>Q4. 入力欄が「1以上100以下の整数」だけを受け付ける仕様のとき、境界値分析でテストすべき4つの値をすべて答えよ。</summary><div class="a">0, 1, 100, 101（下限1の内側1・外側1、上限100の内側1・外側1のペア）。 <a class="qref" href="#dv-4">→ 解説 6-4 に戻る</a></div></details>
+  <details><summary>Q5. 合格ラインが「60点以上（60点を含む）」の場合、境界値分析で確認すべき2つの点数はどれか。</summary><div class="a">59点（不合格になるはず）と60点（合格になるはず）。合否が切り替わる境目の前後を確認する。 <a class="qref" href="#dv-4">→ 解説 6-4 に戻る</a></div></details>
+  <details><summary>Q6. トップダウンで結合テストを行う際、未完成の下位モジュールの代わりに使うものは何か。ボトムアップの場合、未完成の上位モジュールの代わりに使うものは何か。</summary><div class="a">下位の代役＝スタブ、上位の代役＝ドライバ。「スタブは下、ドライバは上」で位置を覚える。 <a class="qref" href="#dv-5">→ 解説 6-5 に戻る</a></div></details>
+  <details><summary>Q7. 入力画面4つ（重み4）、出力帳票1つ（重み7）からなるシステムのファンクションポイント値（簡易計算）を求めよ。</summary><div class="a">画面：4×4=16、帳票：1×7=7、合計：16+7=<b>23</b>。 <a class="qref" href="#dv-7">→ 解説 6-7 に戻る</a></div></details>
+  <details><summary>Q8. { }で囲み、キーと値の組をカンマ区切りで並べる軽量なデータ交換形式はどれか（HTML/XML/JSON/CSVから選べ）。</summary><div class="a">JSON。タグを使うHTML・XMLや、カンマ区切りの表形式であるCSVと区別する。 <a class="qref" href="#dv-8">→ 解説 6-8 に戻る</a></div></details>
+</section>
+
+</main>
+
+<nav class="pager">
+  <a href="fe-database.html"><span class="dir">‹ もどる</span>セクション5：データベース</a>
+  <a href="fe-manage.html" class="next"><span class="dir">つぎへ ›</span>セクション7：マネジメント</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ セクション6：開発技術</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
+</script>
+</body>
+</html>

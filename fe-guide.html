@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基本情報 学習ノート｜図解でおさらい</title>
+<meta name="description" content="基本情報技術者試験（FE）の頻出99項目を図解×チェック×クイズで定着させる学習ノート。科目Aの計算・用語から科目Bの擬似言語トレースまで。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.8;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  header.hero{background:var(--surface);border:1px solid var(--border);border-radius:20px;
+    padding:30px 24px 26px;margin-top:18px;text-align:center;box-shadow:0 12px 28px -24px rgba(50,38,24,.4)}
+  .hero .mark{display:block;margin:0 auto 12px}
+  .hero h1{font-size:1.55rem;font-weight:700}
+  .hero p{color:var(--ink-dim);font-size:.88rem;margin-top:8px}
+  .hero .rule{width:46px;height:3px;background:var(--accent);border-radius:2px;margin:16px auto 0}
+  main{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .card h2{font-size:1.05rem;margin-bottom:10px}
+  .card p{font-size:.9rem;margin:8px 0}
+  .card ol,.card ul{font-size:.9rem;padding-left:1.5em;margin:8px 0}
+  .card li{margin:5px 0}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:10px 0 4px}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left;white-space:nowrap}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:12px 0 2px;font-size:.88rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  /* 全体進捗 */
+  .total{display:flex;align-items:center;gap:18px}
+  .total .num{font-size:2rem;font-weight:700;color:var(--accent);white-space:nowrap}
+  .total .num small{font-size:.95rem;color:var(--ink-dim);font-weight:600}
+  .total .side{flex:1}
+  .bar{height:12px;background:var(--surface2);border:1px solid var(--border);border-radius:99px;overflow:hidden}
+  .bar .fill{height:100%;background:linear-gradient(90deg,var(--accent-dim),var(--accent));border-radius:99px;width:0%;transition:width .4s ease}
+  .total .msg{font-size:.8rem;color:var(--ink-dim);margin-top:7px}
+  /* セクションカード */
+  .kamoku{font-size:.78rem;font-weight:700;color:var(--ink-dim);letter-spacing:.06em;margin:6px 2px -6px}
+  .sec{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:16px 18px;
+    transition:transform .12s,box-shadow .12s,border-color .12s}
+  .sec:hover{border-color:var(--accent-dim);box-shadow:0 7px 18px -9px rgba(60,45,28,.3);transform:translateY(-1px)}
+  .sec .ico{flex-shrink:0;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;
+    font-size:1.5rem;background:var(--accent-bg,#F2E9D8);border:1px solid rgba(80,60,30,.06)}
+  .sec .meta{min-width:0;flex:1}
+  .sec .t{display:block;font-weight:700;font-size:.98rem}
+  .sec .d{display:block;color:var(--ink-dim);font-size:.76rem;margin:2px 0 7px}
+  .sec .bar{display:block;height:8px;max-width:430px}
+  .sec .cnt{font-size:.74rem;color:var(--ink-dim);font-weight:600;white-space:nowrap;margin-left:6px}
+  .sec .cnt b{color:var(--accent)}
+  .sec .arrow{color:var(--accent-dim);font-size:1.25rem;flex-shrink:0}
+  /* 抜き打ちチェック */
+  .rndcheck{background:linear-gradient(135deg,#FCFBF7,#F3E5DA);border:1px solid var(--accent-line)}
+  .rndcheck .q{background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:18px 16px;margin:12px 0;text-align:center}
+  .rndcheck .q .sec-tag{font-size:.72rem;color:var(--ink-dim);letter-spacing:.04em}
+  .rndcheck .q .title{font-size:1.14rem;font-weight:700;margin:6px 0 4px}
+  .rndcheck .q .ask{font-size:.82rem;color:var(--ink-dim)}
+  .rndcheck .q .go{display:inline-block;margin-top:10px;font-size:.82rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btns button{flex:1;min-width:130px;border:none;border-radius:11px;padding:11px 14px;
+    font-family:var(--sans);font-weight:700;font-size:.88rem;cursor:pointer;transition:.12s}
+  .btn-draw{background:var(--accent);color:#fff}
+  .btn-draw:hover{background:#A84C2E}
+  .btn-ok{background:var(--green-soft);color:var(--green);border:1px solid #D5DFC6!important}
+  .btn-ng{background:#F7E3DE;color:#b23a2e;border:1px solid #E8C4BA!important}
+  .btn-ok:hover,.btn-ng:hover{filter:brightness(.97)}
+  .hidden{display:none}
+  .tips{font-size:.86rem}
+  .tips b{color:var(--accent)}
+  .related{display:flex;gap:10px;flex-wrap:wrap}
+  .related a{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;
+    background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;font-size:.84rem;font-weight:600;transition:.12s}
+  .related a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .reset{text-align:center;margin-top:4px}
+  .reset button{background:none;border:none;color:var(--ink-dim);font-size:.74rem;font-family:var(--sans);
+    text-decoration:underline;cursor:pointer}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="index.html">‹ ツール置き場</a>
+  <span class="prog">全体 <b id="total-mini">0</b> / 99</span>
+</header>
+
+<header class="hero">
+  <svg class="mark" width="56" height="30" viewBox="0 0 56 30" aria-hidden="true">
+    <rect x="4" y="5" width="30" height="20" rx="4" fill="none" stroke="#BE5A38" stroke-width="2.6"/>
+    <path d="M11 15 l5 5 l9 -10" fill="none" stroke="#BE5A38" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="45" cy="15" r="7" fill="#FCFBF7" stroke="#BE5A38" stroke-width="2.6"/>
+    <line x1="45" y1="15" x2="45" y2="10.5" stroke="#BE5A38" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="45" y1="15" x2="48.5" y2="17" stroke="#BE5A38" stroke-width="2.2" stroke-linecap="round"/>
+  </svg>
+  <h1>基本情報 学習ノート</h1>
+  <p>試験に出る99項目を、図解×チェック×クイズで「覚えれば受かる」形に凝縮</p>
+  <div class="rule"></div>
+</header>
+
+<main>
+
+<!-- 試験の基本データ -->
+<section class="card">
+  <h2>📝 試験の基本データ（2026年7月時点・IPA公式より）</h2>
+  <table class="tbl">
+    <tr><th>方式</th><td>CBT（パソコン受験）・通年いつでも申込可／受験料 7,500円</td></tr>
+    <tr><th>科目A</th><td>90分・60問（四択）── 知識問題。テクノロジ／マネジメント／ストラテジ</td></tr>
+    <tr><th>科目B</th><td>100分・20問 ── アルゴリズム（擬似言語）16問＋情報セキュリティ4問</td></tr>
+    <tr><th>合格基準</th><td>両科目とも 600点／1,000点 以上（片方だけ高得点でも不合格）</td></tr>
+    <tr><th>合格率</th><td>直近は 35〜40% 前後</td></tr>
+  </table>
+  <div class="caution"><span class="tt">⚠️ 受験時期のはなし</span>
+    2027年度に試験制度の大幅刷新が予定されていて、<b>現行制度（＝このノートの前提）は2026年度が最終年度</b>。
+    さらにCBT試験は2026年12月28日以降いったん休止予定（再開時期は2026年秋に告知）。
+    現行制度で受けるなら<b>2026年内の受験</b>がいちばん確実です。
+  </div>
+</section>
+
+<!-- 全体進捗 -->
+<section class="card">
+  <h2>📊 いまの定着度</h2>
+  <div class="total">
+    <div class="num"><span id="total-count">0</span><small> / 99 項目</small></div>
+    <div class="side">
+      <div class="bar"><div class="fill" id="total-fill"></div></div>
+      <div class="msg" id="total-msg">各ページの「できるようになった」チェックがここに集計されます（この端末に保存）。</div>
+    </div>
+  </div>
+</section>
+
+<!-- セクション（科目A） -->
+<div class="kamoku">科目A（知識・60問）</div>
+<a class="sec" href="fe-basics.html">
+  <span class="ico" style="--accent-bg:#F4E7DB">🔢</span>
+  <span class="meta">
+    <span class="t">1. 基礎理論 <span class="cnt"><b id="c-fb">0</b>/10</span></span>
+    <span class="d">2進数・補数・論理演算・情報量・確率統計 ── 計算問題の土台</span>
+    <span class="bar"><span class="fill" id="f-fb" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="fe-computer.html">
+  <span class="ico" style="--accent-bg:#E3EAF3">🖥️</span>
+  <span class="meta">
+    <span class="t">2. コンピュータシステム <span class="cnt"><b id="c-cs">0</b>/12</span></span>
+    <span class="d">CPU・キャッシュ・OS・RAID・稼働率・待ち行列 ── 定番計算の宝庫</span>
+    <span class="bar"><span class="fill" id="f-cs" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="fe-network.html">
+  <span class="ico" style="--accent-bg:#E7EDDC">🌐</span>
+  <span class="meta">
+    <span class="t">3. ネットワーク <span class="cnt"><b id="c-nw">0</b>/11</span></span>
+    <span class="d">OSI/TCPIP・ポート番号・IPアドレス・サブネット計算・DNS</span>
+    <span class="bar"><span class="fill" id="f-nw" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="fe-security.html">
+  <span class="ico" style="--accent-bg:#F3E5DA">🔐</span>
+  <span class="meta">
+    <span class="t">4. セキュリティ <span class="cnt"><b id="c-sec">0</b>/13</span></span>
+    <span class="d">攻撃手法・暗号・署名・認証・ISMS ── 最多出題＋科目Bに直結</span>
+    <span class="bar"><span class="fill" id="f-sec" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="fe-database.html">
+  <span class="ico" style="--accent-bg:#EAE4D5">🗃️</span>
+  <span class="meta">
+    <span class="t">5. データベース <span class="cnt"><b id="c-db">0</b>/10</span></span>
+    <span class="d">正規化・SQL・トランザクション・障害回復</span>
+    <span class="bar"><span class="fill" id="f-db" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="fe-develop.html">
+  <span class="ico" style="--accent-bg:#E4ECDE">🛠️</span>
+  <span class="meta">
+    <span class="t">6. 開発技術 <span class="cnt"><b id="c-dv">0</b>/9</span></span>
+    <span class="d">V字モデル・アジャイル・テスト技法・見積り</span>
+    <span class="bar"><span class="fill" id="f-dv" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="fe-manage.html">
+  <span class="ico" style="--accent-bg:#F5E8D4">📋</span>
+  <span class="meta">
+    <span class="t">7. マネジメント <span class="cnt"><b id="c-mg">0</b>/9</span></span>
+    <span class="d">クリティカルパス・人月計算・ITIL・SLA・監査</span>
+    <span class="bar"><span class="fill" id="f-mg" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<a class="sec" href="fe-strategy.html">
+  <span class="ico" style="--accent-bg:#E3EAF3">📈</span>
+  <span class="meta">
+    <span class="t">8. ストラテジ <span class="cnt"><b id="c-st">0</b>/10</span></span>
+    <span class="d">SWOT・PPM・損益分岐点・著作権・法律・生成AI</span>
+    <span class="bar"><span class="fill" id="f-st" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+<div class="kamoku">科目B（技能・20問）── 配点の8割が擬似言語</div>
+<a class="sec" href="fe-algo.html">
+  <span class="ico" style="--accent-bg:#F4E7DB">🧩</span>
+  <span class="meta">
+    <span class="t">9. アルゴリズムと擬似言語 <span class="cnt"><b id="c-al">0</b>/15</span></span>
+    <span class="d">擬似言語の読み方・トレースの型・再帰・ソート・科目Bセキュリティの解き方</span>
+    <span class="bar"><span class="fill" id="f-al" style="display:block"></span></span>
+  </span>
+  <span class="arrow">›</span>
+</a>
+
+<!-- 抜き打ちチェック -->
+<section class="card rndcheck">
+  <h2>🎲 抜き打ちチェック（アクティブ・リコール）</h2>
+  <p style="font-size:.85rem;color:var(--ink-dim)">全99項目からランダムに1問。<b>まず何も見ずに30秒、口に出して説明</b>してみてから判定しよう。「思い出そうとする」こと自体が最強の記憶術です。</p>
+  <div class="q hidden" id="q-box">
+    <div class="sec-tag" id="q-sec">セクション1</div>
+    <div class="title" id="q-title">…</div>
+    <div class="ask">→ 30秒で説明できる？ 定義・公式・例のどれかを使ってOK</div>
+    <br><a class="go" id="q-link" href="#">解説ページで確認する →</a>
+  </div>
+  <div class="btns" id="btns-draw">
+    <button class="btn-draw" id="btn-draw">出題する</button>
+  </div>
+  <div class="btns hidden" id="btns-judge">
+    <button class="btn-ok" id="btn-ok">✅ 説明できた</button>
+    <button class="btn-ng" id="btn-ng">🤔 まだあやしい</button>
+    <button class="btn-draw" id="btn-next">次の問題</button>
+  </div>
+</section>
+
+<!-- 使い方 -->
+<section class="card">
+  <h2>📖 このノートの使い方（おすすめの回し方）</h2>
+  <ol>
+    <li><b>1周目：</b>セクション1から順に、図を眺めながら読む。理解できた項目は「✔ できるようになった」にチェック。</li>
+    <li><b>計算問題は手を動かす：</b>稼働率・サブネット・損益分岐点などは、例題を紙で解いてからチェック。</li>
+    <li><b>科目Bはトレースの型：</b>セクション9の「トレース表の書き方」を身につけてから、IPAの公開問題で練習する。</li>
+    <li><b>隙間時間（5分でOK）：</b>上の<b>抜き打ちチェック</b>か、各ページ末の<b>🎲ランダムクイズ</b>を数問。見ずに答える→答え合わせ。</li>
+    <li><b>忘れかけた頃にもう一度：</b>翌日→3日後→1週間後、と間隔をあけて繰り返すと長期記憶になる（間隔反復）。</li>
+  </ol>
+  <p class="tips">💡 優先順位に迷ったら「<b>セキュリティ → 基礎理論 → アルゴリズム</b>」の順。出題数と配点がいちばん大きい3つです。</p>
+</section>
+
+<!-- 直前1週間プラン -->
+<section class="card">
+  <h2>⏱️ 試験まで1週間の回し方（短期集中プラン）</h2>
+  <ol>
+    <li><b>Day 1-2：</b>セクション4 セキュリティ＋セクション1 基礎理論。計算は例題を紙で解く。</li>
+    <li><b>Day 3-4：</b>セクション9 アルゴリズム（トレース表の型を体に入れる）＋セクション2・3の計算項目（稼働率・キャッシュ・サブネット）。</li>
+    <li><b>Day 5：</b>セクション5〜8を用語中心に一気読み。覚えたらすぐチェック。</li>
+    <li><b>Day 6：</b>IPA公開問題を時間を計って通しで1回（科目Bは1問5分厳守、セキュリティ4問を先に）。</li>
+    <li><b>Day 7：</b>抜き打ちチェックを回して「あやしい」が出た項目だけ復習。夜は早く寝る。</li>
+  </ol>
+  <p class="tips">🎯 満点は要らない。<b>両科目600/1000</b>＝6割ちょっとで合格。取れる問題を確実に。</p>
+</section>
+
+<!-- 本試験の過去問 -->
+<section class="card">
+  <h2>✍️ 仕上げは本物の問題で</h2>
+  <p>このノートで土台を作ったら、IPA公式の問題で腕試しを。科目Bは特に「時間を計って解く」練習が効きます。</p>
+  <div class="related">
+    <a href="https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/2025r07.html" target="_blank" rel="noopener">📄 IPA 公開問題（2025年度）<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">本試験からの公開問題と解答例</span></a>
+    <a href="https://www.ipa.go.jp/shiken/syllabus/gaiyou.html" target="_blank" rel="noopener">📚 IPA 試験要綱・シラバス<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">サンプル問題・最新の出題範囲</span></a>
+  </div>
+  <div class="reset"><button id="btn-reset">チェック進捗をすべてリセットする</button></div>
+</section>
+
+</main>
+<footer>基本情報 学習ノート ─ made by nerun</footer>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+
+const ITEMS=[
+ {id:'fb-1', t:'2進数と基数変換（10進⇔2進⇔16進）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-2', t:'負の数の表し方（2の補数）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-3', t:'シフト演算と桁あふれ', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-4', t:'論理演算（AND・OR・NOT・XOR）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-5', t:'ド・モルガンの法則とベン図', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-6', t:'論理回路（MIL記号）の読み方', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-7', t:'情報量の単位（ビット・バイト・2のn乗）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-8', t:'文字コード（ASCII・Unicode・UTF-8）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-9', t:'確率と場合の数（順列・組合せ・期待値）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-10', t:'統計の基礎（平均・分散・正規分布）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'cs-1', t:'コンピュータの5大装置とCPUの動き', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-2', t:'CPUの性能計算（クロック・CPI・MIPS）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-3', t:'パイプライン処理', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-4', t:'メモリの階層（レジスタ〜補助記憶）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-5', t:'キャッシュの実効アクセス時間の計算', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-6', t:'補助記憶とRAID（0・1・5）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-7', t:'OSの役割とタスク管理', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-8', t:'排他制御とデッドロック', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-9', t:'仮想記憶（ページング・LRU）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-10', t:'信頼性のシステム構成（デュアル／デュプレックス）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-11', t:'稼働率の計算（直列・並列・MTBF/MTTR）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-12', t:'待ち行列（M/M/1）の計算', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'nw-1', t:'ネットワークの全体像（LAN/WAN・パケット交換）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-2', t:'OSI参照モデルとTCP/IPの対応', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-3', t:'主要プロトコルとポート番号', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-4', t:'IPアドレスの仕組み（IPv4・プライベートIP）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-5', t:'サブネットマスクとCIDRの計算', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-6', t:'DNSとDHCPの働き', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-7', t:'TCPとUDPの違い（3ウェイハンドシェイク）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-8', t:'LANのしくみ（MACアドレス・ARP）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-9', t:'無線LAN（SSID・WPA2/3）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-10', t:'伝送時間の計算', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-11', t:'Webとメールのしくみ（Cookie・SMTP/POP）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'sec-1', t:'情報セキュリティの3要素（CIA）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-2', t:'マルウェアの種類（ウイルス・ワーム・ランサム）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-3', t:'技術的な攻撃手法（SQLインジェクション等）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-4', t:'人を狙う攻撃とパスワード攻撃', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-5', t:'共通鍵暗号と公開鍵暗号', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-6', t:'ハイブリッド暗号とTLS（HTTPS）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-7', t:'ハッシュ関数とデジタル署名', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-8', t:'認証の技術（多要素・生体認証）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-9', t:'PKIと電子証明書（認証局）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-10', t:'ネットワークを守る装置（FW・IDS/IPS・DMZ）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-11', t:'リスクマネジメントとISMS', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-12', t:'アクセス管理と組織的対策（クラウド責任共有）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-13', t:'バックアップとBCP（RPO・RTO）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'db-1', t:'関係データベースの基本（表・行・列）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-2', t:'主キーと外部キー', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-3', t:'正規化（第1〜第3正規形）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-4', t:'SQL① 基本のSELECT（WHERE・ORDER BY）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-5', t:'SQL② 集計（GROUP BY・HAVING）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-6', t:'SQL③ 結合（内部結合・外部結合）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-7', t:'トランザクションとACID特性', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-8', t:'同時実行制御（共有ロック・専有ロック）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-9', t:'障害回復（ロールバック・ロールフォワード）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-10', t:'インデックスとDB応用（DWH・NoSQL）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'dv-1', t:'ソフトウェア開発の流れとV字モデル', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-2', t:'ウォーターフォールとアジャイル（スクラム）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-3', t:'オブジェクト指向の基礎とUML', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-4', t:'テスト技法（同値分割・境界値・網羅）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-5', t:'テストの工程（スタブ・ドライバ・回帰）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-6', t:'レビューと品質管理（インスペクション）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-7', t:'見積り（ファンクションポイント法）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-8', t:'プログラム言語とデータ記述（JSON・XML）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-9', t:'保守と構成管理（リファクタリング）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'mg-1', t:'プロジェクトマネジメントの基本（QCD）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-2', t:'WBSとガントチャート', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-3', t:'アローダイアグラムとクリティカルパス', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-4', t:'工数と進捗の計算（人月・EVM）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-5', t:'ITサービスマネジメント（インシデント／問題管理）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-6', t:'SLAとSLM', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-7', t:'サービスデスクと運用（UPS・SPOC）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-8', t:'システム監査（独立性・指摘事項）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-9', t:'内部統制とITガバナンス（職務の分離）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'st-1', t:'経営戦略の分析手法（SWOT・PPM・3C）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-2', t:'マーケティングの基礎（4P・STP）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-3', t:'意思決定と在庫管理（決定木・ABC分析）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-4', t:'会計の基本（固定費と変動費）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-5', t:'損益分岐点の計算', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-6', t:'財務諸表の読み方（BS・PL）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-7', t:'知的財産権（著作権の帰属・特許）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-8', t:'IT関連の法律（不正アクセス禁止法・派遣と請負）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-9', t:'企業活動と組織（ガバナンス・CSR）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-10', t:'新しい技術とDX（クラウド・生成AI）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'al-1', t:'科目Bの戦い方（時間配分・解く順番）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-2', t:'擬似言語の読み方①（宣言・代入・演算子）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-3', t:'擬似言語の読み方②（if・while・for）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-4', t:'トレース表の書き方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-5', t:'配列のトレース（添字1始まりに注意）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-6', t:'関数と引数（戻り値）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-7', t:'再帰の追い方（コールスタック）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-8', t:'スタックとキュー（LIFO・FIFO）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-9', t:'連結リスト（参照のつなぎ替え）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-10', t:'探索アルゴリズム（線形・二分探索）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-11', t:'ソートアルゴリズム（バブル・クイック・マージ）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-12', t:'計算量（オーダー記法）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-13', t:'ハッシュ法（衝突の解決）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-14', t:'データサイエンス系問題の読み方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-15', t:'科目Bセキュリティ4問の解き方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'}
+];
+
+const SECS={fb:10,cs:12,nw:11,sec:13,db:10,dv:9,mg:9,st:10,al:15};
+const TOTAL=99;
+
+function counts(){
+  const s=loadState();
+  const c={total:0};
+  for(const k in SECS)c[k]=0;
+  ITEMS.forEach(it=>{if(s[it.id]){c.total++;c[it.id.replace(/-\d+$/,'')]++;}});
+  return c;
+}
+function render(){
+  const c=counts();
+  document.getElementById('total-count').textContent=c.total;
+  document.getElementById('total-mini').textContent=c.total;
+  document.getElementById('total-fill').style.width=(c.total/TOTAL*100)+'%';
+  for(const k in SECS){
+    document.getElementById('c-'+k).textContent=c[k];
+    document.getElementById('f-'+k).style.width=(c[k]/SECS[k]*100)+'%';
+  }
+  const msg=document.getElementById('total-msg');
+  if(c.total===TOTAL)msg.textContent='🎉 全99項目クリア！ここからはIPAの公開問題と抜き打ちチェックで維持しよう。';
+  else if(c.total>=80)msg.textContent='あと少し！残りの項目を集中的に。';
+  else if(c.total>0)msg.textContent='いい調子。チェックは各ページの「できるようになった」と連動しています。';
+}
+
+let cur=null;
+function draw(){
+  cur=ITEMS[Math.floor(Math.random()*ITEMS.length)];
+  document.getElementById('q-sec').textContent=cur.s;
+  document.getElementById('q-title').textContent=cur.t;
+  document.getElementById('q-link').href=cur.p+'#'+cur.id;
+  document.getElementById('q-box').classList.remove('hidden');
+  document.getElementById('btns-draw').classList.add('hidden');
+  document.getElementById('btns-judge').classList.remove('hidden');
+}
+document.getElementById('btn-draw').addEventListener('click',draw);
+document.getElementById('btn-next').addEventListener('click',draw);
+document.getElementById('btn-ok').addEventListener('click',()=>{
+  if(!cur)return;const s=loadState();s[cur.id]=true;saveState(s);render();draw();
+});
+document.getElementById('btn-ng').addEventListener('click',()=>{
+  if(!cur)return;const s=loadState();delete s[cur.id];saveState(s);render();
+  location.href=cur.p+'#'+cur.id;
+});
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  if(confirm('チェック進捗をすべてリセットします。よろしいですか？')){saveState({});render();}
+});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション3：ネットワーク｜基本情報 学習ノート</title>
+<meta name="description" content="基本情報技術者試験 科目A対策。OSI参照モデル・IPアドレス・ポート番号・サブネット計算など、ネットワーク分野をやさしく解説します。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
+  /* 疑似コード表示（科目B用） */
+  pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.7;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;text-align:left}
+  pre.code b{color:var(--accent);font-weight:700}
+  /* スマホ図解・スムーススクロール・目次ボタン */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">セクション3</span>
+  <span class="prog">できた <b id="done-count">0</b> / 11</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 3</div>
+  <h1>🌐 ネットワーク</h1>
+  <p class="lead">OSI参照モデルとIPアドレスの考え方さえつかめば、用語の丸暗記問題も計算問題もまとめて得点源にできます。ポート番号・サブネット計算・TCPとUDPの違いなど「毎回出る」テーマをこのセクションで一気に押さえましょう。</p>
+  <nav class="toc" id="toc">
+    <a href="#nw-1">1. ネットワークの全体像</a><a href="#nw-2">2. OSI参照モデルとTCP/IP</a><a href="#nw-3">3. ポート番号</a><a href="#nw-4">4. IPアドレス</a><a href="#nw-5">5. サブネットマスク</a><a href="#nw-6">6. DNSとDHCP</a><a href="#nw-7">7. TCPとUDP</a><a href="#nw-8">8. MACアドレスとARP</a><a href="#nw-9">9. 無線LAN</a><a href="#nw-10">10. 伝送時間の計算</a><a href="#nw-11">11. Webとメール</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 3-1 ============ -->
+<section class="item" id="nw-1">
+  <h2><span class="no">3-1</span>ネットワークの全体像 — LANとWAN、荷物を小分けにして送る仕組み</h2>
+  <p class="goal">🎯 ゴール：LANとWANの違い、家庭のネットワークがインターネットにつながる流れ、パケット交換の考え方を説明できる</p>
+  <p>LAN（Local Area Network）は家や会社の中など、限られた範囲のネットワークのことです。これに対してWAN（Wide Area Network）は、そのLAN同士を離れた場所とつなぐ、より広い範囲のネットワークを指します。自宅のPCやスマホがルータを通じてインターネットにつながるとき、家の中がLAN、そこから先の通信事業者の回線を通ってインターネットにつながるまでの部分がWANにあたります。</p>
+  <p>インターネットでのデータのやり取りは「パケット交換」という方式で行われています。手紙を1通丸ごと専用の配達員に運ばせる（回線が通信中ずっと専有される昔の電話のような「回線交換」）のではなく、データを「パケット」という小さな荷物に分割して、それぞれ別々の経路で送り、宛先で組み立て直す方式です。これにより、1本の回線を多くの人が同時に使い回せるようになります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="家庭のLANからルータ・インターネットを経てサーバへつながる全体図" viewBox="0 0 700 260" width="700">
+    <rect x="20" y="50" width="190" height="150" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="115" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#4A6FA5">自宅LAN（構内ネットワーク）</text>
+    <rect x="40" y="90" width="70" height="34" rx="6" fill="#FFFEFB" stroke="#4A6FA5"/><text x="75" y="112" text-anchor="middle" font-size="12" fill="#211F1A">PC</text>
+    <rect x="40" y="140" width="70" height="34" rx="6" fill="#FFFEFB" stroke="#4A6FA5"/><text x="75" y="162" text-anchor="middle" font-size="12" fill="#211F1A">スマホ</text>
+    <rect x="135" y="112" width="60" height="50" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="165" y="133" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">ルータ</text><text x="165" y="150" text-anchor="middle" font-size="10" fill="#716C61">出入口</text>
+    <line x1="110" y1="107" x2="135" y2="127" stroke="#4A6FA5" stroke-width="1.5"/>
+    <line x1="110" y1="157" x2="135" y2="147" stroke="#4A6FA5" stroke-width="1.5"/>
+    <line x1="210" y1="137" x2="330" y2="120" stroke="#211F1A" stroke-width="2"/>
+    <polygon points="330,120 319,118 322,128" fill="#211F1A"/>
+    <text x="270" y="103" text-anchor="middle" font-size="11" fill="#716C61">WAN（施設をまたぐ広い範囲）</text>
+    <text x="270" y="152" text-anchor="middle" font-size="11" fill="#716C61">小分けにして送る＝パケット交換</text>
+    <rect x="330" y="60" width="170" height="110" rx="45" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="415" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#4f6b3a">インターネット</text>
+    <line x1="500" y1="115" x2="555" y2="115" stroke="#211F1A" stroke-width="2"/>
+    <polygon points="555,115 544,110 544,120" fill="#211F1A"/>
+    <rect x="560" y="85" width="120" height="60" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="620" y="110" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">サーバ</text>
+    <text x="620" y="128" text-anchor="middle" font-size="10" fill="#716C61">Webサイトなど</text>
+    <text x="350" y="230" text-anchor="middle" font-size="11" fill="#716C61">LAN＝家や会社の中の範囲／WAN＝それらをつなぐ広い範囲</text>
+  </svg>
+  <figcaption>図3-1　家庭のLANからインターネットへつながる全体像</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>LAN＝限られた範囲、WAN＝LAN同士をつなぐ広い範囲</li>
+      <li>パケット交換＝データを小分けにして送る（インターネットの基本）</li>
+      <li>回線交換（従来の電話）との違いが問われる</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-1">LAN/WANの違いとパケット交換の考え方を説明できるようになった</label>
+</section>
+
+<!-- ============ 3-2 ============ -->
+<section class="item" id="nw-2">
+  <h2><span class="no">3-2</span>OSI参照モデルとTCP/IP — 通信を7つ（4つ）の階層に分けて考える</h2>
+  <p class="goal">🎯 ゴール：OSI参照モデルの7階層とTCP/IPの4階層の対応関係、各層の代表プロトコル・機器を説明できる</p>
+  <p>ネットワーク通信はとても複雑なので、役割ごとに層（レイヤ）に分けて考えます。OSI参照モデルは通信の仕組みを7つの層に分けた「国際的な設計図」で、実際のインターネットで使われているTCP/IPというルールの集まりは、これを4つの層に整理し直したものです。会社の仕事を「受付・仕分け・配送・現場作業」のように役割分担するのと同じ発想で、それぞれの層は自分の仕事だけに集中し、下の層がどう動いているかを意識しなくてよい、というのがポイントです。</p>
+  <p>覚え方のコツは「OSIの上位3層（アプリケーション・プレゼンテーション・セッション）を、TCP/IPでは『アプリケーション層』1つにまとめている」という点です。下の層はほぼ1対1で対応します。ネットワーク層＝インターネット層はIPが担当し、ここでルータが働きます。データリンク層と物理層はまとめて「ネットワークインタフェース層」と呼ばれ、データリンク層ではスイッチ、物理層ではリピータ・ハブといった機器が働きます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="OSI参照モデル7層とTCP/IP4層の対応、各層の代表プロトコルと代表機器を示す図" viewBox="0 0 700 370" width="700">
+    <text x="95" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">OSI参照モデル</text>
+    <text x="260" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">TCP/IP</text>
+    <text x="425" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">代表プロトコル</text>
+    <text x="605" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">代表機器</text>
+    <rect x="10" y="40" width="170" height="40" fill="#E3EAF3" stroke="#4A6FA5"/><text x="95" y="65" text-anchor="middle" font-size="12" fill="#211F1A">7 アプリケーション層</text>
+    <rect x="10" y="80" width="170" height="40" fill="#E3EAF3" stroke="#4A6FA5"/><text x="95" y="105" text-anchor="middle" font-size="12" fill="#211F1A">6 プレゼンテーション層</text>
+    <rect x="10" y="120" width="170" height="40" fill="#E3EAF3" stroke="#4A6FA5"/><text x="95" y="145" text-anchor="middle" font-size="12" fill="#211F1A">5 セッション層</text>
+    <rect x="10" y="160" width="170" height="40" fill="#E3EAF3" stroke="#4A6FA5"/><text x="95" y="185" text-anchor="middle" font-size="12" fill="#211F1A">4 トランスポート層</text>
+    <rect x="10" y="200" width="170" height="40" fill="#E3EAF3" stroke="#4A6FA5"/><text x="95" y="225" text-anchor="middle" font-size="12" fill="#211F1A">3 ネットワーク層</text>
+    <rect x="10" y="240" width="170" height="40" fill="#E3EAF3" stroke="#4A6FA5"/><text x="95" y="265" text-anchor="middle" font-size="12" fill="#211F1A">2 データリンク層</text>
+    <rect x="10" y="280" width="170" height="40" fill="#E3EAF3" stroke="#4A6FA5"/><text x="95" y="305" text-anchor="middle" font-size="12" fill="#211F1A">1 物理層</text>
+    <rect x="190" y="40" width="140" height="120" fill="#F3E5DA" stroke="#BE5A38"/><text x="260" y="104" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">アプリケーション層</text>
+    <rect x="190" y="160" width="140" height="40" fill="#F3E5DA" stroke="#BE5A38"/><text x="260" y="184" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">トランスポート層</text>
+    <rect x="190" y="200" width="140" height="40" fill="#F3E5DA" stroke="#BE5A38"/><text x="260" y="224" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">インターネット層</text>
+    <rect x="190" y="240" width="140" height="80" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="260" y="274" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">ネットワーク</text>
+    <text x="260" y="290" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">インタフェース層</text>
+    <rect x="340" y="40" width="170" height="120" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="425" y="98" text-anchor="middle" font-size="12" fill="#211F1A">HTTP・DNS・SMTP</text>
+    <text x="425" y="115" text-anchor="middle" font-size="11" fill="#716C61">など（詳細は次項3-3）</text>
+    <rect x="340" y="160" width="170" height="40" fill="#F2EFE6" stroke="#E2DCCD"/><text x="425" y="184" text-anchor="middle" font-size="12" fill="#211F1A">TCP・UDP</text>
+    <rect x="340" y="200" width="170" height="40" fill="#F2EFE6" stroke="#E2DCCD"/><text x="425" y="224" text-anchor="middle" font-size="12" fill="#211F1A">IP</text>
+    <rect x="340" y="240" width="170" height="80" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="425" y="274" text-anchor="middle" font-size="12" fill="#211F1A">イーサネット</text>
+    <text x="425" y="290" text-anchor="middle" font-size="12" fill="#211F1A">Wi-Fi</text>
+    <rect x="520" y="200" width="170" height="40" fill="#FFFEFB" stroke="#E2DCCD"/><text x="605" y="224" text-anchor="middle" font-size="12" fill="#211F1A">ルータ（L3）</text>
+    <rect x="520" y="240" width="170" height="40" fill="#FFFEFB" stroke="#E2DCCD"/><text x="605" y="264" text-anchor="middle" font-size="12" fill="#211F1A">スイッチ（L2）</text>
+    <rect x="520" y="280" width="170" height="40" fill="#FFFEFB" stroke="#E2DCCD"/><text x="605" y="304" text-anchor="middle" font-size="12" fill="#211F1A">リピータ/ハブ（L1）</text>
+    <text x="350" y="345" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">コツ：OSIの上位3層（アプリ〜セッション）はTCP/IPでは「アプリケーション層」1つにまとめる</text>
+  </svg>
+  <figcaption>図3-2　OSI参照モデル7層とTCP/IP4層の対応（最重要図解）</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>OSI上位3層（アプリ・プレゼンテーション・セッション）＝TCP/IPの「アプリケーション層」1つ</li>
+      <li>ネットワーク層＝インターネット層＝IP＝ルータ（L3）が働く層</li>
+      <li>データリンク層＝スイッチ（L2）、物理層＝リピータ/ハブ（L1）</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-2">OSI参照モデルとTCP/IPの層の対応を説明できるようになった</label>
+</section>
+
+<!-- ============ 3-3 ============ -->
+<section class="item" id="nw-3">
+  <h2><span class="no">3-3</span>主要プロトコルとポート番号 — サーバの「窓口番号」</h2>
+  <p class="goal">🎯 ゴール：代表的なプロトコルとポート番号の組み合わせを覚え、選択問題で即答できる</p>
+  <p>サーバの中では、Webのサービス、メールのサービスなど複数のアプリケーションが同時に動いています。このとき「どのアプリケーション宛の通信か」を区別するための番号が「ポート番号」です。たとえるなら、1つの大きな建物（サーバ）の中にたくさんの窓口があり、それぞれの窓口に「HTTP係は80番窓口」「メール送信係は25番窓口」というように番号が振られているイメージです。通信を送るときは、宛先のIPアドレス（建物の住所）だけでなく、ポート番号（窓口番号）まで指定して届けます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="サーバの窓口をポート番号に見立てたたとえ図" viewBox="0 0 700 270" width="700">
+    <rect x="10" y="20" width="680" height="34" rx="8" fill="#BE5A38"/>
+    <text x="350" y="43" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">サーバの窓口（ポート番号）</text>
+    <rect x="10" y="70" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="75" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">HTTP</text><text x="75" y="118" text-anchor="middle" font-size="11" fill="#716C61">ポート 80</text>
+    <rect x="150" y="70" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="215" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">HTTPS</text><text x="215" y="118" text-anchor="middle" font-size="11" fill="#716C61">ポート 443</text>
+    <rect x="290" y="70" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="355" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">DNS</text><text x="355" y="118" text-anchor="middle" font-size="11" fill="#716C61">ポート 53</text>
+    <rect x="430" y="70" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="495" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">SMTP（送信）</text><text x="495" y="118" text-anchor="middle" font-size="11" fill="#716C61">ポート 25</text>
+    <rect x="570" y="70" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="635" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">POP3（受信）</text><text x="635" y="118" text-anchor="middle" font-size="11" fill="#716C61">ポート 110</text>
+    <rect x="75" y="160" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="140" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">IMAP（受信）</text><text x="140" y="208" text-anchor="middle" font-size="11" fill="#716C61">ポート 143</text>
+    <rect x="215" y="160" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="280" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">FTP</text><text x="280" y="208" text-anchor="middle" font-size="11" fill="#716C61">ポート 20・21</text>
+    <rect x="355" y="160" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="420" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">DHCP</text><text x="420" y="208" text-anchor="middle" font-size="11" fill="#716C61">ポート 67・68</text>
+    <rect x="495" y="160" width="130" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="560" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">NTP</text><text x="560" y="208" text-anchor="middle" font-size="11" fill="#716C61">ポート 123</text>
+    <text x="350" y="255" text-anchor="middle" font-size="11" fill="#716C61">ポート番号＝アプリケーションの窓口番号（IPアドレス＝建物の住所、ポート＝窓口）</text>
+  </svg>
+  <figcaption>図3-3　サーバの窓口（ポート番号）のたとえ図</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th>プロトコル</th><th>ポート番号</th><th>役割</th></tr>
+    <tr><td>HTTP</td><td>80</td><td>Webページの閲覧</td></tr>
+    <tr><td>HTTPS</td><td>443</td><td>暗号化されたWeb閲覧</td></tr>
+    <tr><td>DNS</td><td>53</td><td>名前解決（3-6で解説）</td></tr>
+    <tr><td>SMTP</td><td>25</td><td>メールの送信</td></tr>
+    <tr><td>POP3 / IMAP</td><td>110 / 143</td><td>メールの受信</td></tr>
+    <tr><td>FTP</td><td>20・21</td><td>ファイル転送</td></tr>
+    <tr><td>DHCP</td><td>67・68</td><td>IPアドレスの自動配布</td></tr>
+    <tr><td>NTP</td><td>123</td><td>時刻合わせ</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>HTTP＝80、HTTPS＝443、DNS＝53はセットで丸暗記</li>
+      <li>メールは「送信＝SMTP（25）」「受信＝POP3（110）／IMAP（143）」で区別</li>
+      <li>ポート番号＝IPアドレスの後ろにつく「窓口番号」というイメージ</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-3">主要プロトコルとポート番号を対応づけられるようになった</label>
+</section>
+
+<!-- ============ 3-4 ============ -->
+<section class="item" id="nw-4">
+  <h2><span class="no">3-4</span>IPアドレス（IPv4） — ネットワーク上の「住所」</h2>
+  <p class="goal">🎯 ゴール：IPv4アドレスの構造と、プライベートアドレス・グローバルアドレスの違いを説明できる</p>
+  <p>IPアドレスは、ネットワークにつながる機器を識別するための「住所」にあたるものです。IPv4アドレスは32ビットの数値で、人間が読みやすいように8ビットずつ4つに区切り、それぞれを10進数にして「192.168.1.10」のようにピリオドで区切って表記します。このアドレスは「ネットワーク部」（どのネットワークか＝住所でいう市区町村）と「ホスト部」（そのネットワークの中のどの機器か＝住所でいう番地）に分かれています。</p>
+  <p>IPアドレスには、インターネット上で世界に1つだけの「グローバルアドレス」と、家庭内や社内など限られた範囲だけで使う「プライベートアドレス」があります。プライベートアドレスとして予約されている範囲は、10.0.0.0〜10.255.255.255、172.16.0.0〜172.31.255.255、192.168.0.0〜192.168.255.255の3つです（172.32.x.xのように範囲外に見えて似た数字はプライベートアドレスではない、というひっかけに注意）。家庭内のプライベートアドレスとインターネット側のグローバルアドレスを相互に変換する仕組みがNAT（ネットワークアドレス変換）です。なお、IPv4アドレスの枯渇に備えて作られたIPv6は128ビットで、桁違いに多くのアドレスを扱えます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="IPv4アドレスの32ビット構造とネットワーク部・ホスト部を示す図" viewBox="0 0 700 215" width="700">
+    <text x="350" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">IPv4アドレスは32ビット＝8ビット×4つの組（例：192.168.1.10）</text>
+    <rect x="20" y="45" width="150" height="40" rx="6" fill="#F2EFE6" stroke="#E2DCCD"/><text x="95" y="70" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">192</text>
+    <text x="185" y="72" text-anchor="middle" font-size="18" fill="#211F1A">.</text>
+    <rect x="200" y="45" width="150" height="40" rx="6" fill="#F2EFE6" stroke="#E2DCCD"/><text x="275" y="70" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">168</text>
+    <text x="365" y="72" text-anchor="middle" font-size="18" fill="#211F1A">.</text>
+    <rect x="380" y="45" width="150" height="40" rx="6" fill="#F2EFE6" stroke="#E2DCCD"/><text x="455" y="70" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">1</text>
+    <text x="545" y="72" text-anchor="middle" font-size="18" fill="#211F1A">.</text>
+    <rect x="560" y="45" width="150" height="40" rx="6" fill="#F2EFE6" stroke="#E2DCCD"/><text x="635" y="70" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">10</text>
+    <text x="95" y="103" text-anchor="middle" font-size="11" font-family="monospace" fill="#716C61">11000000</text>
+    <text x="275" y="103" text-anchor="middle" font-size="11" font-family="monospace" fill="#716C61">10101000</text>
+    <text x="455" y="103" text-anchor="middle" font-size="11" font-family="monospace" fill="#716C61">00000001</text>
+    <text x="635" y="103" text-anchor="middle" font-size="11" font-family="monospace" fill="#716C61">00001010</text>
+    <rect x="20" y="140" width="510" height="26" rx="6" fill="#E3EAF3" stroke="#4A6FA5"/><text x="275" y="158" text-anchor="middle" font-size="12" fill="#211F1A">ネットワーク部（例：前半24ビット＝どのネットワークか）</text>
+    <rect x="560" y="140" width="150" height="26" rx="6" fill="#E7EDDC" stroke="#4f6b3a"/><text x="635" y="158" text-anchor="middle" font-size="12" fill="#211F1A">ホスト部</text>
+    <text x="350" y="195" text-anchor="middle" font-size="11" fill="#716C61">※ 境目はサブネットマスクで決まる（次の項目3-5で解説）</text>
+  </svg>
+  <figcaption>図3-4　IPv4アドレスの32ビット構造</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th>種類</th><th>範囲</th></tr>
+    <tr><td>プライベート（クラスA相当）</td><td>10.0.0.0 〜 10.255.255.255</td></tr>
+    <tr><td>プライベート（クラスB相当）</td><td>172.16.0.0 〜 172.31.255.255</td></tr>
+    <tr><td>プライベート（クラスC相当）</td><td>192.168.0.0 〜 192.168.255.255</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>IPアドレス＝住所、ネットワーク部＝市区町村、ホスト部＝番地</li>
+      <li>プライベートは10.x／172.16〜31.x／192.168.x の3種類、NATで変換</li>
+      <li>IPv6は128ビット（IPv4の32ビットより桁違いに多い）</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-4">IPv4アドレスの構造とプライベート/グローバルの違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 3-5 ============ -->
+<section class="item" id="nw-5">
+  <h2><span class="no">3-5</span>サブネットマスクとCIDR — ネットワーク部とホスト部の境目を決める</h2>
+  <p class="goal">🎯 ゴール：サブネットマスクとIPアドレスのAND演算、CIDR表記からのホスト数計算ができる</p>
+  <p>IPアドレスのどこまでが「ネットワーク部」でどこからが「ホスト部」かは、住所を見ただけでは分かりません。それを教えてくれるのが「サブネットマスク」です。IPアドレスとサブネットマスクの各ビットを比較して、両方とも1のときだけ1にする「AND演算」を行うと、そのアドレスが属するネットワークアドレスが求まります。</p>
+  <p>サブネットマスクは「/28」のように、ネットワーク部が何ビットかを数字1つで表す「CIDR（サイダー）表記」で書かれることもよくあります。ホスト部のビット数がnビットのとき、利用できるホストアドレスの数は「2のn乗－2」個です。全部0のアドレス（ネットワークアドレス自身）と全部1のアドレス（ブロードキャストアドレス＝そのネットワーク全員宛）は、機器に割り当てられないため2個を引きます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="IPアドレスとサブネットマスクのAND演算で最後のオクテットを求める筆算図" viewBox="0 0 700 260" width="700">
+    <text x="350" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">最後のオクテット（192.168.1.130 の「130」）で計算</text>
+    <text x="60" y="45" font-size="11" fill="#716C61">位の重み</text>
+    <text x="162" y="45" text-anchor="middle" font-size="11" fill="#716C61">128</text><text x="207" y="45" text-anchor="middle" font-size="11" fill="#716C61">64</text><text x="252" y="45" text-anchor="middle" font-size="11" fill="#716C61">32</text><text x="297" y="45" text-anchor="middle" font-size="11" fill="#716C61">16</text><text x="342" y="45" text-anchor="middle" font-size="11" fill="#716C61">8</text><text x="387" y="45" text-anchor="middle" font-size="11" fill="#716C61">4</text><text x="432" y="45" text-anchor="middle" font-size="11" fill="#716C61">2</text><text x="477" y="45" text-anchor="middle" font-size="11" fill="#716C61">1</text>
+    <text x="20" y="75" font-size="12" fill="#211F1A">IP：130</text>
+    <text x="162" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">1</text><text x="207" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="252" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="297" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="342" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="387" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="432" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">1</text><text x="477" y="75" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text>
+    <text x="20" y="110" font-size="12" fill="#211F1A">AND</text>
+    <text x="20" y="125" font-size="12" fill="#211F1A">マスク：240</text>
+    <text x="162" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">1</text><text x="207" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">1</text><text x="252" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">1</text><text x="297" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">1</text><text x="342" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="387" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="432" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text><text x="477" y="110" text-anchor="middle" font-size="13" font-family="monospace" fill="#211F1A">0</text>
+    <line x1="140" y1="122" x2="500" y2="122" stroke="#211F1A" stroke-width="1.5"/>
+    <text x="20" y="150" font-size="12" font-weight="700" fill="#BE5A38">結果：128</text>
+    <text x="162" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">1</text><text x="207" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">0</text><text x="252" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">0</text><text x="297" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">0</text><text x="342" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">0</text><text x="387" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">0</text><text x="432" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">0</text><text x="477" y="150" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="#BE5A38">0</text>
+    <text x="350" y="185" text-anchor="middle" font-size="12" fill="#211F1A">192.168.1.130 AND 255.255.255.240（/28）＝ 192.168.1.128（ネットワークアドレス）</text>
+    <text x="350" y="210" text-anchor="middle" font-size="12" fill="#716C61">使えるホスト＝192.168.1.129〜142の14個（128＝ネットワーク、143＝ブロードキャストは除く）</text>
+  </svg>
+  <figcaption>図3-5　IPアドレスとサブネットマスクのAND演算</figcaption>
+  </figure>
+  <div class="formula">利用できるホスト数 ＝ 2^（ホスト部のビット数） － 2</div>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    サブネットマスクが/28（255.255.255.240）のネットワークで、利用できるホストアドレスの数はいくつか。
+    <details class="ans"><summary>答えを見る</summary>
+    IPv4アドレスは全部で32ビット。/28はそのうち28ビットがネットワーク部なので、ホスト部のビット数＝32－28＝<b>4ビット</b>。<br>
+    4ビットで表せる組み合わせは2⁴＝16通り。このうち全部0（ネットワークアドレス）と全部1（ブロードキャストアドレス）の2つは機器に割り当てられないため除く。<br>
+    利用できるホスト数＝16－2＝<b>14個</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>IPアドレス AND サブネットマスク ＝ ネットワークアドレス</li>
+      <li>ホスト数＝2^（ホスト部ビット数）－2（ネットワーク/ブロードキャストの2つを除く）</li>
+      <li>先に2進数のAND演算に慣れておくと計算が速い</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-5">サブネットマスクからホスト数・ネットワークアドレスを計算できるようになった</label>
+</section>
+
+<!-- ============ 3-6 ============ -->
+<section class="item" id="nw-6">
+  <h2><span class="no">3-6</span>DNSとDHCP — インターネットの「電話帳」と「住所の自動配布係」</h2>
+  <p class="goal">🎯 ゴール：DNSとDHCPそれぞれの役割と、名前解決の流れを説明できる</p>
+  <p>私たちが普段ブラウザに入力する「www.example.com」のような文字列（ドメイン名）は、人間にとっては覚えやすいものですが、実際の通信には数字のIPアドレスが必要です。この「名前からIPアドレスを調べる」仕組みがDNS（Domain Name System）です。DNSは、いわば「電話帳」のような存在で、名前を伝えると対応するIPアドレスを教えてくれます。</p>
+  <p>一方DHCP（Dynamic Host Configuration Protocol）は、ネットワークに新しく参加した機器に対して、IPアドレスなどの設定情報を自動的に貸し出す仕組みです。ホテルやオフィスでスマホをWi-Fiにつなぐと、特に設定しなくてもすぐインターネットが使えるのは、DHCPが自動的にIPアドレスを割り当てて（リースして）くれているからです。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="DNSによる名前解決の問い合わせの流れを示す図" viewBox="0 0 700 220" width="700">
+    <rect x="20" y="80" width="140" height="60" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/><text x="90" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">あなたのPC</text>
+    <rect x="280" y="20" width="180" height="60" rx="10" fill="#F3E5DA" stroke="#BE5A38"/><text x="370" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">DNSサーバ</text><text x="370" y="66" text-anchor="middle" font-size="10" fill="#716C61">（名前の電話帳）</text>
+    <rect x="540" y="80" width="140" height="60" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/><text x="610" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">Webサーバ</text>
+    <line x1="160" y1="90" x2="280" y2="60" stroke="#211F1A" stroke-width="1.5"/>
+    <polygon points="280,60 269,58 272,68" fill="#211F1A"/>
+    <text x="220" y="55" text-anchor="middle" font-size="11" fill="#716C61">① www.example.comのIPは？</text>
+    <line x1="280" y1="72" x2="160" y2="110" stroke="#211F1A" stroke-width="1.5"/>
+    <polygon points="160,110 171,108 168,118" fill="#211F1A"/>
+    <text x="220" y="132" text-anchor="middle" font-size="11" fill="#716C61">② 203.0.113.5 だよ</text>
+    <line x1="160" y1="125" x2="540" y2="112" stroke="#211F1A" stroke-width="1.5"/>
+    <polygon points="540,112 529,109 530,119" fill="#211F1A"/>
+    <text x="350" y="160" text-anchor="middle" font-size="11" fill="#716C61">③ 教えてもらったIPアドレス宛に接続しにいく</text>
+    <text x="350" y="190" text-anchor="middle" font-size="11" fill="#716C61">DNS＝名前→IPアドレスの電話帳／DHCP＝IPアドレスの自動貸し出し</text>
+  </svg>
+  <figcaption>図3-6　DNSによる名前解決の問い合わせの流れ</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>DNS＝名前→IPアドレスの電話帳（名前解決）</li>
+      <li>DHCP＝IPアドレスなどの設定を自動的に貸し出す（リース）</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-6">DNSとDHCPの役割を説明できるようになった</label>
+</section>
+
+<!-- ============ 3-7 ============ -->
+<section class="item" id="nw-7">
+  <h2><span class="no">3-7</span>TCPとUDP — 確認しながら送るか、確認せずに速く送るか</h2>
+  <p class="goal">🎯 ゴール：TCPとUDPの違いと、TCPの3ウェイハンドシェイクの流れを説明できる</p>
+  <p>トランスポート層の代表的なプロトコルにTCPとUDPがあります。TCPは、相手に本当にデータが届いたかを確認しながら送る、信頼性重視の方式です。データが届かなかった場合は再送するなど、確実性を重視するため、書留郵便のようなイメージです。これに対してUDPは、届いたかどうかの確認をせずにとにかく速く送る方式です。多少データが欠けてもすぐ次を送ってしまう年賀状の大量発送のようなイメージで、動画のライブ配信やDNSの問い合わせなど、速度が重要な場面で使われます。</p>
+  <p>TCPで通信を始めるときは「3ウェイハンドシェイク」という3回のやり取りで接続を確立します。まずクライアントが「つなぎたいです（SYN）」と伝え、サーバが「いいですよ、そちらもいいですか（SYN/ACK）」と応答し、最後にクライアントが「了解、始めましょう（ACK）」と返して、ようやく本番のデータのやり取りが始まります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="TCPの3ウェイハンドシェイクのシーケンス図" viewBox="0 0 700 260" width="700">
+    <text x="150" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">クライアント</text>
+    <text x="550" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">サーバ</text>
+    <line x1="150" y1="50" x2="150" y2="230" stroke="#716C61" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <line x1="550" y1="50" x2="550" y2="230" stroke="#716C61" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <line x1="150" y1="90" x2="550" y2="90" stroke="#4A6FA5" stroke-width="2"/>
+    <polygon points="550,90 539,85 539,95" fill="#4A6FA5"/>
+    <text x="350" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#4A6FA5">① SYN（つなぎたいです）</text>
+    <line x1="550" y1="140" x2="150" y2="140" stroke="#BE5A38" stroke-width="2"/>
+    <polygon points="150,140 161,135 161,145" fill="#BE5A38"/>
+    <text x="350" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">② SYN/ACK（いいですよ、そちらは？）</text>
+    <line x1="150" y1="190" x2="550" y2="190" stroke="#4f6b3a" stroke-width="2"/>
+    <polygon points="550,190 539,185 539,195" fill="#4f6b3a"/>
+    <text x="350" y="180" text-anchor="middle" font-size="12" font-weight="700" fill="#4f6b3a">③ ACK（了解、始めましょう）</text>
+    <text x="350" y="220" text-anchor="middle" font-size="11" fill="#716C61">→ ここで接続が確立し、データのやり取りが始まる</text>
+  </svg>
+  <figcaption>図3-7　TCPの3ウェイハンドシェイク</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th></th><th>TCP</th><th>UDP</th></tr>
+    <tr><td>信頼性</td><td>高い（確認・再送あり）</td><td>低い（確認なし）</td></tr>
+    <tr><td>速度</td><td>やや遅い</td><td>速い</td></tr>
+    <tr><td>主な用途</td><td>Web・メールなど確実性重視</td><td>動画配信・DNSなど速度重視</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>TCP＝確認しながら確実に送る（3ウェイハンドシェイク・再送制御）</li>
+      <li>UDP＝確認せずに速く送る（ライブ配信・DNSなど）</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-7">TCPとUDPの違いと3ウェイハンドシェイクを説明できるようになった</label>
+</section>
+
+<!-- ============ 3-8 ============ -->
+<section class="item" id="nw-8">
+  <h2><span class="no">3-8</span>LANのしくみ（MACアドレスとARP） — 機器固有の「製造番号」で見分ける</h2>
+  <p class="goal">🎯 ゴール：MACアドレスの役割、スイッチとルータの転送方法の違い、ARPの役割を説明できる</p>
+  <p>MACアドレスは、ネットワーク機器（正確には通信用の部品＝NIC）に割り振られた48ビットの固有の番号で、世界に同じものが存在しないよう管理されています。IPアドレスが「住所」だとすると、MACアドレスは機器そのものに刻まれた「製造番号」のようなものです。</p>
+  <p>同じLANの中でデータを転送するスイッチは、宛先のMACアドレスを見て、どのポート（差込口）につながっている機器宛かを学習しながら転送します。一方、別のネットワークへ出ていく必要があるときは、ルータがIPアドレスを見て転送します。自分のいるネットワークの外へ出るときの出入口となるルータのことを「デフォルトゲートウェイ」と呼びます。</p>
+  <p>ここで問題になるのが「IPアドレスは分かっているが、その機器のMACアドレスが分からない」という状況です。これを解決するのがARP（Address Resolution Protocol）で、IPアドレスから対応するMACアドレスを調べる仕組みです。</p>
+  <table class="tbl">
+    <tr><th></th><th>スイッチ</th><th>ルータ</th></tr>
+    <tr><td>見ている層</td><td>データリンク層（L2）</td><td>ネットワーク層（L3）</td></tr>
+    <tr><td>転送の判断材料</td><td>MACアドレス</td><td>IPアドレス</td></tr>
+    <tr><td>役割</td><td>同じLAN内での転送</td><td>別ネットワークへの転送</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>MACアドレス＝機器固有の48ビットの番号（製造番号のようなもの）</li>
+      <li>スイッチ＝MACアドレスで転送、ルータ＝IPアドレスで転送</li>
+      <li>ARP＝IPアドレス→MACアドレスの変換</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-8">MACアドレスとARPの役割を説明できるようになった</label>
+</section>
+
+<!-- ============ 3-9 ============ -->
+<section class="item" id="nw-9">
+  <h2><span class="no">3-9</span>無線LAN — ケーブルなしでLANにつながる仕組み</h2>
+  <p class="goal">🎯 ゴール：SSID・暗号化方式・周波数帯の違いを説明できる</p>
+  <p>無線LANでは、ケーブルの代わりに電波でLANに接続します。接続先の無線LANを識別するための「ネットワークの名前」がSSIDです。スマホでWi-Fiの一覧から接続先を選ぶとき表示される名前がこれにあたります。</p>
+  <p>無線は電波が周囲に届いてしまうため、通信内容を暗号化して盗み見を防ぐことが重要です。現在は暗号化方式としてWPA2やWPA3を使うのが基本で、古い方式のWEPは簡単に解読できてしまうため使うべきではありません。また、無線LANでは主に2.4GHz帯と5GHz帯という2種類の周波数帯が使われており、それぞれ特徴が異なります。</p>
+  <table class="tbl">
+    <tr><th>周波数帯</th><th>届く範囲</th><th>速度・障害物への強さ</th></tr>
+    <tr><td>2.4GHz帯</td><td>遠くまで届きやすい</td><td>他の電波と混雑しやすい</td></tr>
+    <tr><td>5GHz帯</td><td>障害物に弱く届きにくい</td><td>速度が速い</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>SSID＝無線LANのネットワーク名</li>
+      <li>暗号化はWPA2/WPA3を使う（WEPは危険）</li>
+      <li>2.4GHz＝遠くまで届くが混雑しやすい、5GHz＝速いが障害物に弱い</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-9">無線LANのSSID・暗号化方式・周波数帯の違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 3-10 ============ -->
+<section class="item" id="nw-10">
+  <h2><span class="no">3-10</span>伝送時間の計算 — バイト→ビットの変換を忘れずに</h2>
+  <p class="goal">🎯 ゴール：回線速度・利用率・データ量から伝送時間を計算できる</p>
+  <p>ファイルを送るのにかかる時間（伝送時間）は、送りたいデータ量を、実際に使える回線速度で割ることで求められます。ただし回線速度は常にフルで使えるとは限らないため、「利用率」（実際にどれくらいの割合で使えているか）をかけ合わせた「実効速度」で計算する必要があります。</p>
+  <div class="formula">伝送時間 ＝ データ量 ÷（回線速度 × 利用率）</div>
+  <p>ここで最も間違えやすいのが単位です。ファイルの大きさは「バイト」で表されることが多い一方、回線速度は「bps（ビット/秒）」で表されます。1バイト＝8ビットなので、データ量をバイトからビットに変換するには「×8」を忘れないようにしましょう。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    回線速度100Mbps、回線利用率80%の通信回線を使って、100Mバイトのファイルを送信する。送信にかかる時間はおよそ何秒か。
+    <details class="ans"><summary>答えを見る</summary>
+    ① データ量をビットに変換する：100Mバイト × 8 ＝ <b>800Mビット</b>。<br>
+    ② 実効速度を求める：回線速度 × 利用率 ＝ 100Mbps × 0.8 ＝ <b>80Mbps</b>。<br>
+    ③ 伝送時間 ＝ データ量 ÷ 実効速度 ＝ 800Mビット ÷ 80Mbps ＝ <b>10秒</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>伝送時間＝データ量÷（回線速度×利用率）を丸暗記</li>
+      <li>バイト→ビットの「×8」を忘れると答えが8倍ズレる</li>
+      <li>M（メガ）やG（ギガ）の桁も揃えてから計算する</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-10">回線速度と利用率から伝送時間を計算できるようになった</label>
+</section>
+
+<!-- ============ 3-11 ============ -->
+<section class="item" id="nw-11">
+  <h2><span class="no">3-11</span>Webとメールのしくみ — URL・Cookie・送受信の流れ</h2>
+  <p class="goal">🎯 ゴール：URLの構造、Cookieの役割、メールが送受信される流れを説明できる</p>
+  <p>URL（Uniform Resource Locator）は、インターネット上の情報の場所を示す文字列です。「https://www.example.com/page」のように、通信の方式（https）・サーバの場所（www.example.com）・サーバの中の場所（/page）といった要素で構成されています。Cookieは、Webサイトがブラウザに覚えさせておく小さなメモのことで、ログイン状態を保つなどのセッション管理に使われます。買い物かごに入れた商品を覚えておいてくれるのも、多くの場合Cookieの働きです。</p>
+  <p>メールの送受信は、送信と受信で使うプロトコルが異なります。メールを送るときは、送信者側・受信者側どちらのサーバとのやり取りもSMTPが使われます。一方、受信者が自分の端末にメールを取り込むときは、POP3（サーバからダウンロードしてサーバ側からは基本的に削除する方式）かIMAP（サーバに置いたまま、必要なときだけ内容を見に行く方式）のどちらかが使われます。複数の端末で同じメールを確認したい場合は、サーバに置いたままにできるIMAPの方が便利です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="メールが送信者から受信者に届くまでの流れを示す図" viewBox="0 0 700 250" width="700">
+    <rect x="10" y="100" width="110" height="50" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/><text x="65" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">送信者</text>
+    <rect x="160" y="40" width="170" height="50" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="245" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">送信側メールサーバ</text><text x="245" y="78" text-anchor="middle" font-size="10" fill="#716C61">SMTP</text>
+    <rect x="370" y="40" width="170" height="50" rx="8" fill="#F3E5DA" stroke="#BE5A38"/><text x="455" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">受信側メールサーバ</text><text x="455" y="78" text-anchor="middle" font-size="10" fill="#716C61">SMTPで受け取る</text>
+    <rect x="580" y="100" width="110" height="50" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/><text x="635" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">受信者</text>
+    <line x1="120" y1="115" x2="160" y2="75" stroke="#211F1A" stroke-width="1.5"/>
+    <polygon points="160,75 149,74 153,84" fill="#211F1A"/>
+    <text x="140" y="100" text-anchor="middle" font-size="10" fill="#716C61">SMTPで送信</text>
+    <line x1="330" y1="65" x2="370" y2="65" stroke="#211F1A" stroke-width="1.5"/>
+    <polygon points="370,65 359,60 359,70" fill="#211F1A"/>
+    <text x="350" y="45" text-anchor="middle" font-size="10" fill="#716C61">サーバ間もSMTP</text>
+    <line x1="540" y1="75" x2="580" y2="115" stroke="#211F1A" stroke-width="1.5"/>
+    <polygon points="580,115 569,111 573,121" fill="#211F1A"/>
+    <text x="610" y="90" text-anchor="middle" font-size="10" fill="#716C61">POP3／IMAP</text>
+    <rect x="140" y="170" width="420" height="46" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="350" y="190" text-anchor="middle" font-size="11" fill="#211F1A">POP3＝ダウンロードして端末に保存（サーバから消える）</text>
+    <text x="350" y="207" text-anchor="middle" font-size="11" fill="#211F1A">IMAP＝サーバに置いたまま、必要なときだけ見に行く</text>
+    <text x="350" y="238" text-anchor="middle" font-size="11" fill="#716C61">送信はいつもSMTP。受信の取り出し方だけPOP3とIMAPで違う</text>
+  </svg>
+  <figcaption>図3-11　メールが送信者から受信者に届くまでの流れ</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>URL＝通信方式＋サーバの場所＋サーバ内の場所で構成</li>
+      <li>Cookie＝ブラウザに覚えさせる小さなメモ（セッション管理）</li>
+      <li>送信はSMTP、受信はPOP3（ダウンロード）かIMAP（サーバに保持）</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="nw-11">URL・Cookieの役割とメールの送受信の流れを説明できるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（ネットワーク）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+
+  <details><summary>Q1. TCP/IPの「インターネット層」に対応するOSI参照モデルの層はどれか。</summary><div class="a">「<b>ネットワーク層</b>」（第3層）。IPが担当する層で、ここでルータが働く。 <a class="qref" href="#nw-2">→ 解説 3-2 に戻る</a></div></details>
+
+  <details><summary>Q2. HTTPSの通信で使われるポート番号はどれか。</summary><div class="a"><b>443</b>。暗号化されていないHTTPは80番を使う。 <a class="qref" href="#nw-3">→ 解説 3-3 に戻る</a></div></details>
+
+  <details><summary>Q3. 次のIPアドレスのうち、プライベートIPアドレスはどれか。8.8.8.8／172.32.0.5／192.168.10.5／203.0.113.5</summary><div class="a"><b>192.168.10.5</b>（192.168.0.0〜192.168.255.255の範囲）。172.32.0.5は数字が似ているが、プライベート範囲は172.16.0.0〜172.31.255.255までなので範囲外（グローバルアドレス）というひっかけ。 <a class="qref" href="#nw-4">→ 解説 3-4 に戻る</a></div></details>
+
+  <details><summary>Q4. サブネットマスクが/26のネットワークで、利用できるホストアドレスの数はいくつか。</summary><div class="a">ホスト部のビット数＝32－26＝6ビット。2⁶＝64通りから、ネットワークアドレスとブロードキャストアドレスの2つを除いて、64－2＝<b>62個</b>。 <a class="qref" href="#nw-5">→ 解説 3-5 に戻る</a></div></details>
+
+  <details><summary>Q5. 動画のライブ配信のように速度を優先し、多少のデータ欠落は許容する通信でよく使われるプロトコルはどれか。</summary><div class="a"><b>UDP</b>。確認応答をせずに送り続けるため速いが、信頼性はTCPより低い。 <a class="qref" href="#nw-7">→ 解説 3-7 に戻る</a></div></details>
+
+  <details><summary>Q6. 「www.example.com」のようなドメイン名をIPアドレスに変換する仕組みを何と呼ぶか。</summary><div class="a"><b>DNS（Domain Name System）</b>。名前とIPアドレスの対応を調べる「電話帳」のような役割を持つ。 <a class="qref" href="#nw-6">→ 解説 3-6 に戻る</a></div></details>
+
+  <details><summary>Q7. 回線速度10Mbps、回線利用率50%の回線で、5Mバイトのデータを送るのにかかる時間はおよそ何秒か。</summary><div class="a">データ量＝5Mバイト×8＝40Mビット。実効速度＝10Mbps×0.5＝5Mbps。伝送時間＝40÷5＝<b>8秒</b>。 <a class="qref" href="#nw-10">→ 解説 3-10 に戻る</a></div></details>
+
+  <details><summary>Q8. 回線速度50Mbps、回線利用率100%の回線で、125Mバイトのデータを送信するのにかかる時間は何秒か。</summary><div class="a">データ量＝125Mバイト×8＝1000Mビット。実効速度＝50Mbps×1.0＝50Mbps。伝送時間＝1000÷50＝<b>20秒</b>。 <a class="qref" href="#nw-10">→ 解説 3-10 に戻る</a></div></details>
+
+</section>
+
+</main>
+
+<nav class="pager">
+  <a href="fe-computer.html"><span class="dir">‹ もどる</span>セクション2：コンピュータシステム</a>
+  <a href="fe-security.html" class="next"><span class="dir">つぎへ ›</span>セクション4：セキュリティ</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ セクション3：ネットワーク</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
+</script>
+</body>
+</html>

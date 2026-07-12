@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション5：データベース｜基本情報 学習ノート</title>
+<meta name="description" content="基本情報技術者試験 科目A対策。正規化・主キー/外部キー・SQL（SELECT/集計/結合）・トランザクション・障害回復をやさしく解説します。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
+  /* 疑似コード表示（科目B用） */
+  pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.7;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;text-align:left}
+  pre.code b{color:var(--accent);font-weight:700}
+  /* スマホ図解・スムーススクロール・目次ボタン */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">セクション5</span>
+  <span class="prog">できた <b id="done-count">0</b> / 10</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 5</div>
+  <h1>🗃️ データベース</h1>
+  <p class="lead">SQLと正規化は「知っていれば確実に取れる」典型分野です。科目Aでは正規化・主キー/外部キー・SQL（SELECT／集計／結合）・トランザクション（ACID・排他制御）が「よく出る」の常連なので、丸暗記ではなく仕組みから理解しておくと安心です。</p>
+  <nav class="toc" id="toc">
+    <a href="#db-1">1. 関係データベースの基本</a><a href="#db-2">2. 主キーと外部キー</a><a href="#db-3">3. 正規化</a><a href="#db-4">4. SQL① SELECT</a><a href="#db-5">5. SQL② 集計</a><a href="#db-6">6. SQL③ 結合</a><a href="#db-7">7. トランザクションとACID</a><a href="#db-8">8. 同時実行制御</a><a href="#db-9">9. 障害回復</a><a href="#db-10">10. インデックスとDB応用</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 5-1 ============ -->
+<section class="item" id="db-1">
+  <h2><span class="no">5-1</span>関係データベースの基本 — 表・行・列とDBMSの仕事</h2>
+  <p class="goal">🎯 ゴール：表・行・列の呼び名と、DBMS（データベース管理システム）がやってくれていることを説明できる</p>
+  <p>関係データベース（リレーショナルデータベース）は、データをExcelの表のような「表（テーブル）」の形で保存するしくみです。表の横1行分を「行（レコード）」、縦1列分を「列（フィールド）」と呼びます。例えば名簿の表なら、1人分のデータが1行（レコード）、「氏名」や「電話番号」といった項目が1列（フィールド）にあたります。</p>
+  <table class="tbl">
+    <tr><th>表の呼び方</th><th>意味</th><th>Excelでのイメージ</th></tr>
+    <tr><td>表（テーブル）</td><td>データのまとまり全体</td><td>1枚のシート</td></tr>
+    <tr><td>行（レコード）</td><td>1件分のデータ</td><td>横1行</td></tr>
+    <tr><td>列（フィールド）</td><td>項目の種類</td><td>縦1列（列見出し）</td></tr>
+  </table>
+  <p>データベースを管理する専用ソフトを<b>DBMS（データベース管理システム）</b>と呼びます。DBMSは、複数人が同時にアクセスしても矛盾が起きないよう制御し（同時アクセス制御）、途中で処理が止まっても正しい状態に戻せるようにし（障害回復）、決めたルールに反するデータが入らないよう見張る（一元管理）、という仕事をしています。Excelでも表は作れますが、複数人が同時に同じセルを編集したときの安全策や、途中で保存に失敗したときの自動復旧は基本的にありません。この「壊れない・矛盾しない仕組み」を持っているかどうかが、DBMSとただの表計算ソフトの一番の違いです。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>表＝テーブル、行＝レコード、列＝フィールド。用語の言い換え問題が頻出</li>
+      <li>DBMSの3大仕事：一元管理・同時アクセス制御・障害回復</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-1">表・行・列の呼び方とDBMSの役割を説明できるようになった</label>
+</section>
+
+<!-- ============ 5-2 ============ -->
+<section class="item" id="db-2">
+  <h2><span class="no">5-2</span>主キーと外部キー — 学籍番号のように行を特定する</h2>
+  <p class="goal">🎯 ゴール：主キーと外部キーの役割の違いを説明し、参照整合性の意味を答えられる</p>
+  <p><b>主キー</b>とは、表の中の1行を一意に特定できる列のことです。クラス名簿でいう「学籍番号」のようなもので、同じ値が2つあってはいけません（重複不可）し、空欄（NULL）も許されません。1つの列だけで一意にできない場合は、複数の列を組み合わせて主キーにします。これを<b>複合キー</b>と呼びます。</p>
+  <p><b>外部キー</b>とは、別の表の主キーを参照する列のことです。例えば「注文表」の中に「顧客ID」という列があり、それが「顧客表」の主キーである顧客IDを指している、というような関係です。この仕組みのおかげで、注文表には必ず実在する顧客IDしか登録できなくなります。これを<b>参照整合性</b>と呼びます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="顧客表と注文表を例に、主キーと外部キーの参照関係を示す図" viewBox="0 0 700 270" width="700">
+    <text x="170" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">顧客表</text>
+    <rect x="40" y="36" width="260" height="112" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <rect x="40" y="36" width="260" height="26" rx="10" fill="#4A6FA5"/>
+    <text x="105" y="54" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">顧客ID（PK）</text>
+    <text x="230" y="54" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">顧客名</text>
+    <text x="105" y="82" text-anchor="middle" font-size="11" fill="#211F1A">C01</text>
+    <text x="230" y="82" text-anchor="middle" font-size="11" fill="#211F1A">山田太郎</text>
+    <text x="105" y="106" text-anchor="middle" font-size="11" fill="#211F1A">C02</text>
+    <text x="230" y="106" text-anchor="middle" font-size="11" fill="#211F1A">鈴木花子</text>
+    <text x="105" y="130" text-anchor="middle" font-size="11" fill="#211F1A">C03</text>
+    <text x="230" y="130" text-anchor="middle" font-size="11" fill="#211F1A">高橋次郎</text>
+    <line x1="170" y1="36" x2="170" y2="148" stroke="#4A6FA5" stroke-width="1"/>
+    <text x="510" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">注文表</text>
+    <rect x="360" y="36" width="300" height="135" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <rect x="360" y="36" width="300" height="26" rx="10" fill="#BE5A38"/>
+    <text x="425" y="54" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">注文番号（PK）</text>
+    <text x="540" y="54" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">顧客ID（FK）</text>
+    <text x="635" y="54" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">商品名</text>
+    <text x="425" y="82" text-anchor="middle" font-size="11" fill="#211F1A">1001</text>
+    <text x="540" y="82" text-anchor="middle" font-size="11" fill="#211F1A">C01</text>
+    <text x="635" y="82" text-anchor="middle" font-size="10" fill="#211F1A">ノートPC</text>
+    <text x="425" y="106" text-anchor="middle" font-size="11" fill="#211F1A">1002</text>
+    <text x="540" y="106" text-anchor="middle" font-size="11" fill="#211F1A">C02</text>
+    <text x="635" y="106" text-anchor="middle" font-size="10" fill="#211F1A">マウス</text>
+    <text x="425" y="130" text-anchor="middle" font-size="11" fill="#211F1A">1003</text>
+    <text x="540" y="130" text-anchor="middle" font-size="11" fill="#211F1A">C01</text>
+    <text x="635" y="130" text-anchor="middle" font-size="10" fill="#211F1A">キーボード</text>
+    <text x="425" y="154" text-anchor="middle" font-size="11" fill="#b23a2e">1004</text>
+    <text x="540" y="154" text-anchor="middle" font-size="11" fill="#b23a2e">C99 ×</text>
+    <text x="635" y="154" text-anchor="middle" font-size="10" fill="#b23a2e">（登録不可）</text>
+    <path d="M540,171 C500,210 300,215 178,150" fill="none" stroke="#BE5A38" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <polygon points="178,150 188,152 184,142" fill="#BE5A38"/>
+    <text x="345" y="215" text-anchor="middle" font-size="11" fill="#BE5A38">外部キーは顧客表の主キーを参照している</text>
+    <text x="345" y="245" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">顧客表に無いC99は注文表に入れられない＝参照整合性</text>
+  </svg>
+  <figcaption>図5-2　主キー（PK）と外部キー（FK）の参照関係</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>主キー＝一意・NULL不可。1列で無理なら複合キーで対応</li>
+      <li>外部キー＝他表の主キーを指す列。参照先に無い値は登録できない（参照整合性）</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-2">主キー・外部キー・参照整合性を説明できるようになった</label>
+</section>
+
+<!-- ============ 5-3 ============ -->
+<section class="item" id="db-3">
+  <h2><span class="no">5-3</span>正規化 — 二重持ちをなくして矛盾を防ぐ（頻出図解）</h2>
+  <p class="goal">🎯 ゴール：正規化の目的と第1〜第3正規形それぞれで何をするかを説明し、簡単な例でどの正規形か判定できる</p>
+  <p><b>正規化</b>とは、1つの表に情報を詰め込みすぎて同じ内容が何度も出てくる状態（二重持ち）を解消し、複数の表に分けていく作業です。目的はただ1つ、「更新したときに矛盾が起きないようにする」ことです。例えば顧客の住所を1か所にしか持たなければ、住所変更は1行直すだけで済みますが、あちこちの表に住所が重複していると、直し忘れた箇所だけ古い住所のままになってしまいます。</p>
+  <p>正規化は段階を踏んで進めます。<b>第1正規形</b>は、1つのセルに複数の値が入っている「繰り返し項目」をなくし、1行1件のきれいな表にする段階です。<b>第2正規形</b>は、複合キーの一部（キーの一部分）にしか従属していない列を、別の表に分ける段階です。<b>第3正規形</b>は、主キー以外の列に従属している列（主キーを経由した間接的な従属＝推移的関数従属）を、さらに別の表に分ける段階です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="1枚の注文伝票が正規化の各段階を経て3つの表に分かれていく過程を示す図" viewBox="0 0 700 540" width="700">
+    <text x="350" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">元の注文伝票（1枚・くり返しあり）</text>
+    <rect x="140" y="34" width="420" height="100" rx="10" fill="#FFFEFB" stroke="#716C61" stroke-dasharray="3 3"/>
+    <text x="160" y="54" font-size="11" fill="#211F1A">注文番号：1001　注文日：2026-07-01</text>
+    <text x="160" y="72" font-size="11" fill="#211F1A">顧客：C01　山田太郎（東京都…）</text>
+    <rect x="155" y="82" width="390" height="42" rx="6" fill="#F3E5DA" stroke="#BE5A38" stroke-dasharray="4 3"/>
+    <text x="175" y="98" font-size="11" fill="#211F1A">①ノートPC × 1</text>
+    <text x="175" y="116" font-size="11" fill="#211F1A">②マウス　　× 2</text>
+    <text x="480" y="108" font-size="10" fill="#BE5A38">商品行がくり返す</text>
+    <line x1="350" y1="138" x2="350" y2="163" stroke="#211F1A" stroke-width="1.6"/>
+    <polygon points="350,163 344,152 356,152" fill="#211F1A"/>
+    <text x="350" y="155" text-anchor="middle" font-size="11" font-weight="700" fill="#BE5A38">① 第1正規形：くり返し項目をなくし1行1件に</text>
+    <text x="350" y="182" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">第1正規形（1つの表・行が増えるが情報がダブる）</text>
+    <rect x="70" y="192" width="560" height="70" rx="8" fill="#F2EFE6" stroke="#716C61"/>
+    <text x="90" y="208" font-size="10.5" fill="#211F1A">注文番号|注文日     |顧客ID|顧客名  |住所    |商品名   |数量</text>
+    <text x="90" y="226" font-size="10.5" fill="#716C61">1001    |2026-07-01|C01   |山田太郎|東京都…|ノートPC |1</text>
+    <text x="90" y="244" font-size="10.5" fill="#716C61">1001    |2026-07-01|C01   |山田太郎|東京都…|マウス   |2</text>
+    <text x="350" y="290" text-anchor="middle" font-size="11" font-weight="700" fill="#BE5A38">② 第2・第3正規形：従属関係ごとに表を分ける</text>
+    <line x1="350" y1="266" x2="350" y2="308" stroke="#211F1A" stroke-width="1.6"/>
+    <polygon points="350,308 344,297 356,297" fill="#211F1A"/>
+    <text x="350" y="332" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">第3正規形（最終形・3表）</text>
+    <rect x="20" y="345" width="200" height="90" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="120" y="363" text-anchor="middle" font-size="11.5" font-weight="700" fill="#211F1A">注文表</text>
+    <text x="120" y="382" text-anchor="middle" font-size="10.5" fill="#716C61">注文番号（PK）</text>
+    <text x="120" y="399" text-anchor="middle" font-size="10.5" fill="#716C61">注文日</text>
+    <text x="120" y="416" text-anchor="middle" font-size="10.5" fill="#716C61">顧客ID（FK）</text>
+    <rect x="250" y="345" width="200" height="90" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="350" y="363" text-anchor="middle" font-size="11.5" font-weight="700" fill="#211F1A">顧客表</text>
+    <text x="350" y="382" text-anchor="middle" font-size="10.5" fill="#716C61">顧客ID（PK）</text>
+    <text x="350" y="399" text-anchor="middle" font-size="10.5" fill="#716C61">顧客名</text>
+    <text x="350" y="416" text-anchor="middle" font-size="10.5" fill="#716C61">住所</text>
+    <rect x="480" y="345" width="200" height="90" rx="10" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="580" y="363" text-anchor="middle" font-size="11.5" font-weight="700" fill="#211F1A">注文明細表</text>
+    <text x="580" y="382" text-anchor="middle" font-size="10.5" fill="#716C61">注文番号（FK）</text>
+    <text x="580" y="399" text-anchor="middle" font-size="10.5" fill="#716C61">＋商品名（PK）</text>
+    <text x="580" y="416" text-anchor="middle" font-size="10.5" fill="#716C61">数量</text>
+    <path d="M170,410 C210,455 260,455 300,415" fill="none" stroke="#BE5A38" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <polygon points="300,415 289,414 295,424" fill="#BE5A38"/>
+    <path d="M195,392 C260,500 430,500 480,400" fill="none" stroke="#BE5A38" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <polygon points="480,400 470,396 472,407" fill="#BE5A38"/>
+    <text x="350" y="500" text-anchor="middle" font-size="11" fill="#716C61">顧客の住所変更は「顧客表」の1行だけ直せばよい＝更新時の矛盾がなくなる</text>
+    <text x="350" y="522" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">1枚の伝票 → 第1正規形（1表） → 第2・第3正規形（3表）</text>
+  </svg>
+  <figcaption>図5-3　注文伝票が正規化されて3つの表に分かれる過程（頻出図解）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    ある注文明細表は「注文番号＋商品コード」を主キーとしており、列「商品名」は商品コードのみに従属し、注文番号には従属していない（主キーの一部にしか従属していない）。この表は第何正規形の条件を満たしていないか。
+    <details class="ans"><summary>答えを見る</summary>
+    <b>第2正規形</b>。「商品名」は複合キーの一部（商品コード）だけに従属する部分関数従属になっており、第2正規形（主キー全体に従属する）の条件に反している。商品名は商品表として切り出す必要がある。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>正規化の目的は「二重持ちの解消」→「更新時の矛盾防止」のひとつだけ</li>
+      <li>第1＝くり返し排除、第2＝キーの一部への従属を分離、第3＝キー以外への従属（推移的関数従属）を分離</li>
+      <li>迷ったら「この列は主キーの全部に従属しているか？」を自問する</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-3">正規化の目的と第1〜第3正規形の違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 5-4 ============ -->
+<section class="item" id="db-4">
+  <h2><span class="no">5-4</span>SQL① 基本のSELECT — 表から条件で取り出す</h2>
+  <p class="goal">🎯 ゴール：SELECT〜FROM〜WHEREの基本構文と、LIKE・BETWEEN・IN・DISTINCT・ORDER BYの意味を理解し、簡単なSQL文の実行結果を答えられる</p>
+  <p>SQLは、データベースに「この条件のデータをちょうだい」とお願いするための言葉です。基本の形は <b>SELECT 列 FROM 表 WHERE 条件</b>で、「どの表の」「どの列を」「どんな条件で」取り出すかをこの順番で書きます。ほかによく使う道具に、あいまい検索の<b>LIKE '%文字%'</b>（部分一致）、範囲指定の<b>BETWEEN</b>、複数候補の<b>IN</b>、重複を取り除く<b>DISTINCT</b>、並べ替えの<b>ORDER BY</b>があります。</p>
+  <p>次の「社員表」を例に、実際のSQL文と結果を対応させて見てみましょう。</p>
+  <table class="tbl">
+    <tr><th>社員ID</th><th>氏名</th><th>部署</th><th>年齢</th><th>給与</th></tr>
+    <tr><td>1</td><td>佐藤</td><td>営業</td><td>34</td><td>280000</td></tr>
+    <tr><td>2</td><td>鈴木</td><td>開発</td><td>28</td><td>320000</td></tr>
+    <tr><td>3</td><td>高橋</td><td>営業</td><td>45</td><td>350000</td></tr>
+    <tr><td>4</td><td>田中</td><td>開発</td><td>31</td><td>300000</td></tr>
+    <tr><td>5</td><td>伊藤</td><td>総務</td><td>52</td><td>260000</td></tr>
+  </table>
+  <p class="mini">実行前の表：社員表（上のとおり5行）</p>
+  <pre class="code"><b>SELECT</b> 氏名, 部署, 年齢 <b>FROM</b> 社員 <b>WHERE</b> 部署 = '開発' <b>ORDER BY</b> 年齢</pre>
+  <p class="mini">結果の表：WHEREで「部署＝開発」に絞り、ORDER BYで年齢の小さい順に並べ替え</p>
+  <table class="tbl">
+    <tr><th>氏名</th><th>部署</th><th>年齢</th></tr>
+    <tr><td>鈴木</td><td>開発</td><td>28</td></tr>
+    <tr><td>田中</td><td>開発</td><td>31</td></tr>
+  </table>
+  <p>もし氏名に「藤」を含む人を探すなら <code>WHERE 氏名 LIKE '%藤%'</code>（佐藤・伊藤の2件がヒット）、年齢30〜50歳の範囲なら <code>WHERE 年齢 BETWEEN 30 AND 50</code>、部署が営業か総務のどちらかなら <code>WHERE 部署 IN ('営業','総務')</code>のように書きます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>SELECT-FROM-WHEREの順番と役割をセットで覚える</li>
+      <li>LIKE＝あいまい、BETWEEN＝範囲、IN＝候補の列挙、DISTINCT＝重複除去</li>
+      <li>ORDER BYを付けない限り、結果の行の並び順は保証されない</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-4">SELECT文の基本構文と実行結果を読めるようになった</label>
+</section>
+
+<!-- ============ 5-5 ============ -->
+<section class="item" id="db-5">
+  <h2><span class="no">5-5</span>SQL② 集計 — GROUP BYとHAVINGの違い</h2>
+  <p class="goal">🎯 ゴール：COUNT/SUM/AVG/MAX/MINの集計関数とGROUP BYの動きを理解し、WHEREとHAVINGの使い分けを説明できる</p>
+  <p>集計関数は、複数の行をまとめて1つの値にする道具です。<b>COUNT</b>＝件数、<b>SUM</b>＝合計、<b>AVG</b>＝平均、<b>MAX</b>／<b>MIN</b>＝最大値・最小値を求めます。<b>GROUP BY</b>を使うと、指定した列の値ごとにグループを作り、グループごとに集計できます。「部署ごとの平均給与」のような集計は、GROUP BYの定番の使い方です。</p>
+  <p>ここで定番のひっかけが、<b>WHERE</b>と<b>HAVING</b>の違いです。WHEREは集計する前の「行」に対する条件（この行を集計に含めるかどうか）、HAVINGは集計した後の「グループ」に対する条件（このグループを結果に残すかどうか）です。順番も「行を絞る(WHERE)→グループ化する(GROUP BY)→グループを絞る(HAVING)」の順で動きます。</p>
+  <p class="mini">実行前の表：5-4と同じ社員表（5行）</p>
+  <pre class="code"><b>SELECT</b> 部署, <b>COUNT</b>(*) AS 人数, <b>AVG</b>(給与) AS 平均給与 <b>FROM</b> 社員 <b>GROUP BY</b> 部署 <b>HAVING COUNT</b>(*) &gt;= 2</pre>
+  <p class="mini">結果の表：部署ごとにグループ化し、人数2人以上のグループだけ残す（総務は1人なので除外）</p>
+  <table class="tbl">
+    <tr><th>部署</th><th>人数</th><th>平均給与</th></tr>
+    <tr><td>営業</td><td>2</td><td>315000</td></tr>
+    <tr><td>開発</td><td>2</td><td>310000</td></tr>
+  </table>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    上の社員表に対して <code>SELECT 部署, COUNT(*) FROM 社員 GROUP BY 部署 HAVING COUNT(*) &gt;= 2</code> を実行すると、総務のグループは結果に含まれるか。
+    <details class="ans"><summary>答えを見る</summary>
+    <b>含まれない</b>。総務は伊藤の1人だけでCOUNT(*)=1となり、HAVING COUNT(*)&gt;=2の条件を満たさないため、集計後にグループごと除外される。営業（2人）と開発（2人）だけが結果に残る。
+    </details>
+  </div>
+  <div class="caution"><span class="tt">⚠️ 注意</span>
+    WHEREは「行」への条件、HAVINGは「集計後のグループ」への条件。HAVINGの条件にCOUNTやAVGなどの集計関数を書けるのに対し、WHEREの段階ではまだ集計されていないので集計関数は使えない。
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-5">GROUP BYとHAVINGを使った集計結果を読めるようになった</label>
+</section>
+
+<!-- ============ 5-6 ============ -->
+<section class="item" id="db-6">
+  <h2><span class="no">5-6</span>SQL③ 結合 — 内部結合と左外部結合</h2>
+  <p class="goal">🎯 ゴール：内部結合と左外部結合の違いを説明し、簡単な2表からそれぞれの結合結果の行数を求められる</p>
+  <p><b>結合（JOIN）</b>は、複数の表を関連づけて1つの表のように扱うための操作です。<b>内部結合（INNER JOIN）</b>は、両方の表に共通するキーを持つ行だけを残します。片方にしか無いデータは結果から消えます。<b>左外部結合（LEFT OUTER JOIN）</b>は、左側の表の行を全部残し、対応する右側のデータが無い場合はその部分をNULL（値なし）で埋めます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="内部結合と左外部結合の違いをベン図で示す図" viewBox="0 0 700 250" width="700">
+    <text x="175" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">内部結合（INNER JOIN）</text>
+    <circle cx="140" cy="120" r="70" fill="#E3EAF3" fill-opacity=".55" stroke="#4A6FA5"/>
+    <circle cx="220" cy="120" r="70" fill="#E7EDDC" fill-opacity=".55" stroke="#4f6b3a"/>
+    <path d="M180,60 A70,70 0 0,1 180,180 A70,70 0 0,1 180,60 Z" fill="#BE5A38" fill-opacity=".55"/>
+    <text x="100" y="120" text-anchor="middle" font-size="11" fill="#211F1A">社員表</text>
+    <text x="262" y="120" text-anchor="middle" font-size="11" fill="#211F1A">部署表</text>
+    <text x="180" y="205" text-anchor="middle" font-size="11" font-weight="700" fill="#BE5A38">一致する行だけ残る</text>
+    <line x1="360" y1="10" x2="360" y2="240" stroke="#E2DCCD" stroke-width="1"/>
+    <text x="530" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">左外部結合（LEFT JOIN）</text>
+    <circle cx="490" cy="120" r="70" fill="#BE5A38" fill-opacity=".55" stroke="#4A6FA5"/>
+    <circle cx="570" cy="120" r="70" fill="#F2EFE6" fill-opacity=".3" stroke="#4f6b3a"/>
+    <text x="450" y="120" text-anchor="middle" font-size="11" fill="#211F1A">社員表</text>
+    <text x="612" y="120" text-anchor="middle" font-size="11" fill="#211F1A">部署表</text>
+    <text x="530" y="205" text-anchor="middle" font-size="11" font-weight="700" fill="#BE5A38">左（社員表）は全部残り</text>
+    <text x="530" y="223" text-anchor="middle" font-size="11" font-weight="700" fill="#BE5A38">対応が無ければNULLで埋まる</text>
+  </svg>
+  <figcaption>図5-6　内部結合と左外部結合の違い</figcaption>
+  </figure>
+  <p class="mini">実行前の表：社員表（4行・田中は部署未配属でNULL）と部署表（3行・総務にはまだ誰も配属されていない）</p>
+  <table class="tbl">
+    <tr><th>社員ID</th><th>氏名</th><th>部署ID</th></tr>
+    <tr><td>1</td><td>佐藤</td><td>10</td></tr>
+    <tr><td>2</td><td>鈴木</td><td>20</td></tr>
+    <tr><td>3</td><td>高橋</td><td>10</td></tr>
+    <tr><td>4</td><td>田中</td><td>NULL</td></tr>
+  </table>
+  <table class="tbl">
+    <tr><th>部署ID</th><th>部署名</th></tr>
+    <tr><td>10</td><td>営業</td></tr>
+    <tr><td>20</td><td>開発</td></tr>
+    <tr><td>30</td><td>総務</td></tr>
+  </table>
+  <pre class="code"><b>SELECT</b> 社員.氏名, 部署.部署名 <b>FROM</b> 社員 <b>INNER JOIN</b> 部署 <b>ON</b> 社員.部署ID = 部署.部署ID</pre>
+  <p class="mini">結果の表（内部結合）：田中（部署ID無し）と総務（該当社員なし）は結果に出てこない</p>
+  <table class="tbl">
+    <tr><th>氏名</th><th>部署名</th></tr>
+    <tr><td>佐藤</td><td>営業</td></tr>
+    <tr><td>鈴木</td><td>開発</td></tr>
+    <tr><td>高橋</td><td>営業</td></tr>
+  </table>
+  <pre class="code"><b>SELECT</b> 社員.氏名, 部署.部署名 <b>FROM</b> 社員 <b>LEFT JOIN</b> 部署 <b>ON</b> 社員.部署ID = 部署.部署ID</pre>
+  <p class="mini">結果の表（左外部結合）：左表（社員）は4人全員残り、田中の部署名はNULLになる</p>
+  <table class="tbl">
+    <tr><th>氏名</th><th>部署名</th></tr>
+    <tr><td>佐藤</td><td>営業</td></tr>
+    <tr><td>鈴木</td><td>開発</td></tr>
+    <tr><td>高橋</td><td>営業</td></tr>
+    <tr><td>田中</td><td>NULL</td></tr>
+  </table>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    上の社員表（4行）と部署表（3行）で、内部結合の結果は何行になるか。また左外部結合の結果は何行になるか。
+    <details class="ans"><summary>答えを見る</summary>
+    内部結合＝<b>3行</b>（佐藤・鈴木・高橋。部署未配属の田中と、社員のいない総務は対象外）。左外部結合＝<b>4行</b>（社員表の4人全員が残り、田中の部署名はNULL）。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>内部結合＝両方に存在する行だけ。片方にしかないデータは消える</li>
+      <li>左外部結合＝左表は全部残す。対応が無ければNULLで埋める</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-6">内部結合と左外部結合の結果の違いを求められるようになった</label>
+</section>
+
+<!-- ============ 5-7 ============ -->
+<section class="item" id="db-7">
+  <h2><span class="no">5-7</span>トランザクションとACID — 銀行振込で考える原子性</h2>
+  <p class="goal">🎯 ゴール：トランザクションの意味とACID特性（特に原子性）を、振込処理を例に説明できる</p>
+  <p><b>トランザクション</b>とは、「ここからここまでを1つのまとまりとして扱う処理」のことです。代表例が銀行振込です。振込処理は「Aさんの口座から引き落とす」処理と「Bさんの口座に入金する」処理の2つで構成されますが、この2つは必ずセットで成功するか、セットで失敗するかのどちらかでなければなりません。引き落としだけ成功して入金が失敗する、という中途半端な状態は絶対に許されないのです。</p>
+  <p>この「全部やるか、全部やらないか」という性質を<b>原子性（Atomicity）</b>と呼びます。トランザクションが正常に完了して結果を確定させることを<b>コミット</b>、途中で異常が起きて処理前の状態に戻すことを<b>ロールバック</b>と呼びます。トランザクションが守るべき性質は原子性を含めて4つあり、頭文字を取って<b>ACID</b>と呼びます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="銀行振込を例に、トランザクションの原子性（全部やるか全部やらないか）を示す図" viewBox="0 0 700 260" width="700">
+    <text x="350" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">振込処理＝1つのトランザクション</text>
+    <rect x="60" y="40" width="580" height="90" rx="10" fill="none" stroke="#BE5A38" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="350" y="58" text-anchor="middle" font-size="11" fill="#BE5A38">ひとまとまり（原子性：どちらも実行 or どちらも実行しない）</text>
+    <rect x="90" y="70" width="220" height="46" rx="8" fill="#F7E3DE" stroke="#b23a2e"/>
+    <text x="200" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">Aさんの口座</text>
+    <text x="200" y="107" text-anchor="middle" font-size="11" fill="#b23a2e">－1,000円（引き落とし）</text>
+    <text x="350" y="98" text-anchor="middle" font-size="16" fill="#211F1A">→</text>
+    <rect x="390" y="70" width="220" height="46" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="500" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">Bさんの口座</text>
+    <text x="500" y="107" text-anchor="middle" font-size="11" fill="#4f6b3a">＋1,000円（入金）</text>
+    <text x="175" y="160" text-anchor="middle" font-size="12" font-weight="700" fill="#4f6b3a">成功時：両方確定＝コミット</text>
+    <text x="175" y="180" text-anchor="middle" font-size="10.5" fill="#716C61">Aは－1,000円、Bは＋1,000円のまま</text>
+    <text x="525" y="160" text-anchor="middle" font-size="12" font-weight="700" fill="#b23a2e">失敗時：全部取り消し＝ロールバック</text>
+    <text x="525" y="180" text-anchor="middle" font-size="10.5" fill="#716C61">入金だけ失敗しても、Aの引き落としも元に戻す</text>
+    <text x="350" y="215" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">ACID＝原子性(Atomicity)・一貫性(Consistency)・独立性(Isolation)・耐久性(Durability)</text>
+    <text x="350" y="236" text-anchor="middle" font-size="11" fill="#716C61">「引き落としだけ成功」という中途半端な状態を防ぐのが原子性</text>
+  </svg>
+  <figcaption>図5-7　振込処理で見る原子性（ACIDの1つ）</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th>頭文字</th><th>性質</th><th>意味</th></tr>
+    <tr><td>A</td><td>原子性（Atomicity）</td><td>全部実行するか、全く実行しないかのどちらか</td></tr>
+    <tr><td>C</td><td>一貫性（Consistency）</td><td>処理の前後でデータの整合性ルールが保たれる</td></tr>
+    <tr><td>I</td><td>独立性（Isolation）</td><td>複数のトランザクションが同時実行されても互いに影響しない</td></tr>
+    <tr><td>D</td><td>耐久性（Durability）</td><td>コミットした結果は障害が起きても失われない</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>トランザクション＝「ひとまとまり」の処理。振込＝引落＋入金がセット</li>
+      <li>コミット＝確定、ロールバック＝取り消し（処理前に戻す）</li>
+      <li>ACID＝原子性・一貫性・独立性・耐久性の4つ</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-7">トランザクションとACID特性（特に原子性）を説明できるようになった</label>
+</section>
+
+<!-- ============ 5-8 ============ -->
+<section class="item" id="db-8">
+  <h2><span class="no">5-8</span>同時実行制御（ロック） — 共有ロックと専有ロック</h2>
+  <p class="goal">🎯 ゴール：共有ロックと専有ロックの違い、DBでもデッドロックが起こることを説明できる</p>
+  <p>複数の人が同時に同じデータを読み書きすると、更新内容が消えてしまうなどの事故が起こります。これを防ぐために、DBMSはデータに「鍵（ロック）」をかけます。<b>共有ロック</b>は読み取り用の鍵で、複数の人が同時にかけることができます（みんなで見るだけなら問題ないため）。<b>専有ロック（排他ロック）</b>は書き込み用の鍵で、これがかかっている間は他の人は読むことも書くこともできません。</p>
+  <p>ロックをかける範囲の細かさを<b>ロックの粒度</b>と呼びます。行単位のように細かくロックすると、他の人が別の行を触れるので同時に処理できる量（並行性）は上がりますが、管理するロックの数が増えて負荷が重くなります。逆に表単位のように粗くロックすると、管理は楽になりますが同時に処理できる量は下がります。</p>
+  <p>ロックは、コンピュータのOSで学んだ排他制御と同じ考え方です。そのため、DBの世界でも<b>デッドロック</b>（お互いが相手の持つロックの解放を待ち続けて、永久に処理が進まなくなる状態）が起こり得ます。対策として、複数のトランザクションがロックを取得する順序を統一する、といった方法が使われます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>共有ロック＝読み取り用・複数OK、専有ロック＝書き込み用・独占</li>
+      <li>ロックの粒度が細かい＝並行性は上がるが管理コストも上がる</li>
+      <li>デッドロックはDBでも起こる。ロック取得順序の統一で防ぐ</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-8">共有ロックと専有ロックの違いを説明できるようになった</label>
+</section>
+
+<!-- ============ 5-9 ============ -->
+<section class="item" id="db-9">
+  <h2><span class="no">5-9</span>障害回復 — ロールバックとロールフォワードの使い分け（頻出図解）</h2>
+  <p class="goal">🎯 ゴール：ログ（ジャーナル）の役割と、障害の種類に応じてロールバックとロールフォワードのどちらを使うかを判断できる</p>
+  <p>DBMSは、データを更新するたびに「更新前の内容」と「更新後の内容」を<b>ログ（ジャーナル）</b>という記録に残しています。このログのおかげで、障害が起きても正しい状態まで戻したり、進めたりすることができます。障害の種類によって、使う回復方法が変わります。</p>
+  <p>トランザクションの処理中に異常終了した場合（プログラムのバグや停電など、ディスク自体は無事な場合）は、ログの<b>更新前情報</b>を使って、その処理が始まる前の状態まで巻き戻します。これを<b>ロールバック</b>と呼びます。一方、ディスクそのものが物理的に壊れてしまった場合は、更新前の情報も一緒に失われているので巻き戻すことができません。この場合は、以前取っておいた<b>バックアップ</b>を戻し、そこにログの<b>更新後情報</b>を適用して、壊れる直前の状態まで再現します。これを<b>ロールフォワード</b>と呼びます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="障害の種類とロールバック・ロールフォワードの対応を示す図" viewBox="0 0 700 350" width="700">
+    <text x="350" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">障害の種類と回復方法の対応</text>
+    <text x="350" y="38" text-anchor="middle" font-size="11" fill="#716C61">ログ（ジャーナル）＝更新前後の内容を記録したもの</text>
+    <rect x="20" y="55" width="320" height="72" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="180" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">軽度の障害</text>
+    <text x="180" y="94" text-anchor="middle" font-size="10.5" fill="#211F1A">プログラムのバグ・入力ミスなどで</text>
+    <text x="180" y="110" text-anchor="middle" font-size="10.5" fill="#211F1A">処理中に異常終了（ディスクは無事）</text>
+    <line x1="180" y1="127" x2="180" y2="152" stroke="#211F1A" stroke-width="1.6"/>
+    <polygon points="180,152 174,141 186,141" fill="#211F1A"/>
+    <rect x="20" y="158" width="320" height="100" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="180" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">ロールバック</text>
+    <text x="180" y="200" text-anchor="middle" font-size="10.5" fill="#211F1A">ログの「更新前情報」を使って</text>
+    <text x="180" y="217" text-anchor="middle" font-size="10.5" fill="#211F1A">処理前の状態まで巻き戻す</text>
+    <text x="180" y="240" text-anchor="middle" font-size="10.5" font-weight="700" fill="#716C61">＝処理中の障害向け</text>
+    <rect x="360" y="55" width="320" height="72" rx="10" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="520" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">重度の障害</text>
+    <text x="520" y="94" text-anchor="middle" font-size="10.5" fill="#211F1A">ディスクそのものが</text>
+    <text x="520" y="110" text-anchor="middle" font-size="10.5" fill="#211F1A">物理的に壊れた（データ消失）</text>
+    <line x1="520" y1="127" x2="520" y2="152" stroke="#211F1A" stroke-width="1.6"/>
+    <polygon points="520,152 514,141 526,141" fill="#211F1A"/>
+    <rect x="360" y="158" width="320" height="100" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="520" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">ロールフォワード</text>
+    <text x="520" y="200" text-anchor="middle" font-size="10.5" fill="#211F1A">バックアップを戻し、ログの</text>
+    <text x="520" y="217" text-anchor="middle" font-size="10.5" fill="#211F1A">「更新後情報」で最新状態を再現</text>
+    <text x="520" y="240" text-anchor="middle" font-size="10.5" font-weight="700" fill="#716C61">＝ディスク障害向け</text>
+    <line x1="350" y1="45" x2="350" y2="270" stroke="#E2DCCD" stroke-width="1"/>
+    <text x="350" y="290" text-anchor="middle" font-size="11" font-weight="700" fill="#211F1A">チェックポイント以降のログだけ使えばよいので、回復にかかる時間を短縮できる</text>
+    <text x="350" y="312" text-anchor="middle" font-size="11" fill="#716C61">合言葉：処理中の障害＝ロールバック（戻す）／ディスク障害＝ロールフォワード（進める）</text>
+  </svg>
+  <figcaption>図5-9　障害の種類とロールバック／ロールフォワードの対応（頻出図解）</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>処理中の障害（ディスクは無事）→ ロールバック（更新前情報で戻す）</li>
+      <li>ディスク障害（データ消失）→ ロールフォワード（バックアップ＋更新後情報で進める）</li>
+      <li>チェックポイントを取っておくと、それ以降のログだけで済み回復が速くなる</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-9">障害の種類に応じてロールバックとロールフォワードを使い分けられるようになった</label>
+</section>
+
+<!-- ============ 5-10 ============ -->
+<section class="item" id="db-10">
+  <h2><span class="no">5-10</span>インデックスとDB応用 — 本の索引で検索を速くする</h2>
+  <p class="goal">🎯 ゴール：インデックスの効果とトレードオフ、データウェアハウス・NoSQLの特徴を説明できる</p>
+  <p><b>インデックス</b>とは、表の特定の列にあらかじめ「索引」を作っておき、検索を高速化する仕組みです。分厚い辞書を最初から最後まで1ページずつめくって探すのではなく、巻末の索引を使ってページ数を先に調べるようなイメージです。ただし索引にも管理コストがかかるように、インデックスを作った列は検索が速くなる代わりに、データを更新するたびにインデックス自体も更新する必要があるため、更新（追加・変更・削除）の処理は遅くなります。検索が多い列には向いていますが、更新が頻繁な列に何でもかんでもインデックスを付ければよいわけではありません。</p>
+  <p>DB応用の用語もいくつか押さえておきます。<b>データウェアハウス</b>は、日々の業務データを分析目的でまとめて蓄積しておく倉庫のようなものです。そこから経営判断に役立つ情報を取り出す活動を<b>BI（ビジネスインテリジェンス）</b>と呼びます。<b>NoSQL</b>は、関係データベースのような厳密な表構造にこだわらず、キーと値のペアで保存する「キーバリュー型」などを使って、規模の大きさや処理速度を優先するデータベースです。</p>
+  <table class="tbl">
+    <tr><th>用語</th><th>特徴</th></tr>
+    <tr><td>インデックス</td><td>検索は速くなるが、更新は遅くなる</td></tr>
+    <tr><td>データウェアハウス</td><td>分析用にデータを蓄積する倉庫</td></tr>
+    <tr><td>NoSQL（キーバリュー型など）</td><td>厳密さより規模・速度を優先</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>インデックス＝検索が速くなる代わりに更新が遅くなる（トレードオフ）</li>
+      <li>データウェアハウス＝分析用の蓄積、BI＝そこから経営判断に活用する活動</li>
+      <li>NoSQL＝「厳密さより規模・速度」。関係DBとは目的が違う</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="db-10">インデックスの効果とトレードオフを説明できるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（データベース）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+
+  <details><summary>Q1. 表の中で1つの行を一意に特定でき、重複もNULLも許されない列を何と呼ぶか。</summary><div class="a"><b>主キー</b>。学籍番号のように、1行を確実に特定するための列。1列で無理なら複数列を組み合わせた複合キーにする。 <a class="qref" href="#db-2">→ 解説 5-2 に戻る</a></div></details>
+
+  <details><summary>Q2. ある注文明細表で、複合キー「注文番号＋商品コード」のうち商品コードだけに従属する列「商品名」が含まれている。この表は第何正規形の条件を満たしていないか。</summary><div class="a"><b>第2正規形</b>。主キーの一部（商品コード）にしか従属しない部分関数従属があるため、第2正規形の条件（主キー全体に従属すること）に反する。商品名は別表に分離する必要がある。 <a class="qref" href="#db-3">→ 解説 5-3 に戻る</a></div></details>
+
+  <details><summary>Q3. 社員表（部署：営業=2人・開発=2人・総務=1人）に対して WHERE 部署='開発' ORDER BY 年齢 を実行すると、何行がどの順で返るか（開発は鈴木28歳、田中31歳）。</summary><div class="a"><b>2行</b>、鈴木（28歳）→田中（31歳）の順。WHEREで開発の2人に絞り、ORDER BYで年齢の昇順に並べ替える。 <a class="qref" href="#db-4">→ 解説 5-4 に戻る</a></div></details>
+
+  <details><summary>Q4. 社員表（4人、うち1人は部署未配属）と部署表（3部署、うち1部署は該当社員なし）を内部結合すると何行になるか。</summary><div class="a"><b>3行</b>。内部結合は両方の表に一致するデータがある行だけを残すため、部署未配属の社員と、該当社員のいない部署はどちらも結果から除外される。 <a class="qref" href="#db-6">→ 解説 5-6 に戻る</a></div></details>
+
+  <details><summary>Q5. 銀行振込処理で、引き落としだけ成功し入金が失敗したときに処理全体を取り消して整合性を保つ性質は、ACIDのうちどれか。</summary><div class="a"><b>原子性（Atomicity）</b>。トランザクションは全部実行するか全く実行しないかのどちらかで、中途半端な状態を許さない。 <a class="qref" href="#db-7">→ 解説 5-7 に戻る</a></div></details>
+
+  <details><summary>Q6. 複数人が同時に読むことはできるが、書き込み中は他の人が読み書きできなくなるロックを何と呼ぶか。</summary><div class="a"><b>専有ロック（排他ロック）</b>。読み取り専用の共有ロックは複数人が同時にかけられるが、書き込み用の専有ロックは1人だけしか持てない。 <a class="qref" href="#db-8">→ 解説 5-8 に戻る</a></div></details>
+
+  <details><summary>Q7. データベースのディスクそのものが物理的に破損した場合、どちらの障害回復方法を使うべきか。</summary><div class="a"><b>ロールフォワード</b>。ディスク障害では更新前情報自体が失われているため、バックアップを戻したうえでログの更新後情報を適用し、最新の状態を再現する。 <a class="qref" href="#db-9">→ 解説 5-9 に戻る</a></div></details>
+
+  <details><summary>Q8. 検索を高速化できる一方、更新のたびに保守コストがかかり更新性能を落とすDBの仕組みは何か。</summary><div class="a"><b>インデックス</b>。本の索引と同じで、検索は速くなるが、データを更新するたびに索引自体も更新する必要があるため更新は遅くなる。 <a class="qref" href="#db-10">→ 解説 5-10 に戻る</a></div></details>
+
+</section>
+
+</main>
+
+<nav class="pager">
+  <a href="fe-security.html"><span class="dir">‹ もどる</span>セクション4：セキュリティ</a>
+  <a href="fe-develop.html" class="next"><span class="dir">つぎへ ›</span>セクション6：開発技術</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ セクション5：データベース</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
+</script>
+</body>
+</html>

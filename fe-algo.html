@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション9：科目B アルゴリズム対策｜基本情報 学習ノート</title>
+<meta name="description" content="基本情報技術者試験 科目B（擬似言語アルゴリズム）対策。トレース表の書き方・配列・再帰・スタック/キュー・探索/ソート・ハッシュ法を図解と例題で学ぶ。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
+  /* 疑似コード表示（科目B用） */
+  pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.7;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;text-align:left}
+  pre.code b{color:var(--accent);font-weight:700}
+  /* スマホ図解・スムーススクロール・目次ボタン */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">セクション9</span>
+  <span class="prog">できた <b id="done-count">0</b> / 15</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 9</div>
+  <h1>🧩 科目B：アルゴリズムと擬似言語</h1>
+  <p class="lead">科目Bは20問中16問が擬似言語のアルゴリズム問題で、配点の8割を占めます。ここは知識の暗記ではなく「手を動かしてトレースする型」を身につける章で、他のセクションよりも実際にコードを1行ずつ追う練習が前提になります。</p>
+  <nav class="toc" id="toc">
+    <a href="#al-1">1. 戦い方</a><a href="#al-2">2. 宣言・代入・演算</a><a href="#al-3">3. 制御構造</a><a href="#al-4">4. トレース表</a><a href="#al-5">5. 配列</a><a href="#al-6">6. 関数と引数</a><a href="#al-7">7. 再帰</a><a href="#al-8">8. スタック/キュー</a><a href="#al-9">9. 連結リスト</a><a href="#al-10">10. 探索</a><a href="#al-11">11. ソート</a><a href="#al-12">12. 計算量</a><a href="#al-13">13. ハッシュ法</a><a href="#al-14">14. データサイエンス系</a><a href="#al-15">15. セキュリティ4問</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 9-1 ============ -->
+<section class="item" id="al-1">
+  <h2><span class="no">9-1</span>科目Bの戦い方 — 100分20問の時間配分</h2>
+  <p class="goal">🎯 ゴール：科目Bの出題構成と時間配分の作戦を知り、本番で無駄に慌てないようにする。</p>
+  <p>科目Bは100分で20問。単純計算では1問あたり平均5分ですが、問題ごとの難易度差が大きいので「必ず5分」ではなく目安として使います。まずは全体の内訳を押さえましょう。</p>
+  <table class="tbl">
+    <tr><th>種別</th><th>問数</th><th>配点イメージ</th><th>おすすめの順番</th></tr>
+    <tr><td>情報セキュリティ（シナリオ型）</td><td>4問</td><td>2割</td><td>① 先に片づける</td></tr>
+    <tr><td>アルゴリズム（擬似言語）</td><td>16問</td><td>8割</td><td>② 時間を多く残す</td></tr>
+  </table>
+  <p>セキュリティのシナリオ問題は読解勝負でトレース不要なぶん時間を予測しやすいので、先に解いて残り時間をアルゴリズムに回すのが定番の作戦です。アルゴリズムは1問の中でもトレースに時間がかかる設問とすぐ分かる設問が混ざっているので、詰まったら印だけ付けて次に進み、最後に見直す方が全体の得点は伸びます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>合格ラインは600/1000点。満点を狙う試験ではないので、分からない1問に時間を溶かさない。</li>
+      <li>先にセキュリティ4問→残り時間をアルゴリズムに使う、が合格体験記で共通する戦略。</li>
+      <li>全問にいったんマークしてから見直す。飛ばした問題を忘れて時間切れにしない。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-1">科目Bの時間配分と解く順番の作戦を説明できる</label>
+</section>
+
+<!-- ============ 9-2 ============ -->
+<section class="item" id="al-2">
+  <h2><span class="no">9-2</span>宣言・代入・演算 — 擬似言語の基本文法①</h2>
+  <p class="goal">🎯 ゴール：擬似言語の記法（宣言・代入・呼出し・演算子の優先順位）をIPA公式の表どおりに読めるようになる。</p>
+  <p>科目Bのプログラムは「擬似言語」という、IPAが公式に決めた共通の書き方で出題されます。実在するプログラミング言語（Python・Javaなど）ではないので、まずこの資料の記法だけを覚えれば十分です。下の表がIPA公式仕様（Ver.5.0）の記法一覧の一部です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="擬似言語の記法一覧表（宣言・代入・呼出し・コメント）" viewBox="0 0 700 260" width="700">
+    <rect x="20" y="20" width="660" height="34" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <rect x="20" y="54" width="660" height="180" fill="#FFFEFB" stroke="#E2DCCD"/>
+    <line x1="260" y1="20" x2="260" y2="234" stroke="#E2DCCD"/>
+    <line x1="20" y1="90" x2="680" y2="90" stroke="#E2DCCD"/>
+    <line x1="20" y1="126" x2="680" y2="126" stroke="#E2DCCD"/>
+    <line x1="20" y1="162" x2="680" y2="162" stroke="#E2DCCD"/>
+    <line x1="20" y1="198" x2="680" y2="198" stroke="#E2DCCD"/>
+    <text x="30" y="42" font-size="12" font-weight="700" fill="#BE5A38">記法</text>
+    <text x="270" y="42" font-size="12" font-weight="700" fill="#BE5A38">意味</text>
+    <text x="30" y="76" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">○手続名又は関数名</text>
+    <text x="270" y="76" font-size="12" fill="#211F1A">手続・関数の宣言</text>
+    <text x="30" y="112" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">型名: 変数名</text>
+    <text x="270" y="112" font-size="12" fill="#211F1A">変数宣言</text>
+    <text x="30" y="148" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">/* 注釈 */　// 注釈</text>
+    <text x="270" y="148" font-size="12" fill="#211F1A">コメント</text>
+    <text x="30" y="184" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">変数名 ← 式</text>
+    <text x="270" y="184" font-size="12" fill="#211F1A">代入</text>
+    <text x="30" y="220" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">手続名(引数, …)</text>
+    <text x="270" y="220" font-size="12" fill="#211F1A">呼出し</text>
+  </svg>
+  <figcaption>図9-2　擬似言語の記法一覧（IPA公式仕様 Ver.5.0）</figcaption>
+  </figure>
+  <p>この表の書き方を実際に使うとこうなります。</p>
+  <pre class="code"><b>○</b> goukei(整数型: n)   /* goukeiという関数の宣言。引数nは整数型 */
+  整数型: i, s          /* i と s を 整数型で変数宣言 */
+  s <b>←</b> 0                /* 代入：sに0を入れる */
+  goukei(3)             /* 呼出し：goukeiにひきすう3を渡して実行 */</pre>
+  <p>演算子には優先順位があり、上から先に計算されます（高→低）。この順番は本文中でも一字一句変えずに使うので、そのまま覚えてください。</p>
+  <div class="formula">( ) 　＞　単項 not, +, −　＞　mod, ×, ÷　＞　+, −　＞　関係(≠ ≦ ≧ &lt; = &gt;)　＞　and　＞　or</div>
+  <p><code>mod</code>は割り算の余りを求める演算子です（例：7 mod 2 = 1）。「掛け算・割り算・modが先、足し算・引き算は後、比較はもっと後、and/orは一番後」という順番だけ押さえれば式は読めます。</p>
+  <div class="point"><span class="tt">⚡ その他の規約</span>
+    <ul>
+      <li>論理型の定数は <code>true</code> / <code>false</code>。</li>
+      <li>配列は <code>[ ]</code> で要素番号を指定。1始まりかどうかは必ず問題文で明示される。二次元配列は「行,列」の順。<code>{ }</code>は配列リテラル（二次元は内側の<code>{}</code>が1行分）。</li>
+      <li>「未定義」「未定義の値」＝値が入っていない状態を表す公式用語。連結リストの終端などでよく出てくる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-2">宣言・代入・演算子の優先順位をIPA公式の記法で読める</label>
+</section>
+
+<!-- ============ 9-3 ============ -->
+<section class="item" id="al-3">
+  <h2><span class="no">9-3</span>制御構造 — 擬似言語の基本文法②</h2>
+  <p class="goal">🎯 ゴール：if/while/do-while/forの4つの構文と、それぞれの実行順の違いを読み解けるようになる。</p>
+  <p>選択と繰返しの構文はこの4種類です。「上から評価して最初に真になった所だけ実行」「前判定か後判定か」の違いがひっかけになりやすいポイントです。</p>
+  <pre class="code"><b>if</b> (条件式1)
+  …
+<b>elseif</b> (条件式2)
+  …
+<b>else</b>
+  …
+<b>endif</b></pre>
+  <p>if文は上から順に条件式を評価し、最初に真になった処理だけを実行します（elseifは複数書けて、省略もできます）。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="while・do-while・forの実行順を比較したフローチャート" viewBox="0 0 700 300" width="700">
+    <defs>
+      <marker id="al3arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#716C61"/></marker>
+    </defs>
+    <!-- col1: while -->
+    <text x="135" y="20" font-size="13" font-weight="700" fill="#4A6FA5" text-anchor="middle">while（前判定）</text>
+    <rect x="45" y="35" width="180" height="40" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="135" y="59" font-size="12" text-anchor="middle" fill="#211F1A">条件判定 (i ≦ n)</text>
+    <line x1="135" y1="75" x2="135" y2="108" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <text x="150" y="95" font-size="11" fill="#716C61">真</text>
+    <rect x="45" y="108" width="180" height="40" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="135" y="132" font-size="12" text-anchor="middle" fill="#211F1A">本体処理</text>
+    <path d="M225,128 C255,128 255,55 225,55" fill="none" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <text x="230" y="90" font-size="10" fill="#716C61">くり返す</text>
+    <path d="M45,55 C20,55 20,20 40,15" fill="none" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <text x="8" y="30" font-size="10" fill="#716C61">偽→終了</text>
+    <text x="135" y="178" font-size="11" text-anchor="middle" fill="#716C61">条件を先に確認。0回のこともある</text>
+    <!-- col2: do-while -->
+    <text x="365" y="20" font-size="13" font-weight="700" fill="#4A6FA5" text-anchor="middle">do～while（後判定）</text>
+    <rect x="275" y="35" width="180" height="40" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="365" y="59" font-size="12" text-anchor="middle" fill="#211F1A">本体処理（先に実行）</text>
+    <line x1="365" y1="75" x2="365" y2="108" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <rect x="275" y="108" width="180" height="40" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="365" y="132" font-size="12" text-anchor="middle" fill="#211F1A">条件判定 (i ≦ n)</text>
+    <path d="M455,128 C485,128 485,55 455,55" fill="none" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <text x="460" y="90" font-size="10" fill="#716C61">真→もう1回</text>
+    <path d="M275,128 C250,128 250,150 260,155" fill="none" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <text x="238" y="170" font-size="10" fill="#716C61">偽→終了</text>
+    <text x="365" y="178" font-size="11" text-anchor="middle" fill="#716C61">必ず1回は実行してから確認する</text>
+    <!-- col3: for -->
+    <text x="595" y="20" font-size="13" font-weight="700" fill="#4A6FA5" text-anchor="middle">for（回数指定）</text>
+    <rect x="505" y="32" width="180" height="28" rx="7" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="595" y="50" font-size="11" text-anchor="middle" fill="#211F1A">i ← 1（初期値）</text>
+    <line x1="595" y1="60" x2="595" y2="76" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <rect x="505" y="76" width="180" height="30" rx="7" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="595" y="95" font-size="11" text-anchor="middle" fill="#211F1A">条件判定 i ≦ n</text>
+    <line x1="595" y1="106" x2="595" y2="122" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <rect x="505" y="122" width="180" height="30" rx="7" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="595" y="141" font-size="11" text-anchor="middle" fill="#211F1A">本体処理</text>
+    <line x1="595" y1="152" x2="595" y2="168" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <rect x="505" y="168" width="180" height="26" rx="7" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="595" y="185" font-size="11" text-anchor="middle" fill="#211F1A">iを1増やす</text>
+    <path d="M685,181 C710,181 710,91 685,91" fill="none" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <text x="640" y="215" font-size="11" text-anchor="middle" fill="#716C61">くり返す</text>
+    <path d="M505,91 C480,91 480,60 495,55" fill="none" stroke="#716C61" marker-end="url(#al3arrow)"/>
+    <text x="595" y="245" font-size="11" text-anchor="middle" fill="#716C61">初期値・条件・更新をforがまとめて管理</text>
+  </svg>
+  <figcaption>図9-3　while・do-while・forの実行順の違い</figcaption>
+  </figure>
+  <pre class="code"><b>while</b> (i ≦ n)
+  …
+  i ← i + 1
+<b>endwhile</b>
+
+<b>do</b>
+  …
+  i ← i + 1
+<b>while</b> (i ≦ n)
+
+<b>for</b> (i を 1 から n まで 1 ずつ増やす)
+  …
+<b>endfor</b></pre>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>whileは条件を先に確認する「前判定」。最初から条件が偽なら本体は1回も実行されない。</li>
+      <li>do～whileは本体を先に実行してから条件を確認する「後判定」。<b>条件が最初から偽でも必ず1回は実行される</b>。ここが最頻出のひっかけ。</li>
+      <li>forは初期値・繰返し条件・更新をひとまとめに書ける繰返し。endif/endwhile/endforで必ず閉じる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-3">if/while/do-while/forの実行順の違いを説明できる</label>
+</section>
+
+<!-- ============ 9-4 ============ -->
+<section class="item" id="al-4">
+  <h2><span class="no">9-4</span>トレース表の書き方 — この章の心臓部</h2>
+  <p class="goal">🎯 ゴール：擬似言語のプログラムを1行ずつ手を動かして追い、変数の値の変化を表に書き出せるようになる。</p>
+  <p>科目Bの正体は「暗記」ではなく「トレース（プログラムを1行ずつ実際に実行した気持ちで追うこと）」です。手順はいつも同じ4ステップです。</p>
+  <ol>
+    <li><b>①ゴール確認</b>：何を答える問題か（戻り値？出力？空欄の穴埋め？）を先に確認する。</li>
+    <li><b>②初期値を書く</b>：変数が最初に持っている値を表の1行目に書く。</li>
+    <li><b>③列を決める</b>：値が変わる変数だけを表の列にする（変わらない変数は書かなくてよい）。</li>
+    <li><b>④1行ずつ実行</b>：コードを上から1行ずつ実行し、値が変わるたびに表に1行足す。</li>
+  </ol>
+  <figure class="fig">
+  <svg role="img" aria-label="疑似コードとトレース表を並べて1行ずつ対応させた図" viewBox="0 0 700 300" width="700">
+    <text x="350" y="20" font-size="13" font-weight="700" fill="#BE5A38" text-anchor="middle">goukei(3) を呼んだときのトレース</text>
+    <rect x="15" y="40" width="315" height="200" fill="#F2EFE6" stroke="#E2DCCD" rx="8"/>
+    <text x="30" y="62" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">1</text>
+    <text x="45" y="62" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">○ goukei(整数型: n)</text>
+    <text x="30" y="88" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">2</text>
+    <text x="45" y="88" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  整数型: i, s</text>
+    <text x="30" y="114" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">3</text>
+    <text x="45" y="114" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  s ← 0</text>
+    <text x="30" y="140" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">4</text>
+    <text x="45" y="140" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  for(iを1からnまで1ずつ増加)</text>
+    <text x="30" y="166" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">5</text>
+    <text x="45" y="166" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">    s ← s + i</text>
+    <text x="30" y="192" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">6</text>
+    <text x="45" y="192" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  endfor</text>
+    <text x="30" y="218" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">7</text>
+    <text x="45" y="218" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  return s</text>
+    <!-- trace table -->
+    <rect x="360" y="55" width="325" height="175" fill="#FFFEFB" stroke="#E2DCCD"/>
+    <line x1="430" y1="55" x2="430" y2="230" stroke="#E2DCCD"/>
+    <line x1="480" y1="55" x2="480" y2="230" stroke="#E2DCCD"/>
+    <line x1="530" y1="55" x2="530" y2="230" stroke="#E2DCCD"/>
+    <line x1="360" y1="83" x2="685" y2="83" stroke="#E2DCCD"/>
+    <line x1="360" y1="111" x2="685" y2="111" stroke="#E2DCCD"/>
+    <line x1="360" y1="139" x2="685" y2="139" stroke="#E2DCCD"/>
+    <line x1="360" y1="167" x2="685" y2="167" stroke="#E2DCCD"/>
+    <line x1="360" y1="195" x2="685" y2="195" stroke="#E2DCCD"/>
+    <rect x="360" y="55" width="325" height="28" fill="#F3E5DA"/>
+    <text x="368" y="73" font-size="11" font-weight="700" fill="#BE5A38">段階</text>
+    <text x="440" y="73" font-size="11" font-weight="700" fill="#BE5A38">i</text>
+    <text x="490" y="73" font-size="11" font-weight="700" fill="#BE5A38">s</text>
+    <text x="538" y="73" font-size="11" font-weight="700" fill="#BE5A38">備考</text>
+    <text x="368" y="101" font-size="11" fill="#211F1A">初期化</text>
+    <text x="440" y="101" font-size="11" fill="#211F1A">－</text>
+    <text x="490" y="101" font-size="11" fill="#211F1A">0</text>
+    <text x="538" y="101" font-size="11" fill="#211F1A">3行目まで</text>
+    <text x="368" y="129" font-size="11" fill="#211F1A">1周目</text>
+    <text x="440" y="129" font-size="11" fill="#211F1A">1</text>
+    <text x="490" y="129" font-size="11" fill="#211F1A">1</text>
+    <text x="538" y="129" font-size="11" fill="#211F1A">5行目実行</text>
+    <text x="368" y="157" font-size="11" fill="#211F1A">2周目</text>
+    <text x="440" y="157" font-size="11" fill="#211F1A">2</text>
+    <text x="490" y="157" font-size="11" fill="#211F1A">3</text>
+    <text x="538" y="157" font-size="11" fill="#211F1A">5行目実行</text>
+    <text x="368" y="185" font-size="11" fill="#211F1A">3周目</text>
+    <text x="440" y="185" font-size="11" fill="#211F1A">3</text>
+    <text x="490" y="185" font-size="11" fill="#211F1A">6</text>
+    <text x="538" y="185" font-size="11" fill="#211F1A">5行目実行</text>
+    <text x="368" y="213" font-size="11" fill="#211F1A">終了</text>
+    <text x="440" y="213" font-size="11" fill="#211F1A">3</text>
+    <text x="490" y="213" font-size="11" fill="#211F1A">6</text>
+    <text x="538" y="213" font-size="11" fill="#211F1A">戻り値=6</text>
+    <!-- connectors -->
+    <path d="M330,114 C345,114 345,101 360,101" fill="none" stroke="#BE5A38" stroke-dasharray="3,2"/>
+    <path d="M330,166 C348,166 348,129 360,129" fill="none" stroke="#4A6FA5" stroke-dasharray="3,2"/>
+    <path d="M330,166 C350,166 350,157 360,157" fill="none" stroke="#4f6b3a" stroke-dasharray="3,2"/>
+    <path d="M330,166 C352,166 352,185 360,185" fill="none" stroke="#9a5a22" stroke-dasharray="3,2"/>
+    <path d="M330,218 C345,218 345,213 360,213" fill="none" stroke="#716C61" stroke-dasharray="3,2"/>
+    <text x="350" y="255" font-size="11" text-anchor="middle" fill="#716C61">同じ5行目が3回実行され、そのたびに表の行が1行増える</text>
+  </svg>
+  <figcaption>図9-4　コードとトレース表の対応（goukei(3)＝1から3までの合計を求める）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    次の擬似言語で書かれた手続を <code>kazoeru(6)</code> として呼び出したとき、戻り値はいくつになるか。
+    <pre class="code">○ kazoeru(整数型: n)
+  整数型: i, kosuu
+  kosuu ← 0
+  i ← 1
+  while (i ≦ n)
+    if (i mod 3 = 0)
+      kosuu ← kosuu + 1
+    endif
+    i ← i + 1
+  endwhile
+  return kosuu</pre>
+    <details class="ans"><summary>答えを見る</summary>
+    <p>トレース表で1周ずつ確認します（i mod 3 = 0、つまり3の倍数のときだけkosuuが増えます）。</p>
+    <table class="tbl">
+      <tr><th>i</th><th>i mod 3</th><th>kosuu</th></tr>
+      <tr><td>1</td><td>1（≠0）</td><td>0</td></tr>
+      <tr><td>2</td><td>2（≠0）</td><td>0</td></tr>
+      <tr><td>3</td><td>0</td><td>1</td></tr>
+      <tr><td>4</td><td>1（≠0）</td><td>1</td></tr>
+      <tr><td>5</td><td>2（≠0）</td><td>1</td></tr>
+      <tr><td>6</td><td>0</td><td>2</td></tr>
+    </table>
+    <p>i=7になった時点でi≦6が偽になりループ終了。<b>戻り値は2</b>（1〜6のうち3の倍数は3と6の2個）。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「値が変わる変数だけ」を列にする。ループカウンタや一時変数まで全部書くと逆に混乱する。</li>
+      <li>行は「値が変わったとき」だけ増やす。1行ずつ機械的にコードをなぞるのがコツ。</li>
+      <li>本番では省略できる列を見極めて5〜7分/問のペースに近づける。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-4">トレース表を自分の手で書いて変数の変化を追える</label>
+</section>
+
+<!-- ============ 9-5 ============ -->
+<section class="item" id="al-5">
+  <h2><span class="no">9-5</span>配列のトレース — 添字ズレに要注意</h2>
+  <p class="goal">🎯 ゴール：配列の要素番号（添字）の数え方を確認し、添字ズレ（オフバイワン）のミスを防げるようになる。</p>
+  <p>配列は要素番号（添字）が1始まりか0始まりかで動きが変わります。基本情報の擬似言語では<b>1始まり</b>で出題されることが多いですが、必ず問題文の宣言を確認してください。この「思い込みによる添字ズレ（オフバイワン）」が科目Bの最多ミスと言われています。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="配列の箱と添字、およびa[1]とa[2]を入れ替えるトレース例" viewBox="0 0 700 260" width="700">
+    <text x="350" y="20" font-size="12" text-anchor="middle" fill="#716C61">配列 a ← {10, 20, 30, 40}（1始まり）</text>
+    <text x="75" y="45" font-size="11" text-anchor="middle" fill="#4A6FA5">a[1]</text>
+    <text x="145" y="45" font-size="11" text-anchor="middle" fill="#4A6FA5">a[2]</text>
+    <text x="215" y="45" font-size="11" text-anchor="middle" fill="#4A6FA5">a[3]</text>
+    <text x="285" y="45" font-size="11" text-anchor="middle" fill="#4A6FA5">a[4]</text>
+    <rect x="40" y="52" width="70" height="46" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
+    <text x="75" y="80" font-size="14" text-anchor="middle" fill="#211F1A">10</text>
+    <rect x="110" y="52" width="70" height="46" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
+    <text x="145" y="80" font-size="14" text-anchor="middle" fill="#211F1A">20</text>
+    <rect x="180" y="52" width="70" height="46" fill="#F2EFE6" stroke="#E2DCCD" rx="6"/>
+    <text x="215" y="80" font-size="14" text-anchor="middle" fill="#211F1A">30</text>
+    <rect x="250" y="52" width="70" height="46" fill="#F2EFE6" stroke="#E2DCCD" rx="6"/>
+    <text x="285" y="80" font-size="14" text-anchor="middle" fill="#211F1A">40</text>
+    <path d="M40,60 C15,60 15,105 35,112" fill="none" stroke="#BE5A38"/>
+    <text x="10" y="128" font-size="10.5" fill="#BE5A38">a[0]は無い！</text>
+    <text x="450" y="75" font-size="11.5" fill="#211F1A">tmp ← a[1]　　　　（tmpに10を保存）</text>
+    <text x="450" y="95" font-size="11.5" fill="#211F1A">a[1] ← a[2]　　　　（a[1]を20に）</text>
+    <text x="450" y="115" font-size="11.5" fill="#211F1A">a[2] ← tmp　　　　（a[2]をtmpの10に）</text>
+    <line x1="140" y1="150" x2="140" y2="175" stroke="#716C61" stroke-dasharray="3,2"/>
+    <text x="350" y="145" font-size="12" text-anchor="middle" fill="#716C61">↓ 実行後（a[1]とa[2]が入れ替わる）</text>
+    <text x="75" y="195" font-size="11" text-anchor="middle" fill="#4f6b3a">a[1]</text>
+    <text x="145" y="195" font-size="11" text-anchor="middle" fill="#4f6b3a">a[2]</text>
+    <text x="215" y="195" font-size="11" text-anchor="middle" fill="#716C61">a[3]</text>
+    <text x="285" y="195" font-size="11" text-anchor="middle" fill="#716C61">a[4]</text>
+    <rect x="40" y="202" width="70" height="46" fill="#E7EDDC" stroke="#4f6b3a" rx="6"/>
+    <text x="75" y="230" font-size="14" text-anchor="middle" fill="#211F1A">20</text>
+    <rect x="110" y="202" width="70" height="46" fill="#E7EDDC" stroke="#4f6b3a" rx="6"/>
+    <text x="145" y="230" font-size="14" text-anchor="middle" fill="#211F1A">10</text>
+    <rect x="180" y="202" width="70" height="46" fill="#F2EFE6" stroke="#E2DCCD" rx="6"/>
+    <text x="215" y="230" font-size="14" text-anchor="middle" fill="#211F1A">30</text>
+    <rect x="250" y="202" width="70" height="46" fill="#F2EFE6" stroke="#E2DCCD" rx="6"/>
+    <text x="285" y="230" font-size="14" text-anchor="middle" fill="#211F1A">40</text>
+  </svg>
+  <figcaption>図9-5　配列の添字とtmpを使った入れ替え（スワップ）のトレース</figcaption>
+  </figure>
+  <p>二次元配列は「行,列」の順で書きます（例：<code>a[2,3]</code>は2行目3列目）。表計算のイメージに近いですが、順番が「行が先」であることを忘れないようにしましょう。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>問題文に「配列の要素番号は1から始まる」のような一文が必ずある。まずそこを探す。</li>
+      <li>ループの終了条件（<code>i ≦ n</code> か <code>i &lt; n</code> か）と添字の始まりが対応しているか確認する。</li>
+      <li>2つの値を入れ替える（スワップ）ときは、一時変数（tmp）に一旦逃がすのが定番の型。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-5">配列の添字ズレに注意してトレースできる</label>
+</section>
+
+<!-- ============ 9-6 ============ -->
+<section class="item" id="al-6">
+  <h2><span class="no">9-6</span>関数と引数 — 値の受け渡しと戻り値</h2>
+  <p class="goal">🎯 ゴール：関数を呼び出したときに、引数がどう渡り、戻り値がどう返ってくるかを図でイメージできる。</p>
+  <p>関数（手続）を呼び出すと、処理はいったんその関数へ「飛んで」、関数の中身を実行し終えたら、呼び出した場所の続きに「戻ってくる」動きをします。</p>
+  <pre class="code">○ nibai(整数型: x)
+  return x × 2
+
+/* 呼出し側 */
+kekka ← nibai(5)</pre>
+  <figure class="fig">
+  <svg role="img" aria-label="呼び出し元と関数の間で引数と戻り値がやり取りされる図" viewBox="0 0 700 220" width="700">
+    <rect x="30" y="60" width="260" height="120" rx="10" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="160" y="85" font-size="12.5" text-anchor="middle" font-weight="700" fill="#211F1A">呼び出し元（main側）</text>
+    <text x="160" y="115" font-size="12" text-anchor="middle" fill="#211F1A" font-family="'JetBrains Mono',monospace">kekka ← nibai(5)</text>
+    <text x="160" y="140" font-size="11" text-anchor="middle" fill="#716C61">kekkaに戻り値が入る</text>
+    <rect x="410" y="60" width="260" height="120" rx="10" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="540" y="85" font-size="12.5" text-anchor="middle" font-weight="700" fill="#211F1A">nibai関数</text>
+    <text x="540" y="112" font-size="12" text-anchor="middle" fill="#211F1A" font-family="'JetBrains Mono',monospace">x ← 5（受け取った引数）</text>
+    <text x="540" y="135" font-size="12" text-anchor="middle" fill="#211F1A" font-family="'JetBrains Mono',monospace">return x × 2</text>
+    <path d="M290,90 C330,80 370,80 410,90" fill="none" stroke="#4A6FA5" stroke-width="1.6" marker-end="url(#al6a)"/>
+    <text x="350" y="72" font-size="11" text-anchor="middle" fill="#4A6FA5">① 引数 5 を渡す</text>
+    <path d="M410,155 C370,168 330,168 290,155" fill="none" stroke="#BE5A38" stroke-width="1.6" marker-end="url(#al6b)"/>
+    <text x="350" y="185" font-size="11" text-anchor="middle" fill="#BE5A38">② 戻り値 10 を返す</text>
+    <defs>
+      <marker id="al6a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4A6FA5"/></marker>
+      <marker id="al6b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#BE5A38"/></marker>
+    </defs>
+  </svg>
+  <figcaption>図9-6　nibai(5)を呼び出したときの値の流れ（kekkaには10が入る）</figcaption>
+  </figure>
+  <p><code>nibai(5)</code>が呼ばれると、関数の中では<code>x</code>に5が入り、<code>x × 2 = 10</code>を戻り値として返します。呼び出し側の<code>kekka</code>にはその10が代入されます。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>引数は「関数に渡す入力」、戻り値（return）は「関数からの出力」。向きを逆にしない。</li>
+      <li>関数呼び出し中は、呼び出し元の実行がそこで止まり、関数の処理が終わるまで待つ。</li>
+      <li>この「呼んで→戻る」動きが9-7の再帰の土台になる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-6">引数の受け渡しと戻り値の流れを説明できる</label>
+</section>
+
+<!-- ============ 9-7 ============ -->
+<section class="item" id="al-7">
+  <h2><span class="no">9-7</span>再帰の追い方 — マトリョーシカ式の呼び出し</h2>
+  <p class="goal">🎯 ゴール：自分自身を呼び出す「再帰」の動きを、呼び出しの積み重ね（コールスタック）で追えるようになる。</p>
+  <p>再帰とは、関数が自分自身を呼び出すことです。マトリョーシカ人形を開けていくように、どんどん小さい問題を呼び出していき、一番小さい人形（終了条件）にたどり着いたら、そこから答えを組み立てながら外側へ戻っていきます。終了条件を最初に確認するのがコツです。</p>
+  <pre class="code">○ kaijo(整数型: n)
+  <b>if</b> (n = 0)
+    <b>return</b> 1
+  <b>else</b>
+    <b>return</b> n × kaijo(n - 1)
+  <b>endif</b></pre>
+  <figure class="fig">
+  <svg role="img" aria-label="kaijo(3)を呼んだときのコールスタックの積み上げと巻き戻り" viewBox="0 0 700 400" width="700">
+    <defs>
+      <marker id="al7up" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4A6FA5"/></marker>
+      <marker id="al7dn" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#BE5A38"/></marker>
+    </defs>
+    <text x="350" y="18" font-size="13" font-weight="700" fill="#BE5A38" text-anchor="middle">kaijo(3) を呼び出したときの積み上げと巻き戻り</text>
+    <rect x="200" y="30" width="300" height="70" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="350" y="53" font-size="12.5" text-anchor="middle" font-weight="700" fill="#211F1A">kaijo(0)　※終了条件</text>
+    <text x="350" y="75" font-size="11.5" text-anchor="middle" fill="#211F1A">n=0 なので return 1</text>
+    <rect x="200" y="120" width="300" height="70" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="350" y="143" font-size="12.5" text-anchor="middle" font-weight="700" fill="#211F1A">kaijo(1)</text>
+    <text x="350" y="165" font-size="11.5" text-anchor="middle" fill="#211F1A">return 1 × kaijo(0)</text>
+    <rect x="200" y="210" width="300" height="70" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="350" y="233" font-size="12.5" text-anchor="middle" font-weight="700" fill="#211F1A">kaijo(2)</text>
+    <text x="350" y="255" font-size="11.5" text-anchor="middle" fill="#211F1A">return 2 × kaijo(1)</text>
+    <rect x="200" y="300" width="300" height="70" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="350" y="323" font-size="12.5" text-anchor="middle" font-weight="700" fill="#211F1A">kaijo(3)　※最初の呼び出し</text>
+    <text x="350" y="345" font-size="11.5" text-anchor="middle" fill="#211F1A">return 3 × kaijo(2)</text>
+    <!-- left: call down arrows (呼ぶ) -->
+    <line x1="170" y1="300" x2="170" y2="280" stroke="#4A6FA5" marker-end="url(#al7up)"/>
+    <text x="60" y="293" font-size="10.5" fill="#4A6FA5">呼ぶ kaijo(2)</text>
+    <line x1="170" y1="210" x2="170" y2="190" stroke="#4A6FA5" marker-end="url(#al7up)"/>
+    <text x="60" y="203" font-size="10.5" fill="#4A6FA5">呼ぶ kaijo(1)</text>
+    <line x1="170" y1="120" x2="170" y2="100" stroke="#4A6FA5" marker-end="url(#al7up)"/>
+    <text x="60" y="113" font-size="10.5" fill="#4A6FA5">呼ぶ kaijo(0)</text>
+    <!-- right: return arrows (戻す) -->
+    <line x1="530" y1="100" x2="530" y2="120" stroke="#BE5A38" marker-end="url(#al7dn)"/>
+    <text x="536" y="113" font-size="10.5" fill="#BE5A38">戻す 1</text>
+    <line x1="530" y1="190" x2="530" y2="210" stroke="#BE5A38" marker-end="url(#al7dn)"/>
+    <text x="536" y="203" font-size="10.5" fill="#BE5A38">戻す 1×1=1</text>
+    <line x1="530" y1="280" x2="530" y2="300" stroke="#BE5A38" marker-end="url(#al7dn)"/>
+    <text x="536" y="293" font-size="10.5" fill="#BE5A38">戻す 2×1=2</text>
+    <text x="350" y="392" font-size="12.5" text-anchor="middle" font-weight="700" fill="#BE5A38">kaijo(3) = 3×2 = 6（最終結果）</text>
+  </svg>
+  <figcaption>図9-7　kaijo(3)＝3の階乗を求める再帰の積み上げ・巻き戻り</figcaption>
+  </figure>
+  <p>下から順に見ると分かりやすいです。kaijo(3)はまずkaijo(2)を呼び、kaijo(2)はkaijo(1)を呼び、kaijo(1)はkaijo(0)を呼びます。kaijo(0)は終了条件（n=0）なので1を返し、そこから下に向かって kaijo(1)=1×1=1、kaijo(2)=2×1=2、kaijo(3)=3×2=6 と答えを組み立てながら戻っていきます（3の階乗=6）。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    <code>hyoji(x)</code>はxの値を画面に出力する手続きとする。次の手続き<code>saiki(3)</code>を呼び出したとき、画面に出力される数字の順番はどうなるか。
+    <pre class="code">/* hyoji(x)はxの値を画面に出力する手続き */
+○ saiki(整数型: n)
+  <b>if</b> (n &gt; 0)
+    hyoji(n)
+    saiki(n - 1)
+    hyoji(n)
+  <b>endif</b></pre>
+    <details class="ans"><summary>答えを見る</summary>
+    <p>呼び出しを積む方向と、戻る方向の2回、hyojiが実行されることに注意してトレースします。</p>
+    <table class="tbl">
+      <tr><th>呼び出し</th><th>1回目のhyoji（積む方向）</th><th>再帰呼出し</th><th>2回目のhyoji（戻る方向）</th></tr>
+      <tr><td>saiki(3)</td><td>3を出力</td><td>saiki(2)を呼ぶ</td><td>3を出力</td></tr>
+      <tr><td>saiki(2)</td><td>2を出力</td><td>saiki(1)を呼ぶ</td><td>2を出力</td></tr>
+      <tr><td>saiki(1)</td><td>1を出力</td><td>saiki(0)を呼ぶ</td><td>1を出力</td></tr>
+      <tr><td>saiki(0)</td><td colspan="3">n=0なのでif文が偽→何もせず戻るだけ（出力なし）</td></tr>
+    </table>
+    <p>積む方向（3→2→1）、底で何もせず折り返し、戻る方向（1→2→3）の順で出力されるので、<b>出力順は 3 2 1 1 2 3</b> です。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>終了条件（base case）を必ず最初に確認する。書かないと呼び出しが無限に続いてしまう。</li>
+      <li>紙に呼び出しを縦に積み上げて書くと、頭の中だけで追うより圧倒的に混乱しない。</li>
+      <li>「呼ぶ前の処理」と「呼んだ後（戻ってきてから）の処理」は別のタイミングで実行される。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-7">再帰のコールスタックを積み上げ・巻き戻りで追える</label>
+</section>
+
+<!-- ============ 9-8 ============ -->
+<section class="item" id="al-8">
+  <h2><span class="no">9-8</span>スタックとキュー — 皿の山とレジの行列</h2>
+  <p class="goal">🎯 ゴール：スタック（LIFO）とキュー（FIFO）の違いと、push/pop・enqueue/dequeueの動きを追えるようになる。</p>
+  <p>スタックは「積んだ皿」のイメージです。後から積んだ皿（後入れ）から先に取る（先出し）ので<b>LIFO</b>（Last In First Out）と呼びます。操作は<code>push</code>（積む）と<code>pop</code>（取り出す）。</p>
+  <p>キューは「レジの行列」のイメージです。先に並んだ人（先入れ）から先にレジを通る（先出し）ので<b>FIFO</b>（First In First Out）と呼びます。操作は<code>enqueue</code>（列に並ぶ）と<code>dequeue</code>（列から抜ける）。2025年公開問題の問3ではスタックを配列とポインタで実装する出題実績があります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="スタックのpush/popとキューのenqueue/dequeueの動き" viewBox="0 0 700 280" width="700">
+    <text x="165" y="20" font-size="13" font-weight="700" fill="#BE5A38" text-anchor="middle">スタック（LIFO）＝皿の山</text>
+    <text x="165" y="40" font-size="11" text-anchor="middle" fill="#716C61">push(1)→push(2)→push(3) した状態</text>
+    <rect x="115" y="150" width="100" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="165" y="170" font-size="12" text-anchor="middle">1（底）</text>
+    <rect x="115" y="118" width="100" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="165" y="138" font-size="12" text-anchor="middle">2</text>
+    <rect x="115" y="86" width="100" height="30" fill="#F3E5DA" stroke="#BE5A38"/><text x="165" y="106" font-size="12" text-anchor="middle">3（top）</text>
+    <path d="M225,100 C260,100 260,70 250,60" fill="none" stroke="#BE5A38" marker-end="url(#al8a)"/>
+    <text x="250" y="50" font-size="11" fill="#BE5A38" text-anchor="middle">pop()→3が出る</text>
+    <text x="165" y="210" font-size="11" text-anchor="middle" fill="#716C61">pop後に残るのは下の2枚：底から 1, 2</text>
+    <rect x="115" y="240" width="100" height="26" fill="#E7EDDC" stroke="#4f6b3a"/><text x="165" y="258" font-size="11.5" text-anchor="middle">1, 2（top=2）</text>
+    <defs><marker id="al8a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#BE5A38"/></marker>
+    <marker id="al8b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4A6FA5"/></marker></defs>
+    <line x1="350" y1="0" x2="350" y2="280" stroke="#E2DCCD"/>
+    <text x="540" y="20" font-size="13" font-weight="700" fill="#4A6FA5" text-anchor="middle">キュー（FIFO）＝レジの行列</text>
+    <text x="540" y="40" font-size="11" text-anchor="middle" fill="#716C61">enqueue(1)→enqueue(2)→enqueue(3) した状態</text>
+    <text x="405" y="90" font-size="10.5" fill="#716C61">先頭(front)</text>
+    <rect x="400" y="98" width="70" height="40" fill="#F3E5DA" stroke="#BE5A38"/><text x="435" y="122" font-size="12" text-anchor="middle">1</text>
+    <rect x="475" y="98" width="70" height="40" fill="#F2EFE6" stroke="#E2DCCD"/><text x="510" y="122" font-size="12" text-anchor="middle">2</text>
+    <rect x="550" y="98" width="70" height="40" fill="#F2EFE6" stroke="#E2DCCD"/><text x="585" y="122" font-size="12" text-anchor="middle">3</text>
+    <text x="590" y="90" font-size="10.5" fill="#716C61">末尾(rear)</text>
+    <path d="M400,138 C400,165 420,165 420,180" fill="none" stroke="#4A6FA5" marker-end="url(#al8b)"/>
+    <text x="470" y="175" font-size="11" fill="#4A6FA5" text-anchor="middle">dequeue()→1が出る</text>
+    <text x="540" y="215" font-size="11" text-anchor="middle" fill="#716C61">dequeue後に残るのは後ろの2つ：先頭から 2, 3</text>
+    <rect x="475" y="240" width="70" height="26" fill="#E3EAF3" stroke="#4A6FA5"/><text x="510" y="258" font-size="11.5" text-anchor="middle">2</text>
+    <rect x="550" y="240" width="70" height="26" fill="#E3EAF3" stroke="#4A6FA5"/><text x="585" y="258" font-size="11.5" text-anchor="middle">3</text>
+  </svg>
+  <figcaption>図9-8　スタック（後入れ先出し）とキュー（先入れ先出し）の動き</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    空のスタックに対して <code>push(A)→push(B)→pop()→push(C)→push(D)→pop()→pop()</code> の順に操作したとき、最終的にスタックに残る要素は何か（底から順に）。
+    <details class="ans"><summary>答えを見る</summary>
+    <table class="tbl">
+      <tr><th>操作</th><th>スタックの中身（底→top）</th></tr>
+      <tr><td>push(A)</td><td>A</td></tr>
+      <tr><td>push(B)</td><td>A, B</td></tr>
+      <tr><td>pop()</td><td>A　（Bが取り出される）</td></tr>
+      <tr><td>push(C)</td><td>A, C</td></tr>
+      <tr><td>push(D)</td><td>A, C, D</td></tr>
+      <tr><td>pop()</td><td>A, C　（Dが取り出される）</td></tr>
+      <tr><td>pop()</td><td>A　（Cが取り出される）</td></tr>
+    </table>
+    <p>最終的にスタックに残るのは<b>Aだけ</b>です。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>スタック＝LIFO（後入れ先出し）＝push/pop。9-7の再帰のコールスタックも実はスタックの一種。</li>
+      <li>キュー＝FIFO（先入れ先出し）＝enqueue/dequeue。順番待ちの処理に使われる。</li>
+      <li>操作列の問題は、1回ずつ表に書き出して中身を更新するのが一番確実。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-8">スタック/キューの操作列から最終的な中身を求められる</label>
+</section>
+
+<!-- ============ 9-9 ============ -->
+<section class="item" id="al-9">
+  <h2><span class="no">9-9</span>連結リスト — 参照のつなぎ替え</h2>
+  <p class="goal">🎯 ゴール：連結リストが「値＋次への参照」の集まりであること、挿入/削除が参照のつなぎ替えだけで済むことを理解する。</p>
+  <p>配列は要素が横一列に並んでいますが、連結リストは各要素（節）が「値」と「次の要素への参照」の2つを持ち、鎖のようにつながっています。リストの終端は公式用語で「未定義の値」と表現されます。2022年サンプル問題の問3では、この連結リストへの要素追加が出題されています。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="連結リストへの要素挿入前後のつなぎ替えの図" viewBox="0 0 700 260" width="700">
+    <defs><marker id="al9arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#716C61"/></marker>
+    <marker id="al9new" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#BE5A38"/></marker></defs>
+    <text x="350" y="20" font-size="12.5" font-weight="700" fill="#716C61" text-anchor="middle">挿入前：A→B→C→未定義</text>
+    <rect x="30" y="35" width="90" height="40" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/><text x="75" y="60" font-size="13" text-anchor="middle">A</text>
+    <line x1="120" y1="55" x2="168" y2="55" stroke="#716C61" marker-end="url(#al9arrow)"/>
+    <rect x="170" y="35" width="90" height="40" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/><text x="215" y="60" font-size="13" text-anchor="middle">B</text>
+    <line x1="260" y1="55" x2="308" y2="55" stroke="#716C61" marker-end="url(#al9arrow)"/>
+    <rect x="310" y="35" width="90" height="40" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/><text x="355" y="60" font-size="13" text-anchor="middle">C</text>
+    <line x1="400" y1="55" x2="448" y2="55" stroke="#716C61" marker-end="url(#al9arrow)"/>
+    <text x="500" y="60" font-size="11.5" fill="#716C61">未定義（終端）</text>
+    <text x="350" y="120" font-size="12.5" font-weight="700" fill="#BE5A38" text-anchor="middle">挿入後：Aの次にXを挿入 → A→X→B→C→未定義</text>
+    <rect x="30" y="140" width="90" height="40" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/><text x="75" y="165" font-size="13" text-anchor="middle">A</text>
+    <path d="M120,145 C130,120 150,120 165,140" fill="none" stroke="#E2DCCD" stroke-dasharray="4,3"/>
+    <text x="140" y="118" font-size="10" fill="#9a5a22">旧参照（切れる）</text>
+    <line x1="120" y1="160" x2="168" y2="160" stroke="#BE5A38" marker-end="url(#al9new)"/>
+    <text x="140" y="195" font-size="10" fill="#BE5A38">新しい参照</text>
+    <rect x="170" y="140" width="90" height="40" fill="#F3E5DA" stroke="#BE5A38" rx="6"/><text x="215" y="165" font-size="13" text-anchor="middle">X（新規）</text>
+    <line x1="260" y1="160" x2="308" y2="160" stroke="#BE5A38" marker-end="url(#al9new)"/>
+    <rect x="310" y="140" width="90" height="40" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/><text x="355" y="165" font-size="13" text-anchor="middle">B</text>
+    <line x1="400" y1="160" x2="448" y2="160" stroke="#716C61" marker-end="url(#al9arrow)"/>
+    <rect x="450" y="140" width="90" height="40" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/><text x="495" y="165" font-size="13" text-anchor="middle">C</text>
+    <line x1="540" y1="160" x2="588" y2="160" stroke="#716C61" marker-end="url(#al9arrow)"/>
+    <text x="640" y="165" font-size="11.5" fill="#716C61">未定義</text>
+    <text x="350" y="215" font-size="11" text-anchor="middle" fill="#716C61">要素そのものは動かさず、「次への参照」だけをつなぎ替える</text>
+  </svg>
+  <figcaption>図9-9　連結リストへの要素Xの挿入（参照のつなぎ替え）</figcaption>
+  </figure>
+  <p>配列に途中から要素を挿入すると、後ろの要素をすべて1つずつずらす必要がありますが、連結リストなら「次への参照」を書き換えるだけで済みます。これが連結リストの最大の利点です。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>連結リストの各要素は「値」＋「次への参照」の組。配列のような連番の添字は持たない。</li>
+      <li>終端（それ以上つながる要素がない）は「未定義の値」という公式表現で表される。</li>
+      <li>挿入・削除は参照のつなぎ替えだけで完了し、他の要素を移動させる必要がない。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-9">連結リストの挿入・削除を参照のつなぎ替えとして説明できる</label>
+</section>
+
+<!-- ============ 9-10 ============ -->
+<section class="item" id="al-10">
+  <h2><span class="no">9-10</span>探索アルゴリズム — 線形探索と二分探索</h2>
+  <p class="goal">🎯 ゴール：線形探索と二分探索の違いと、二分探索が探索範囲を毎回半分に絞り込む動きを追えるようになる。</p>
+  <p>線形探索は先頭から順番に1つずつ調べる方法で、平均するとn個のデータに対しn/2回の比較が必要です。二分探索は、データが整列済みであることを前提に、探索範囲の中央（mid）と比較して範囲を半分ずつ絞り込む方法で、log2 n回程度の比較で済みます（番兵法という探索の効率化テクニックもあります）。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="二分探索が探索範囲を3段階で半分に絞り込んでいく図" viewBox="0 0 700 300" width="700">
+    <text x="350" y="18" font-size="12.5" font-weight="700" fill="#BE5A38" text-anchor="middle">整列済み配列 a（15個・1始まり）から47を探す</text>
+    <!-- stage1 -->
+    <text x="30" y="45" font-size="11" fill="#716C61">1回目</text>
+    <rect x="38" y="55" width="632" height="26" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <rect x="38" y="55" width="632" height="26" fill="none" stroke="#E2DCCD"/>
+    <path d="M334,52 l20,0 l-10,-14 z" fill="#4A6FA5"/>
+    <text x="344" y="46" font-size="10.5" fill="#4A6FA5" text-anchor="middle">mid=8</text>
+    <text x="350" y="98" font-size="11" text-anchor="middle" fill="#211F1A">a[8]=25 ： 47 &gt; 25 なので右半分へ</text>
+    <!-- stage2 -->
+    <text x="30" y="120" font-size="11" fill="#716C61">2回目</text>
+    <rect x="38" y="130" width="632" height="26" fill="#F2EFE6" stroke="#E2DCCD" opacity="0.35"/>
+    <rect x="376" y="130" width="292" height="26" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <path d="M502,127 l20,0 l-10,-14 z" fill="#4A6FA5"/>
+    <text x="512" y="121" font-size="10.5" fill="#4A6FA5" text-anchor="middle">mid=12</text>
+    <text x="350" y="173" font-size="11" text-anchor="middle" fill="#211F1A">a[12]=41 ： 47 &gt; 41 なので右半分へ</text>
+    <!-- stage3 -->
+    <text x="30" y="195" font-size="11" fill="#716C61">3回目</text>
+    <rect x="38" y="205" width="632" height="26" fill="#F2EFE6" stroke="#E2DCCD" opacity="0.35"/>
+    <rect x="376" y="205" width="292" height="26" fill="#E3EAF3" stroke="#4A6FA5" opacity="0.35"/>
+    <rect x="544" y="205" width="124" height="26" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <path d="M606,202 l20,0 l-10,-14 z" fill="#4f6b3a"/>
+    <text x="616" y="196" font-size="10.5" fill="#4f6b3a" text-anchor="middle">mid=14</text>
+    <text x="350" y="248" font-size="11" text-anchor="middle" fill="#4f6b3a" font-weight="700">a[14]=47 ： 一致！3回の比較で発見</text>
+    <text x="350" y="278" font-size="11" text-anchor="middle" fill="#716C61">範囲[1,15]→[9,15]→[13,15]と半分ずつ絞り込まれる</text>
+  </svg>
+  <figcaption>図9-10　二分探索で範囲が毎回半分に絞り込まれる様子</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    整列済みの配列 <code>b ← {2,5,8,11,14,17,20,23,26,29}</code>（1始まり・10個）から二分探索で <code>29</code> を探すとき、比較は何回行われるか。中央の添字は <code>(low+high)÷2</code> の小数点以下切り捨てとする。
+    <details class="ans"><summary>答えを見る</summary>
+    <table class="tbl">
+      <tr><th>比較回数</th><th>low</th><th>high</th><th>mid</th><th>b[mid]</th><th>判定</th></tr>
+      <tr><td>1</td><td>1</td><td>10</td><td>5</td><td>14</td><td>29&gt;14 → 右へ（low←6）</td></tr>
+      <tr><td>2</td><td>6</td><td>10</td><td>8</td><td>23</td><td>29&gt;23 → 右へ（low←9）</td></tr>
+      <tr><td>3</td><td>9</td><td>10</td><td>9</td><td>26</td><td>29&gt;26 → 右へ（low←10）</td></tr>
+      <tr><td>4</td><td>10</td><td>10</td><td>10</td><td>29</td><td>一致！発見</td></tr>
+    </table>
+    <p><b>比較回数は4回</b>です。10個のデータでも、二分探索なら最大4回程度で見つかることが分かります（log2 10 ≒ 3.3）。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>二分探索は「整列済み」が絶対条件。整列されていないデータには使えない。</li>
+      <li>1回比較するたびに範囲がほぼ半分になる＝計算量はO(log n)（9-12で詳しく）。</li>
+      <li>lowとhighの更新（mid+1／mid-1にするかmidのままにするか）は問題文の定義を必ず確認する。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-10">線形探索と二分探索の違いと比較回数を求められる</label>
+</section>
+
+<!-- ============ 9-11 ============ -->
+<section class="item" id="al-11">
+  <h2><span class="no">9-11</span>ソートアルゴリズム — バブル・選択・挿入・クイック・マージ</h2>
+  <p class="goal">🎯 ゴール：代表的なソート（並べ替え）アルゴリズムの動き方の違いをイメージできるようになる。</p>
+  <p>バブルソートは隣り合う要素を比較して、順番が逆なら交換することを繰り返す方法です（比較回数はn(n−1)/2回）。選択ソートは「残りの中から最小（または最大）を選んで並べる」、挿入ソートは「整列済みの部分に1つずつ正しい位置へ挿入する」動きです。クイックソートは基準値（ピボット）より小さいグループと大きいグループに分割して、それぞれの中でも同じ処理を再帰的に繰り返します（2023年公開問題の問3で実装が出題）。マージソートはデータを半分に分割し続け、最後に整列させながら併合していく方法です（2024年公開問題の問4で出題）。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="バブルソートの1パスとクイックソートの分割の動き" viewBox="0 0 700 320" width="700">
+    <text x="165" y="18" font-size="12.5" font-weight="700" fill="#BE5A38" text-anchor="middle">バブルソート：{5,2,4,1}の1回目のパス</text>
+    <!-- row0 -->
+    <text x="20" y="45" font-size="10.5" fill="#716C61">開始</text>
+    <rect x="50" y="32" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="73" y="52" font-size="12" text-anchor="middle">5</text>
+    <rect x="96" y="32" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="119" y="52" font-size="12" text-anchor="middle">2</text>
+    <rect x="142" y="32" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="165" y="52" font-size="12" text-anchor="middle">4</text>
+    <rect x="188" y="32" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="211" y="52" font-size="12" text-anchor="middle">1</text>
+    <text x="255" y="52" font-size="10.5" fill="#716C61">5&gt;2 → 交換</text>
+    <!-- row1 -->
+    <text x="20" y="87" font-size="10.5" fill="#716C61">①</text>
+    <rect x="50" y="74" width="46" height="30" fill="#E7EDDC" stroke="#4f6b3a"/><text x="73" y="94" font-size="12" text-anchor="middle">2</text>
+    <rect x="96" y="74" width="46" height="30" fill="#E7EDDC" stroke="#4f6b3a"/><text x="119" y="94" font-size="12" text-anchor="middle">5</text>
+    <rect x="142" y="74" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="165" y="94" font-size="12" text-anchor="middle">4</text>
+    <rect x="188" y="74" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="211" y="94" font-size="12" text-anchor="middle">1</text>
+    <text x="255" y="94" font-size="10.5" fill="#716C61">5&gt;4 → 交換</text>
+    <!-- row2 -->
+    <text x="20" y="129" font-size="10.5" fill="#716C61">②</text>
+    <rect x="50" y="116" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="73" y="136" font-size="12" text-anchor="middle">2</text>
+    <rect x="96" y="116" width="46" height="30" fill="#E7EDDC" stroke="#4f6b3a"/><text x="119" y="136" font-size="12" text-anchor="middle">4</text>
+    <rect x="142" y="116" width="46" height="30" fill="#E7EDDC" stroke="#4f6b3a"/><text x="165" y="136" font-size="12" text-anchor="middle">5</text>
+    <rect x="188" y="116" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="211" y="136" font-size="12" text-anchor="middle">1</text>
+    <text x="255" y="136" font-size="10.5" fill="#716C61">5&gt;1 → 交換</text>
+    <!-- row3 -->
+    <text x="20" y="171" font-size="10.5" fill="#716C61">③</text>
+    <rect x="50" y="158" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="73" y="178" font-size="12" text-anchor="middle">2</text>
+    <rect x="96" y="158" width="46" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="119" y="178" font-size="12" text-anchor="middle">4</text>
+    <rect x="142" y="158" width="46" height="30" fill="#E7EDDC" stroke="#4f6b3a"/><text x="165" y="178" font-size="12" text-anchor="middle">1</text>
+    <rect x="188" y="158" width="46" height="30" fill="#E7EDDC" stroke="#4f6b3a"/><text x="211" y="178" font-size="12" text-anchor="middle">5</text>
+    <text x="255" y="178" font-size="10.5" fill="#716C61">最大値5が右端へ</text>
+    <line x1="330" y1="0" x2="330" y2="320" stroke="#E2DCCD"/>
+    <text x="515" y="18" font-size="12.5" font-weight="700" fill="#4A6FA5" text-anchor="middle">クイックソート：分割のイメージ</text>
+    <text x="515" y="42" font-size="11" text-anchor="middle" fill="#716C61">{5,2,4,1,3}　基準値(ピボット)=3</text>
+    <rect x="360" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="385" y="75" font-size="12" text-anchor="middle">5</text>
+    <rect x="415" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="440" y="75" font-size="12" text-anchor="middle">2</text>
+    <rect x="470" y="55" width="50" height="30" fill="#F3E5DA" stroke="#BE5A38"/><text x="495" y="75" font-size="12" text-anchor="middle">4</text>
+    <rect x="525" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="550" y="75" font-size="12" text-anchor="middle">1</text>
+    <rect x="580" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="605" y="75" font-size="12" text-anchor="middle">3</text>
+    <text x="515" y="45" font-size="10" text-anchor="middle" fill="#BE5A38">↑ピボットの位置は例として3番目とする</text>
+    <line x1="515" y1="95" x2="515" y2="120" stroke="#716C61" marker-end="url(#al11arrow)"/>
+    <defs><marker id="al11arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#716C61"/></marker></defs>
+    <rect x="400" y="130" width="90" height="34" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
+    <text x="445" y="145" font-size="10.5" text-anchor="middle" fill="#211F1A">3未満</text>
+    <text x="445" y="159" font-size="11" text-anchor="middle" font-weight="700">{2, 1}</text>
+    <rect x="500" y="130" width="60" height="34" fill="#F3E5DA" stroke="#BE5A38" rx="6"/>
+    <text x="530" y="152" font-size="12" text-anchor="middle" font-weight="700">3</text>
+    <rect x="570" y="130" width="90" height="34" fill="#E7EDDC" stroke="#4f6b3a" rx="6"/>
+    <text x="615" y="145" font-size="10.5" text-anchor="middle" fill="#211F1A">3より大</text>
+    <text x="615" y="159" font-size="11" text-anchor="middle" font-weight="700">{5, 4}</text>
+    <text x="515" y="195" font-size="11" text-anchor="middle" fill="#716C61">それぞれのグループの中でも同じ分割を再帰的にくり返す</text>
+    <text x="515" y="215" font-size="10.5" text-anchor="middle" fill="#9a5a22">（具体的な比較・交換の手順は問題ごとに定義される）</text>
+  </svg>
+  <figcaption>図9-11　バブルソートの1パスと、クイックソートの基準値による分割</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>バブル・選択・挿入は「素朴だが遅い」グループ（計算量O(n²)）。</li>
+      <li>クイック・マージは「分割して征服する」グループで平均的に速い（計算量O(n log n)）。</li>
+      <li>アルゴリズム名を見て「どういう考え方で並べ替えるか」を思い出せれば、トレースの見通しが立てやすい。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-11">代表的なソートアルゴリズムの動き方の違いを説明できる</label>
+</section>
+
+<!-- ============ 9-12 ============ -->
+<section class="item" id="al-12">
+  <h2><span class="no">9-12</span>計算量（オーダー） — nが増えたときの重さ</h2>
+  <p class="goal">🎯 ゴール：O記法の意味と、データ量nが大きくなったときにどのくらい処理が重くなるかの目安を持てるようになる。</p>
+  <p>計算量（オーダー、O記法）は「データ量nが増えたときに処理時間がどれくらい増えるか」の目安です。増え方が小さい順に並べると次のようになります。</p>
+  <div class="formula">O(1) ＜ O(log n) ＜ O(n) ＜ O(n log n) ＜ O(n²)</div>
+  <p>二分探索（9-10）はO(log n)、バブルソート（9-11）はO(n²)、クイックソートは平均するとO(n log n)です。nが小さいうちは差が目立ちませんが、nが大きくなるとO(n²)は急激に重くなります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="データ量nに対する処理量の増え方を比較したグラフ" viewBox="0 0 700 380" width="700">
+    <line x1="60" y1="340" x2="612" y2="340" stroke="#716C61"/>
+    <line x1="60" y1="340" x2="60" y2="40" stroke="#716C61"/>
+    <text x="612" y="360" font-size="11" text-anchor="end" fill="#716C61">データ量 n →</text>
+    <text x="30" y="45" font-size="11" fill="#716C61">処理量</text>
+    <polyline points="120,326.5 173,326.5 227,326.5 280,326.5 333,326.5 387,326.5 440,326.5 493,326.5 547,326.5 600,326.5" fill="none" stroke="#716C61" stroke-width="2"/>
+    <text x="605" y="330" font-size="11" fill="#716C61">O(1)</text>
+    <polyline points="120,340 173,337.3 227,335.7 280,334.6 333,333.7 387,333.0 440,332.4 493,331.9 547,331.4 600,331.0" fill="none" stroke="#4f6b3a" stroke-width="2"/>
+    <text x="605" y="322" font-size="11" fill="#4f6b3a">O(log n)</text>
+    <polyline points="120,337.3 173,334.6 227,331.9 280,329.2 333,326.5 387,323.8 440,321.1 493,318.4 547,315.7 600,313.0" fill="none" stroke="#4A6FA5" stroke-width="2"/>
+    <text x="605" y="308" font-size="11" fill="#4A6FA5">O(n)</text>
+    <polyline points="120,340 173,334.6 227,327.2 280,318.4 333,308.7 387,298.1 440,286.9 493,275.2 547,263.0 600,250.3" fill="none" stroke="#9a5a22" stroke-width="2"/>
+    <text x="605" y="245" font-size="11" fill="#9a5a22">O(n log n)</text>
+    <polyline points="120,337.3 173,329.2 227,315.7 280,296.8 333,272.5 387,243.2 440,208.7 493,169.2 547,123.7 600,70" fill="none" stroke="#BE5A38" stroke-width="2.4"/>
+    <text x="605" y="65" font-size="11" font-weight="700" fill="#BE5A38">O(n²)</text>
+    <text x="350" y="368" font-size="11" text-anchor="middle" fill="#716C61">n²だけがあっという間に跳ね上がる（グラフはn=1〜10の目安）</text>
+  </svg>
+  <figcaption>図9-12　データ量nに対する処理量の増え方の比較</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>O記法は「正確な処理時間」ではなく「増え方の目安」。係数や細かい定数は無視して考える。</li>
+      <li>迷ったら「二分探索=O(log n)、バブル=O(n²)、クイック平均=O(n log n)」の3点セットを軸に思い出す。</li>
+      <li>nが大きい場面（大量データ）ほどO(n²)のアルゴリズムは不利になる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-12">O記法の意味とアルゴリズムごとの計算量を対応づけられる</label>
+</section>
+
+<!-- ============ 9-13 ============ -->
+<section class="item" id="al-13">
+  <h2><span class="no">9-13</span>ハッシュ法 — 計算で置き場所を決める</h2>
+  <p class="goal">🎯 ゴール：ハッシュ関数で格納位置を直接計算する仕組みと、衝突が起きたときの2つの解決方法を理解する。</p>
+  <p>ハッシュ法は、探索するのではなく「計算で格納位置を直接求める」方法です。たとえば <code>h(key) = key mod m</code>（keyをmで割った余り）のような式（ハッシュ関数）を使えば、1回の計算＝O(1)で格納位置が分かります。ただし別のkeyが同じ格納位置を計算してしまう「衝突」が起こることがあり、その解決方法には、空いている別の番地を探す<b>オープンアドレス法</b>と、同じ番地に鎖のようにつなげる<b>チェイン法</b>（数珠つなぎ）の2種類があります。2023年公開問題の問4ではオープンアドレス法による衝突解決が出題されています。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    大きさm=5のハッシュ表に、格納位置を <code>h(key) = key mod m</code> で求めるとする。衝突が起きた場合は次の空き番地（線形探索によるオープンアドレス法）に格納するとき、<code>12 → 7 → 23</code>の順に格納すると、それぞれどの番地に入るか。
+    <details class="ans"><summary>答えを見る</summary>
+    <table class="tbl">
+      <tr><th>key</th><th>h(key)=key mod 5</th><th>その番地の状態</th><th>格納先</th></tr>
+      <tr><td>12</td><td>12 mod 5 = 2</td><td>空き</td><td>番地2</td></tr>
+      <tr><td>7</td><td>7 mod 5 = 2</td><td>番地2は12で使用中→衝突</td><td>次の空き番地3</td></tr>
+      <tr><td>23</td><td>23 mod 5 = 3</td><td>番地3は7で使用中→衝突</td><td>次の空き番地4</td></tr>
+    </table>
+    <p>最終的な格納状態は<b>番地2=12、番地3=7、番地4=23</b>です。7と23はどちらも計算上の位置が別の値でふさがっていたため、1つずつ後ろにずれて格納されています。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>ハッシュ法の狙いは「探さずに計算だけで場所を決める」こと＝計算量O(1)。</li>
+      <li>衝突対策は2種類：オープンアドレス法（空きを探して入れる）／チェイン法（同じ番地に数珠つなぎ）。</li>
+      <li>modの余りを求める計算そのものは9-2の演算子（mod）の復習にもなる。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-13">ハッシュ関数で格納位置を計算し、衝突の解決方法を説明できる</label>
+</section>
+
+<!-- ============ 9-14 ============ -->
+<section class="item" id="al-14">
+  <h2><span class="no">9-14</span>データサイエンス系問題の読み方 — 式は問題文にある</h2>
+  <p class="goal">🎯 ゴール：コサイン類似度やクロス集計などの見慣れない用語が出ても、慌てずに読み解く姿勢を身につける。</p>
+  <p>コサイン類似度・クロス集計・バスケット分析といったデータサイエンス系の問題は、毎年1問程度出題されています（2023年問5・2024年問5・2025年問5で実績あり）。名前だけ見ると難しそうですが、<b>計算に必要な式や定義は必ず問題文の中に書かれています</b>。事前に公式を暗記しておく必要はありません。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>知らない用語が出てきてもビビらない。問題文に定義・式が書いてあることが前提の出題形式。</li>
+      <li>やることは「問題文の式の中の変数名と、擬似コードの変数名を1つずつ対応づける」作業だけ。</li>
+      <li>結局は9-4で身につけた「トレースの型」がそのまま使える普通の問題だと割り切る。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-14">データサイエンス系の問題も式の対応づけで解けると理解した</label>
+</section>
+
+<!-- ============ 9-15 ============ -->
+<section class="item" id="al-15">
+  <h2><span class="no">9-15</span>セキュリティ4問の解き方 — シナリオ型の攻略法</h2>
+  <p class="goal">🎯 ゴール：科目Bのセキュリティ4問がどんなパターンで出題されるかを知り、消去法で解く手順を持てるようになる。</p>
+  <p>科目Bのセキュリティ4問は、毎年架空の会社を舞台にした「シナリオ型」で出題されます。攻撃手法の暗記ではなく、組織としてのリスクマネジメントの判断力を問う問題です。</p>
+  <table class="tbl">
+    <tr><th>年度</th><th>テーマ</th></tr>
+    <tr><td>2022年（サンプル）</td><td>クラウドの責任分界（PaaS利用時に誰が脆弱性対処するか）</td></tr>
+    <tr><td>2023年</td><td>複合機メール初期設定のリスク（フィッシング誘導等の選択）</td></tr>
+    <tr><td>2024年</td><td>テレワーク／BYOD＋SaaS直接続の不正アクセス対策（2要素認証）</td></tr>
+    <tr><td>2025年</td><td>バックアップ運用のRPO/RTO計算＋ISMS認証（JIS Q 27001:2023）</td></tr>
+  </table>
+  <p>解き方のコツは、登場人物（自社／委託先／クラウド事業者）とそれぞれの責任範囲を簡単にメモへ図示してから、「誰が対処すべきか」「最も適切なリスク対応・対策はどれか」を選択肢から消去法で絞り込むことです。SECTION 4（セキュリティ）の「アクセス管理と組織的対策」「バックアップとBCP」の内容が直結するので、忘れていたらそちらを復習してください。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>攻撃の名前を暗記するのではなく「責任は誰にあるか」を図で整理してから選ぶ。</li>
+      <li>過去4回とも「シナリオ→科目Aの知識（暗号・認証・バックアップ・ISMS）を当てはめる」形式。</li>
+      <li>9-1のとおり、この4問は先に解いて時間を確保するのが定番の作戦。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-15">科目Bセキュリティ4問のシナリオ型の解き方を説明できる</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（科目B：アルゴリズムと擬似言語）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。トレース系は面倒でも実際に手を動かして検算してみましょう。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+
+  <details><summary>Q1. 式 <code>7 mod 2 + 3 × 2</code> の値はいくつか。</summary>
+  <div class="a">演算子の優先順位は mod・×・÷ が +・− より高いので、先に「7 mod 2 = 1」と「3 × 2 = 6」を計算し、最後に足し算をする。1 + 6 = <b>7</b>。 <a class="qref" href="#al-2">→ 解説 9-2 に戻る</a></div></details>
+
+  <details><summary>Q2. 次の擬似言語で、本体（i←i+1）は何回実行されるか。<pre class="code">整数型: i
+i ← 5
+do
+  i ← i + 1
+while (i &lt; 5)</pre></summary>
+  <div class="a">do～whileは後判定なので、条件を確認する前に必ず1回は本体を実行する。i←5→i←i+1でi=6になった後に「6&lt;5」を確認すると偽なのでそこで終了。実行回数は<b>1回</b>。 <a class="qref" href="#al-3">→ 解説 9-3 に戻る</a></div></details>
+
+  <details><summary>Q3. 次の擬似言語を実行したあと、yの値はいくつになるか。<pre class="code">整数型: x, y
+x ← 3
+y ← 10
+while (x &lt; y)
+  y ← y - x
+endwhile</pre></summary>
+  <div class="a">トレース表：y=10→(3&lt;10なので)y=7→(3&lt;7なので)y=4→(3&lt;4なので)y=1→(3&lt;1は偽なので終了)。答えは<b>y=1</b>。 <a class="qref" href="#al-4">→ 解説 9-4 に戻る</a></div></details>
+
+  <details><summary>Q4. 空のスタックに <code>push(A)→push(B)→pop()→push(C)→push(D)→pop()→pop()</code> の順で操作したとき、最後にスタックへ残る要素は何か。</summary>
+  <div class="a">push(A)[A]→push(B)[A,B]→pop()[A]（Bが出る）→push(C)[A,C]→push(D)[A,C,D]→pop()[A,C]（Dが出る）→pop()[A]（Cが出る）。最後に残るのは<b>Aだけ</b>。 <a class="qref" href="#al-8">→ 解説 9-8 に戻る</a></div></details>
+
+  <details><summary>Q5. 整列済み配列 <code>b ← {2,5,8,11,14,17,20,23,26,29}</code>（1始まり・10個）から二分探索で29を探すとき、比較は何回か。</summary>
+  <div class="a">low=1,high=10→mid=5(b[5]=14&lt;29,low←6)→mid=8(b[8]=23&lt;29,low←9)→mid=9(b[9]=26&lt;29,low←10)→mid=10(b[10]=29で一致)。比較回数は<b>4回</b>。 <a class="qref" href="#al-10">→ 解説 9-10 に戻る</a></div></details>
+
+  <details><summary>Q6. 次の手続き（hyoji(x)はxを画面に出力する）で <code>saiki(2)</code> を呼び出したとき、出力される数字の順番はどうなるか。<pre class="code">○ saiki(整数型: n)
+  if (n &gt; 0)
+    hyoji(n)
+    saiki(n - 1)
+    hyoji(n)
+  endif</pre></summary>
+  <div class="a">saiki(2)：2を出力→saiki(1)を呼ぶ（1を出力→saiki(0)を呼ぶ（n=0なので何もせず戻る）→1を出力）→2を出力。出力順は<b>2 1 1 2</b>。 <a class="qref" href="#al-7">→ 解説 9-7 に戻る</a></div></details>
+
+  <details><summary>Q7. ハッシュ表の大きさm=7、格納位置を<code>h(key) = key mod m</code>で求めるとき、key=23の格納位置はどこか。</summary>
+  <div class="a">23 ÷ 7 = 3 あまり2（3×7=21、23−21=2）なので、h(23) = <b>2</b>。 <a class="qref" href="#al-13">→ 解説 9-13 に戻る</a></div></details>
+
+  <details><summary>Q8. O(n²)、O(log n)、O(n)、O(n log n) を、nが大きくなったときの処理量が小さい順に並べなさい。</summary>
+  <div class="a"><b>O(log n) ＜ O(n) ＜ O(n log n) ＜ O(n²)</b>。二分探索がO(log n)、バブルソートがO(n²)にあたる。 <a class="qref" href="#al-12">→ 解説 9-12 に戻る</a></div></details>
+</section>
+
+<nav class="pager">
+  <a href="fe-strategy.html"><span class="dir">‹ もどる</span>セクション8：ストラテジ</a>
+  <a href="fe-guide.html" class="next"><span class="dir">つぎへ ›</span>トップへ戻る</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ セクション9：科目B アルゴリズム対策</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
+</script>
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セクション1：基礎理論｜基本情報 学習ノート</title>
+<meta name="description" content="2進数の基数変換、2の補数、論理演算、情報量、確率・統計など、科目Aの計算問題の土台になる基礎理論10項目をまとめた学習ノート。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--accent)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .item h2{display:flex;align-items:baseline;gap:10px;font-size:1.13rem;line-height:1.4;margin-bottom:4px}
+  .item h2 .no{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:1px 8px;position:relative;top:-2px}
+  .goal{font-size:.8rem;color:var(--ink-dim);background:var(--surface2);border-radius:8px;
+    padding:5px 12px;margin:8px 0 12px;display:inline-block}
+  .item p{font-size:.92rem;margin:10px 0}
+  .item ul,.item ol{font-size:.92rem;padding-left:1.5em;margin:8px 0}
+  .item li{margin:4px 0}
+  .fig{margin:16px 0;background:#FFFEFB;border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px 4px;text-align:center;overflow-x:auto}
+  .fig svg{max-width:100%;height:auto}
+  .fig figcaption{font-size:.76rem;color:var(--ink-dim);padding:6px 8px 10px;text-align:center}
+  .point{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .point .tt{font-weight:700;color:var(--accent);font-size:.84rem;display:block;margin-bottom:4px}
+  .point ul{margin:2px 0;padding-left:1.4em}
+  .example{background:var(--green-soft);border:1px solid #D5DFC6;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .example .tt{font-weight:700;color:var(--green);font-size:.84rem;display:block;margin-bottom:4px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0;font-size:.9rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+  .tbl th{background:var(--surface2);font-weight:600;text-align:left}
+  .tbl th,.tbl td{border:1px solid var(--border);padding:6px 10px}
+  details.ans{margin-top:8px}
+  details.ans summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.85rem}
+  details.ans[open] summary{margin-bottom:6px}
+  .check{display:flex;align-items:center;gap:9px;margin:14px -6px -2px;padding:10px 12px;
+    border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
+  .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .check.done{color:var(--green)}
+  .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+  .quiz h2{font-size:1.13rem;margin-bottom:6px}
+  .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
+  .quiz details{border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin:8px 0;background:#FFFEFB}
+  .quiz summary{cursor:pointer;font-size:.9rem;font-weight:600}
+  .quiz details[open]{border-color:var(--accent-line)}
+  .quiz .a{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:.88rem}
+  .quiz .rnd{background:var(--accent);color:#fff;border:none;border-radius:99px;padding:8px 18px;
+    font-family:var(--sans);font-weight:700;font-size:.84rem;cursor:pointer;margin:2px 0 8px}
+  .quiz .rnd:hover{background:#A84C2E}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .grid2{display:grid;gap:10px;margin:12px 0}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
+  .do,.dont{border-radius:11px;padding:10px 14px;font-size:.86rem}
+  .do{background:var(--green-soft);border:1px solid #D5DFC6}
+  .dont{background:#F7E3DE;border:1px solid #E8C4BA}
+  .do .tt{color:var(--green);font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
+  .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
+  svg text{font-family:var(--sans)}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
+  /* 疑似コード表示（科目B用） */
+  pre.code{font-family:var(--mono);font-size:.84rem;line-height:1.7;background:var(--surface2);
+    border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;overflow-x:auto;text-align:left}
+  pre.code b{color:var(--accent);font-weight:700}
+  /* スマホ図解・スムーススクロール・目次ボタン */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">セクション1</span>
+  <span class="prog">できた <b id="done-count">0</b> / 10</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">SECTION 1</div>
+  <h1>🔢 基礎理論</h1>
+  <p class="lead">科目Aの計算問題はほぼ全てここの土台の上に乗っていて、2進数の変換と論理演算はどの回でもほぼ必ず出題される超定番分野です。電卓を使わず手を動かして解ける「型」を10項目で身につけていきましょう。</p>
+  <nav class="toc" id="toc">
+    <a href="#fb-1">1. 2進数と基数変換</a><a href="#fb-2">2. 2の補数</a><a href="#fb-3">3. シフト演算</a><a href="#fb-4">4. 論理演算</a><a href="#fb-5">5. ド・モルガンの法則</a><a href="#fb-6">6. 論理回路(MIL記号)</a><a href="#fb-7">7. 情報量の単位</a><a href="#fb-8">8. 文字コード</a><a href="#fb-9">9. 確率と場合の数</a><a href="#fb-10">10. 統計の基礎</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ 1-1 2進数と基数変換 ============ -->
+<section class="item" id="fb-1">
+  <h2><span class="no">1-1</span>2進数と基数変換 — コンピュータの言葉づかいの基本</h2>
+  <p class="goal">🎯 ゴール：10進数⇔2進数⇔16進数の変換を、割り算と位の重みの手順で迷わずできるようになる。</p>
+  <p>コンピュータの中では電気が「流れている／流れていない」の2状態だけで全てを表現しています。この2状態にちょうど対応するのが、0と1だけを使う「2進数」です。基本情報技術者試験（FE）の科目Aでは、基数変換はほぼ毎回出題される最重要の定番分野です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="45を2進数に変換する、わりざん法と位の重みの図" viewBox="0 0 700 400" width="700">
+    <defs><marker id="ar1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#BE5A38"/></marker></defs>
+    <text x="170" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">① わりざん法（2で割り続ける）</text>
+    <rect x="20" y="36" width="300" height="200" rx="10" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <text x="34" y="62" font-size="12.5" fill="#211F1A">45 ÷ 2 = 22 ／ 余り <tspan font-weight="700" fill="#BE5A38">1</tspan></text>
+    <text x="34" y="90" font-size="12.5" fill="#211F1A">22 ÷ 2 = 11 ／ 余り <tspan font-weight="700" fill="#BE5A38">0</tspan></text>
+    <text x="34" y="118" font-size="12.5" fill="#211F1A">11 ÷ 2 = 5 ／ 余り <tspan font-weight="700" fill="#BE5A38">1</tspan></text>
+    <text x="34" y="146" font-size="12.5" fill="#211F1A">5 ÷ 2 = 2 ／ 余り <tspan font-weight="700" fill="#BE5A38">1</tspan></text>
+    <text x="34" y="174" font-size="12.5" fill="#211F1A">2 ÷ 2 = 1 ／ 余り <tspan font-weight="700" fill="#BE5A38">0</tspan></text>
+    <text x="34" y="202" font-size="12.5" fill="#211F1A">1 ÷ 2 = 0 ／ 余り <tspan font-weight="700" fill="#BE5A38">1</tspan></text>
+    <line x1="300" y1="216" x2="300" y2="52" stroke="#BE5A38" stroke-width="2.5" marker-end="url(#ar1)"/>
+    <text x="243" y="232" text-anchor="middle" font-size="11.5" fill="#716C61">↑ 下から上へ読む</text>
+    <text x="170" y="260" text-anchor="middle" font-size="14" font-weight="700" fill="#BE5A38">101101 (2進数)</text>
+
+    <text x="520" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">② 位の重みで検算</text>
+    <rect x="370" y="36" width="310" height="200" rx="10" fill="#E3EAF3" stroke="#B9CBE6"/>
+    <text x="395" y="66" font-size="13" fill="#4A6FA5" font-weight="700">32</text>
+    <text x="443" y="66" font-size="13" fill="#4A6FA5" font-weight="700">16</text>
+    <text x="491" y="66" font-size="13" fill="#4A6FA5" font-weight="700">8</text>
+    <text x="539" y="66" font-size="13" fill="#4A6FA5" font-weight="700">4</text>
+    <text x="587" y="66" font-size="13" fill="#4A6FA5" font-weight="700">2</text>
+    <text x="635" y="66" font-size="13" fill="#4A6FA5" font-weight="700">1</text>
+    <line x1="385" y1="78" x2="670" y2="78" stroke="#B9CBE6"/>
+    <text x="395" y="106" font-size="14" font-weight="700" fill="#211F1A">1</text>
+    <text x="443" y="106" font-size="14" font-weight="700" fill="#716C61">0</text>
+    <text x="491" y="106" font-size="14" font-weight="700" fill="#211F1A">1</text>
+    <text x="539" y="106" font-size="14" font-weight="700" fill="#211F1A">1</text>
+    <text x="587" y="106" font-size="14" font-weight="700" fill="#716C61">0</text>
+    <text x="635" y="106" font-size="14" font-weight="700" fill="#211F1A">1</text>
+    <text x="520" y="148" text-anchor="middle" font-size="12.5" fill="#211F1A">1が立つ桁だけ足す</text>
+    <text x="520" y="176" text-anchor="middle" font-size="13.5" font-weight="700" fill="#4A6FA5">32+8+4+1 = 45</text>
+
+    <text x="350" y="325" text-anchor="middle" font-size="11.5" fill="#716C61">③ 小数の変換は「×2して整数部を上から読む」</text>
+    <text x="350" y="348" text-anchor="middle" font-size="11.5" fill="#716C61">例）0.625×2=1.25→1／0.25×2=0.5→0／0.5×2=1.0→1 ⇒ 0.101(2)</text>
+  </svg>
+  <figcaption>図1-1　わりざん法（10進→2進）と位の重み（2進→10進）の手順</figcaption>
+  </figure>
+  <p>10進数→2進数は「2で割り続けて、余りを下から上へ読む」というわりざん法が基本です。2進数→10進数は逆に、各桁に割り当てられた「位の重み」（右から1・2・4・8・16・32…と2倍ずつ増えていく値）のうち、1が立っている桁だけを足し合わせます。16進数は2進数を4桁ずつのグループに区切って1桁の16進数字（0〜9、A〜F）に対応させたもので、桁数が減るぶん人間には読みやすくなります。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    10進数45を2進数に変換してください。
+    <details class="ans"><summary>答えを見る</summary>
+    45÷2=22余り1 → 22÷2=11余り0 → 11÷2=5余り1 → 5÷2=2余り1 → 2÷2=1余り0 → 1÷2=0余り1。余りを下から上に読むと <b>101101(2)</b>。検算：32+8+4+1=45 ✓
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「わりざん法」と「位の重みの表」、どちらの方向でも変換できるようにしておくと本番でのミスが減ります。</li>
+      <li>16進数は2進数4桁ひとまとまりが基本（0000〜1111 が 0〜F に対応）。</li>
+      <li>小数の変換は「×2して整数部を読む」向きが整数のときと逆になる点に注意。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-1">10進⇔2進⇔16進の変換が手順通りにできるようになった</label>
+</section>
+
+<!-- ============ 1-2 負の数の表し方（2の補数） ============ -->
+<section class="item" id="fb-2">
+  <h2><span class="no">1-2</span>負の数の表し方（2の補数）— 引き算を足し算に変える工夫</h2>
+  <p class="goal">🎯 ゴール：2の補数の作り方（反転して+1）を覚え、8ビットでの負の数表現ができるようになる。</p>
+  <p>コンピュータには「マイナス」という特別な文字がないので、負の数も0と1だけで表す工夫が必要です。それが「2の補数」という表現方法で、正の数を足す回路をそのまま使い回して引き算までできてしまう、ハードウェアにとって都合の良い仕組みです。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="2の補数の作り方（反転して+1）と8ビットの範囲を示す図" viewBox="0 0 700 260" width="700">
+    <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#716C61"/></marker></defs>
+    <rect x="20" y="30" width="180" height="80" rx="10" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <text x="110" y="55" text-anchor="middle" font-size="12" fill="#716C61">元の数（5）</text>
+    <text x="110" y="82" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">00000101</text>
+
+    <line x1="205" y1="70" x2="255" y2="70" stroke="#716C61" stroke-width="2" marker-end="url(#ar2)"/>
+    <text x="230" y="58" text-anchor="middle" font-size="11.5" fill="#716C61">反転</text>
+
+    <rect x="260" y="30" width="180" height="80" rx="10" fill="#E3EAF3" stroke="#B9CBE6"/>
+    <text x="350" y="55" text-anchor="middle" font-size="12" fill="#4A6FA5">全ビット反転</text>
+    <text x="350" y="82" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">11111010</text>
+
+    <line x1="445" y1="70" x2="495" y2="70" stroke="#716C61" stroke-width="2" marker-end="url(#ar2)"/>
+    <text x="470" y="58" text-anchor="middle" font-size="11.5" fill="#716C61">+1</text>
+
+    <rect x="500" y="30" width="180" height="80" rx="10" fill="#E7EDDC" stroke="#CFE0B8"/>
+    <text x="590" y="55" text-anchor="middle" font-size="12" fill="#4f6b3a">2の補数（−5）</text>
+    <text x="590" y="82" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">11111011</text>
+
+    <line x1="40" y1="180" x2="660" y2="180" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="40" y1="173" x2="40" y2="187" stroke="#716C61" stroke-width="1.5"/>
+    <text x="40" y="205" text-anchor="middle" font-size="12" fill="#211F1A">−128</text>
+    <line x1="351" y1="173" x2="351" y2="187" stroke="#716C61" stroke-width="1.5"/>
+    <text x="351" y="205" text-anchor="middle" font-size="12" fill="#211F1A">0</text>
+    <line x1="659" y1="173" x2="659" y2="187" stroke="#716C61" stroke-width="1.5"/>
+    <text x="659" y="205" text-anchor="middle" font-size="12" fill="#211F1A">127</text>
+    <circle cx="339" cy="180" r="4.5" fill="#BE5A38"/>
+    <text x="339" y="160" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">−5</text>
+    <text x="350" y="235" text-anchor="middle" font-size="11.5" fill="#716C61">8ビットの符号付き表現がとれる範囲：−128〜+127</text>
+  </svg>
+  <figcaption>図1-2　2の補数の作り方（ビット反転して+1）と8ビットの表現範囲</figcaption>
+  </figure>
+  <p>2の補数の作り方は3ステップだけです。①元の数を2進数にする ②全てのビットを反転する（0→1、1→0） ③1を足す。8ビットで表現できる範囲は、符号のぶんを差し引いて−128〜+127になります。全ビットが1（11111111）は「最大値」ではなく「−1」を表すので、直感に反するひっかけとしてよく問われます。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    8ビットで−5を2の補数表現にしてください。
+    <details class="ans"><summary>答えを見る</summary>
+    5=00000101 → ビット反転 11111010 → +1 → <b>11111011</b>。検算：11111011を符号付き8ビットとして読むと、251−256=−5 ✓
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「反転して+1」の2ステップを機械的に覚える。</li>
+      <li>8ビットの範囲は−128〜127。範囲を超えるとオーバーフロー（次の項目1-3を参照）。</li>
+      <li>全ビット1（11111111）は「最大値」ではなく「−1」というひっかけに注意。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-2">8ビットの2の補数で正負の数を変換できるようになった</label>
+</section>
+
+<!-- ============ 1-3 シフト演算と桁あふれ ============ -->
+<section class="item" id="fb-3">
+  <h2><span class="no">1-3</span>シフト演算と桁あふれ — ビットをずらして掛け算・割り算</h2>
+  <p class="goal">🎯 ゴール：シフト演算が何倍・何分の1になるかを即座に計算でき、オーバーフローの意味を説明できるようになる。</p>
+  <p>シフト演算は、ビット列を丸ごと左右にずらす操作です。10進数で「桁を1つずらす」と10倍・10分の1になるのと同じ発想で、2進数では「1ビット左にずらす＝×2」「1ビット右にずらす＝÷2」になります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="8ビットの数を2ビット左にシフトする図" viewBox="0 0 700 275" width="700">
+    <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#BE5A38"/></marker></defs>
+    <text x="350" y="22" text-anchor="middle" font-size="12.5" fill="#716C61">シフト前：00000101（10進で5）</text>
+    <rect x="190" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="209" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="230" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="249" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="270" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="289" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="310" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="329" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="350" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="369" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="390" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="409" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">1</text>
+    <rect x="430" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="449" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="470" y="34" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="489" y="61" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">1</text>
+
+    <line x1="350" y1="86" x2="350" y2="170" stroke="#BE5A38" stroke-width="2.5" marker-end="url(#ar3)"/>
+    <text x="350" y="128" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">2ビット左シフト（×4）</text>
+
+    <text x="350" y="192" text-anchor="middle" font-size="12.5" fill="#716C61">シフト後：00010100（10進で20）</text>
+    <rect x="190" y="204" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="209" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="230" y="204" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="249" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="270" y="204" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="289" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="310" y="204" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="329" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">1</text>
+    <rect x="350" y="204" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="369" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">0</text>
+    <rect x="390" y="204" width="38" height="40" rx="4" fill="#F2EFE6" stroke="#E2DCCD"/><text x="409" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#211F1A">1</text>
+    <rect x="430" y="204" width="38" height="40" rx="4" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/><text x="449" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#BE5A38">0</text>
+    <rect x="470" y="204" width="38" height="40" rx="4" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/><text x="489" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#BE5A38">0</text>
+    <text x="350" y="266" text-anchor="middle" font-size="11.5" fill="#716C61">右端の2桁（濃い枠）が新しく0で埋まった部分。今回は上位2桁が元々0なのであふれ（オーバーフロー）は起きません</text>
+  </svg>
+  <figcaption>図1-3　2ビット左シフトでビット列がずれる様子</figcaption>
+  </figure>
+  <p>論理シフトは空いた桁を単純に0で埋めます。算術シフトは一番左の符号ビットをそのまま保ったまま右シフトすることで、負の数でも÷2の意味を正しく保ちます。左シフトを繰り返すと、表現できる範囲（8ビットなら−128〜127）を超えて最上位から追い出されたビットが失われることがあり、これを桁あふれ（オーバーフロー）と呼びます。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    xを2ビット左シフトすると何倍になりますか。またx=5のとき、結果はいくつですか。
+    <details class="ans"><summary>答えを見る</summary>
+    左シフト1回＝×2なので、2ビット左シフト＝×2×2＝<b>×4</b>。x=5なら5×4=<b>20</b>。2進数でも確認：00000101(5)を2ビット左シフト→00010100(20) ✓
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>左シフトn回＝×2ⁿ、右シフトn回＝÷2ⁿ（電卓なしで暗算できるようにしておく）。</li>
+      <li>論理シフト＝0埋め、算術シフト＝符号ビット保持、という使い分けがひっかけで問われやすい。</li>
+      <li>シフト後に表現範囲を超えていないか（オーバーフロー）を確認するくせをつける。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-3">シフト演算の倍率計算とオーバーフローの判定ができるようになった</label>
+</section>
+
+<!-- ============ 1-4 論理演算 ============ -->
+<section class="item" id="fb-4">
+  <h2><span class="no">1-4</span>論理演算（AND・OR・NOT・XOR）— 真偽を組み合わせる4つの基本操作</h2>
+  <p class="goal">🎯 ゴール：AND/OR/NOT/XORの真理値表を即答でき、ビットマスクの使い道を説明できるようになる。</p>
+  <p>論理演算は「真（1）」と「偽（0）」の2値を組み合わせる、コンピュータの思考の最小単位です。真理値表を丸暗記するというより「この演算はどういう条件で1になるか」というイメージで覚えると混乱しません。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="AND・OR・XOR・NOTの入出力例を示す図" viewBox="0 0 700 240" width="700">
+    <!-- AND panel -->
+    <text x="90" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">AND（両方1で1）</text>
+    <circle cx="55" cy="60" r="17" fill="#BE5A38"/><text x="55" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+    <circle cx="125" cy="60" r="17" fill="#BE5A38"/><text x="125" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+    <text x="55" y="90" text-anchor="middle" font-size="10.5" fill="#716C61">A</text>
+    <text x="125" y="90" text-anchor="middle" font-size="10.5" fill="#716C61">B</text>
+    <line x1="55" y1="77" x2="80" y2="115" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="125" y1="77" x2="100" y2="115" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="55" y="118" width="70" height="36" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="90" y="141" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">AND</text>
+    <line x1="90" y1="154" x2="90" y2="180" stroke="#716C61" stroke-width="1.5"/>
+    <circle cx="90" cy="200" r="18" fill="#BE5A38"/><text x="90" y="205" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+
+    <!-- OR panel -->
+    <text x="265" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">OR（どちらかが1で1）</text>
+    <circle cx="230" cy="60" r="17" fill="#BE5A38"/><text x="230" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+    <circle cx="300" cy="60" r="17" fill="#EAE4D5" stroke="#E2DCCD"/><text x="300" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#716C61">0</text>
+    <text x="230" y="90" text-anchor="middle" font-size="10.5" fill="#716C61">A</text>
+    <text x="300" y="90" text-anchor="middle" font-size="10.5" fill="#716C61">B</text>
+    <line x1="230" y1="77" x2="255" y2="115" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="300" y1="77" x2="275" y2="115" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="230" y="118" width="70" height="36" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="265" y="141" text-anchor="middle" font-size="13" font-weight="700" fill="#4A6FA5">OR</text>
+    <line x1="265" y1="154" x2="265" y2="180" stroke="#716C61" stroke-width="1.5"/>
+    <circle cx="265" cy="200" r="18" fill="#BE5A38"/><text x="265" y="205" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+
+    <!-- XOR panel -->
+    <text x="440" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">XOR（違うときだけ1）</text>
+    <circle cx="405" cy="60" r="17" fill="#BE5A38"/><text x="405" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+    <circle cx="475" cy="60" r="17" fill="#EAE4D5" stroke="#E2DCCD"/><text x="475" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#716C61">0</text>
+    <text x="405" y="90" text-anchor="middle" font-size="10.5" fill="#716C61">A</text>
+    <text x="475" y="90" text-anchor="middle" font-size="10.5" fill="#716C61">B</text>
+    <line x1="405" y1="77" x2="430" y2="115" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="475" y1="77" x2="450" y2="115" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="405" y="118" width="70" height="36" rx="8" fill="#E7EDDC" stroke="#4f6b3a"/>
+    <text x="440" y="141" text-anchor="middle" font-size="12.5" font-weight="700" fill="#4f6b3a">XOR</text>
+    <line x1="440" y1="154" x2="440" y2="180" stroke="#716C61" stroke-width="1.5"/>
+    <circle cx="440" cy="200" r="18" fill="#BE5A38"/><text x="440" y="205" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+
+    <!-- NOT panel -->
+    <text x="605" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">NOT（反転）</text>
+    <circle cx="605" cy="60" r="17" fill="#EAE4D5" stroke="#E2DCCD"/><text x="605" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="#716C61">0</text>
+    <text x="605" y="90" text-anchor="middle" font-size="10.5" fill="#716C61">A</text>
+    <line x1="605" y1="77" x2="605" y2="115" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="570" y="118" width="70" height="36" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="605" y="141" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">NOT</text>
+    <line x1="605" y1="154" x2="605" y2="180" stroke="#716C61" stroke-width="1.5"/>
+    <circle cx="605" cy="200" r="18" fill="#BE5A38"/><text x="605" y="205" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+  </svg>
+  <figcaption>図1-4　AND・OR・XOR・NOTの入出力の具体例（点灯＝1、消灯＝0）</figcaption>
+  </figure>
+  <table class="tbl">
+    <tr><th>A</th><th>B</th><th>A AND B</th><th>A OR B</th><th>A XOR B</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+    <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+    <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+  </table>
+  <div class="point"><span class="tt">⚡ ポイント（ビットマスクとしての使い道）</span>
+    <ul>
+      <li>特定のビットだけを取り出したいとき＝AND（例：下位4ビットだけ欲しいときは 00001111 とANDを取る）。</li>
+      <li>特定のビットだけを反転させたいとき＝XOR（例：全ビット反転は 11111111 とXORを取る）。</li>
+      <li>XORは「違うとき1」＝同じ値同士なら必ず0、という覚え方が一番速い。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-4">AND/OR/NOT/XORの違いとビットマスクの考え方が説明できるようになった</label>
+</section>
+
+<!-- ============ 1-5 ド・モルガンの法則とベン図 ============ -->
+<section class="item" id="fb-5">
+  <h2><span class="no">1-5</span>ド・モルガンの法則とベン図 — NOTを分配するときのルール</h2>
+  <p class="goal">🎯 ゴール：ド・モルガンの法則を使って論理式を変形でき、ベン図で両辺が同じ領域になることを確認できるようになる。</p>
+  <p>「ANDとORをNOTでくくると、AND⇔ORが入れ替わる」という法則がド・モルガンの法則です。プログラムのif文の条件を読み替えるときによく使います。</p>
+  <div class="formula">not(A and B) = (not A) or (not B)　／　not(A or B) = (not A) and (not B)</div>
+  <p>覚え方は「NOTのカッコを外に出すと、ANDとORが入れ替わり、NOTはそれぞれの項に分配される」です。傘を開くように、外側のNOTを中の2項へ配りながらANDとORをひっくり返す、とイメージすると忘れにくくなります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="ド・モルガンの法則の両辺が同じ領域になることを示すベン図" viewBox="0 0 700 270" width="700">
+    <rect x="30" y="30" width="220" height="170" rx="8" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <ellipse cx="140" cy="115" rx="26" ry="52" fill="#FCFBF7"/>
+    <circle cx="110" cy="115" r="65" fill="none" stroke="#211F1A" stroke-width="1.5"/>
+    <circle cx="170" cy="115" r="65" fill="none" stroke="#211F1A" stroke-width="1.5"/>
+    <text x="75" y="119" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">A</text>
+    <text x="205" y="119" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">B</text>
+    <text x="140" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">¬(A∧B)</text>
+
+    <text x="345" y="125" text-anchor="middle" font-size="26" font-weight="700" fill="#211F1A">=</text>
+
+    <rect x="380" y="30" width="220" height="170" rx="8" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <ellipse cx="490" cy="115" rx="26" ry="52" fill="#FCFBF7"/>
+    <circle cx="460" cy="115" r="65" fill="none" stroke="#211F1A" stroke-width="1.5"/>
+    <circle cx="520" cy="115" r="65" fill="none" stroke="#211F1A" stroke-width="1.5"/>
+    <text x="425" y="119" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">A</text>
+    <text x="555" y="119" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">B</text>
+    <text x="490" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">¬A ∨ ¬B</text>
+
+    <text x="350" y="255" text-anchor="middle" font-size="12" fill="#716C61">色がついた部分（交わり以外の全部）がどちらも同じ範囲＝ド・モルガンの法則</text>
+  </svg>
+  <figcaption>図1-5　¬(A∧B) と ¬A∨¬B が同じ領域になることを示すベン図</figcaption>
+  </figure>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「NOTを分配するとANDとORが入れ替わる」を呪文のように覚える。</li>
+      <li>if文の「〜でない かつ 〜でない」は「〜または〜、ではない」に書き換えられる、が頻出パターン。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-5">ド・モルガンの法則を使って論理式を変形できるようになった</label>
+</section>
+
+<!-- ============ 1-6 論理回路（MIL記号） ============ -->
+<section class="item" id="fb-6">
+  <h2><span class="no">1-6</span>論理回路（MIL記号）— 回路図から出力を求める</h2>
+  <p class="goal">🎯 ゴール：AND/OR/NOT/NAND/XORのMIL記号（回路図の絵記号）を見分け、入力側から順に値を書き込んで出力を求められるようになる。</p>
+  <p>論理演算を「回路図」として絵で表すときの記号がMIL記号（JISで定められた図記号）です。試験では回路図に0/1の入力が与えられて出力を求める問題が出ます。コツは「入力側から出力側へ、ゲートを1つずつ値を書き込みながら進む」ことです。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="MIL記号一覧と2段構成の回路の出力トレース例" viewBox="0 0 700 390" width="700">
+    <defs><marker id="ar6" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#716C61"/></marker></defs>
+    <text x="350" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">① 記号の見分け方</text>
+
+    <path d="M40,40 H70 A25,25 0 0 1 70,90 H40 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="1.5"/>
+    <text x="65" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">AND</text>
+    <text x="65" y="128" text-anchor="middle" font-size="11" fill="#716C61">D字形</text>
+
+    <path d="M180,40 Q195,65 180,90 Q225,80 240,65 Q225,50 180,40 Z" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.5"/>
+    <text x="210" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">OR</text>
+    <text x="210" y="128" text-anchor="middle" font-size="11" fill="#716C61">かまぼこ形</text>
+
+    <path d="M320,40 L320,90 L365,65 Z" fill="#E7EDDC" stroke="#4f6b3a" stroke-width="1.5"/>
+    <circle cx="372" cy="65" r="7" fill="#E7EDDC" stroke="#4f6b3a" stroke-width="1.5"/>
+    <text x="350" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">NOT</text>
+    <text x="350" y="128" text-anchor="middle" font-size="11" fill="#716C61">三角+丸</text>
+
+    <path d="M460,40 H490 A25,25 0 0 1 490,90 H460 Z" fill="#F5E8D4" stroke="#9a5a22" stroke-width="1.5"/>
+    <circle cx="497" cy="65" r="7" fill="#F5E8D4" stroke="#9a5a22" stroke-width="1.5"/>
+    <text x="490" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">NAND</text>
+    <text x="490" y="128" text-anchor="middle" font-size="11" fill="#716C61">AND+丸</text>
+
+    <path d="M600,40 Q615,65 600,90 Q645,80 660,65 Q645,50 600,40 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="1.5"/>
+    <path d="M592,42 Q607,65 592,88" fill="none" stroke="#BE5A38" stroke-width="1.5"/>
+    <text x="630" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">XOR</text>
+    <text x="630" y="128" text-anchor="middle" font-size="11" fill="#716C61">OR+もう1本</text>
+
+    <line x1="20" y1="150" x2="680" y2="150" stroke="#E2DCCD"/>
+    <text x="350" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">② トレース例：A=1, B=0, C=1 の2段回路</text>
+
+    <circle cx="55" cy="205" r="17" fill="#BE5A38"/><text x="55" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
+    <text x="55" y="235" text-anchor="middle" font-size="11" fill="#716C61">A</text>
+    <circle cx="55" cy="255" r="17" fill="#EAE4D5" stroke="#E2DCCD"/><text x="55" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">0</text>
+    <text x="55" y="285" text-anchor="middle" font-size="11" fill="#716C61">B</text>
+
+    <line x1="72" y1="205" x2="145" y2="220" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="72" y1="255" x2="145" y2="240" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="150" y="200" width="80" height="55" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="190" y="233" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">AND</text>
+
+    <line x1="230" y1="227" x2="290" y2="227" stroke="#716C61" stroke-width="1.5" marker-end="url(#ar6)"/>
+    <circle cx="310" cy="227" r="18" fill="#EAE4D5" stroke="#E2DCCD"/><text x="310" y="232" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">0</text>
+    <text x="310" y="204" text-anchor="middle" font-size="11" fill="#716C61">① 1 AND 0 = 0</text>
+
+    <circle cx="380" cy="310" r="17" fill="#BE5A38"/><text x="380" y="315" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
+    <text x="380" y="335" text-anchor="middle" font-size="11" fill="#716C61">C</text>
+
+    <line x1="322" y1="235" x2="420" y2="255" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="380" y1="293" x2="420" y2="270" stroke="#716C61" stroke-width="1.5"/>
+    <rect x="425" y="245" width="80" height="55" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="465" y="278" text-anchor="middle" font-size="13" font-weight="700" fill="#4A6FA5">OR</text>
+
+    <line x1="505" y1="272" x2="565" y2="272" stroke="#716C61" stroke-width="1.5" marker-end="url(#ar6)"/>
+    <circle cx="590" cy="272" r="20" fill="#BE5A38"/><text x="590" y="278" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">1</text>
+    <text x="590" y="248" text-anchor="middle" font-size="11" fill="#716C61">② 0 OR 1 = 1（最終出力）</text>
+  </svg>
+  <figcaption>図1-6　MIL記号の見分け方と、入力側から1ゲートずつ値を追うトレース例</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    A=1, B=0 をANDゲートに入れ、その出力とC=1をORゲートに入れる2段構成の回路の出力を求めてください。
+    <details class="ans"><summary>答えを見る</summary>
+    まずANDゲート：A=1, B=0 → 1 AND 0 = 0。次にORゲート：先ほどの出力0とC=1 → 0 OR 1 = <b>1</b>。よって最終出力は1。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>バブル（小さい丸）がついたら出力を反転させる（AND→NANDの違いなど）。</li>
+      <li>入力側から1ゲートずつ値を書き込んでいけば、複雑な回路でも迷わない。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-6">回路図から出力を計算できるようになった</label>
+</section>
+
+<!-- ============ 1-7 情報量の単位 ============ -->
+<section class="item" id="fb-7">
+  <h2><span class="no">1-7</span>情報量の単位 — ビット・バイトと接頭語、データ量計算</h2>
+  <p class="goal">🎯 ゴール：ビットとバイトの関係、k/M/G/Tの接頭語、画像などのデータ量計算ができるようになる。</p>
+  <p>コンピュータが扱う情報の最小単位が「ビット(bit)」で、0か1のどちらかを表します。ビットが8個集まると「バイト(Byte)」1つ分になり、これが情報量の基本単位です。nビットあれば2ⁿ通りの状態を表現できます（例：8ビットなら2⁸=256通り）。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="情報量の単位が階段状に大きくなる図" viewBox="0 0 700 300" width="700">
+    <text x="350" y="20" text-anchor="middle" font-size="12.5" fill="#716C61">情報量の単位の階段（右にいくほど大きな量）</text>
+    <rect x="30" y="240" width="75" height="20" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <text x="67" y="200" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">ビット</text>
+    <text x="67" y="216" text-anchor="middle" font-size="11" fill="#716C61">1bit</text>
+
+    <rect x="145" y="220" width="75" height="40" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <text x="182" y="180" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">バイト</text>
+    <text x="182" y="196" text-anchor="middle" font-size="11" fill="#716C61">=8bit</text>
+
+    <rect x="260" y="180" width="75" height="80" fill="#E3EAF3" stroke="#B9CBE6"/>
+    <text x="297" y="140" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">キロ(k)</text>
+    <text x="297" y="156" text-anchor="middle" font-size="11" fill="#716C61">10³Byte</text>
+
+    <rect x="375" y="140" width="75" height="120" fill="#E3EAF3" stroke="#B9CBE6"/>
+    <text x="412" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">メガ(M)</text>
+    <text x="412" y="116" text-anchor="middle" font-size="11" fill="#716C61">10⁶Byte</text>
+
+    <rect x="490" y="100" width="75" height="160" fill="#E7EDDC" stroke="#CFE0B8"/>
+    <text x="527" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">ギガ(G)</text>
+    <text x="527" y="76" text-anchor="middle" font-size="11" fill="#716C61">10⁹Byte</text>
+
+    <rect x="605" y="60" width="75" height="200" fill="#E7EDDC" stroke="#CFE0B8"/>
+    <text x="642" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">テラ(T)</text>
+    <text x="642" y="26" text-anchor="middle" font-size="11" fill="#716C61">10¹²Byte</text>
+
+    <line x1="20" y1="260" x2="690" y2="260" stroke="#716C61" stroke-width="1.5"/>
+    <text x="350" y="285" text-anchor="middle" font-size="11.5" fill="#716C61">bit→Byteは×8、Byte以降はk→M→G→Tと1000倍ずつ大きくなる</text>
+  </svg>
+  <figcaption>図1-7　情報量の単位の階段（bit・Byte・k・M・G・T）</figcaption>
+  </figure>
+  <p>データ量が大きくなると k(キロ,10³)→M(メガ,10⁶)→G(ギガ,10⁹)→T(テラ,10¹²)という接頭語で桁数を圧縮して表します。試験では1000倍ごとと考えるのが基本ですが、コンピュータ内部の2進接頭語(1Ki=2¹⁰=1024)との違いを問う問題もあるため、問題文の指定に従いましょう。画像データのサイズは「画素数×1画素あたりのバイト数」で求められ、1画素あたりのバイト数は色の情報量(ビット)を8で割って求めます。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    800×600画素・24ビットカラーの画像のデータ量は何バイトですか（1M=10⁶バイトとします）。
+    <details class="ans"><summary>答えを見る</summary>
+    画素数＝800×600＝480,000画素。24ビットカラー＝24÷8＝3バイト/画素。データ量＝480,000×3＝<b>1,440,000バイト（＝1.44MB）</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「画素数×1画素のバイト数」の掛け算パターンを覚えておく。</li>
+      <li>ビット→バイトの変換で÷8を忘れずに。</li>
+      <li>問題文に「1M=10⁶」なのか「1Mi=2²⁰」なのか指定があれば、それに従う。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-7">情報量の単位とデータ量の計算ができるようになった</label>
+</section>
+
+<!-- ============ 1-8 文字コード ============ -->
+<section class="item" id="fb-8">
+  <h2><span class="no">1-8</span>文字コード — 文字をどう0と1に対応させるか</h2>
+  <p class="goal">🎯 ゴール：ASCII・Shift-JIS・Unicode(UTF-8)の違いを説明でき、文字化けの原因を理解する。</p>
+  <p>コンピュータは文字も0と1の組み合わせ（文字コード）として扱います。どの数値がどの文字に対応するかを決めた「対応表」の種類によって、いくつかの方式が使い分けられています。</p>
+  <table class="tbl">
+    <tr><th>方式</th><th>対応する文字</th><th>1文字のサイズ</th></tr>
+    <tr><td>ASCII</td><td>英数字・記号</td><td>7ビット（128種類）</td></tr>
+    <tr><td>Shift-JIS</td><td>日本語＋英数字</td><td>1〜2バイト</td></tr>
+    <tr><td>UTF-8</td><td>世界中の文字</td><td>1〜4バイト（可変長）</td></tr>
+  </table>
+  <p>ASCIIは英数字と記号を7ビット(128種類)で表す、最も基本的な文字コードです。Shift-JISは日本語（ひらがな・カタカナ・漢字）を扱うために作られた日本語用の文字コードです。Unicode/UTF-8は世界中のあらゆる言語の文字を1つの体系で統一的に扱えるようにしたもので、UTF-8はUnicodeを実際のバイト列に変換する方式の1つとして、1文字を1〜4バイトの可変長で表現します（英数字は1バイト、日本語は主に3バイト）。送信側と受信側で「どの文字コードとして解釈するか」の取り決めが食い違うと、文字が正しく表示されない「文字化け」が起こります。原因は符号化方式(エンコーディング)の不一致です。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「日本語対応=Shift-JISだけ」ではない。UTF-8でも日本語は扱える（バイト数が違うだけ）。</li>
+      <li>文字化けの原因は「文字コードの解釈違い」というキーワードで覚える。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-8">文字コードの種類と文字化けの原因が説明できるようになった</label>
+</section>
+
+<!-- ============ 1-9 確率と場合の数 ============ -->
+<section class="item" id="fb-9">
+  <h2><span class="no">1-9</span>確率と場合の数 — 順列・組合せと期待値</h2>
+  <p class="goal">🎯 ゴール：順列(nPr)と組合せ(nCr)を使い分けられ、期待値の計算ができるようになる。</p>
+  <p>「並べ方」や「選び方」が何通りあるかを求めるのが順列・組合せです。試験で問われるのは公式そのものよりも「順番を区別するかどうか」の見極めです。</p>
+  <div class="formula">順列：nPr = n! ÷ (n−r)!　／　組合せ：nCr = n! ÷ (r! × (n−r)!)</div>
+  <p>順列（Permutation）は、n個からr個を選んで並べる場合の数で、順番を区別します。組合せ（Combination）は、n個からr個を選ぶだけの場合の数で、順番を区別しません。「1位2位3位を決める」なら順列、「3人組を選ぶだけ」なら組合せ、と考えると迷いません。</p>
+  <div class="formula">期待値 = Σ(値 × 確率)</div>
+  <p>期待値は、起こりうる結果それぞれの「値×確率」を全部足したものです。「平均的に見てどれくらいの結果になるか」を表す指標で、経営判断（ストラテジ系）の分野でも使われます。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    くじが10本あり、1等（1000円）が1本、2等（300円）が3本、はずれ（0円）が6本入っています。このくじを1回引くときの期待値はいくらですか。
+    <details class="ans"><summary>答えを見る</summary>
+    期待値＝1000円×(1/10)＋300円×(3/10)＋0円×(6/10)＝100＋90＋0＝<b>190円</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>「順番を区別するか」でnPr/nCrを使い分ける。</li>
+      <li>期待値は「値×確率」の合計。確率の合計が1になっているか検算するくせをつける。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-9">順列・組合せの使い分けと期待値の計算ができるようになった</label>
+</section>
+
+<!-- ============ 1-10 統計の基礎 ============ -->
+<section class="item" id="fb-10">
+  <h2><span class="no">1-10</span>統計の基礎 — 平均・分散・標準偏差と正規分布</h2>
+  <p class="goal">🎯 ゴール：平均・中央値・最頻値の違いを説明でき、標準偏差と正規分布の±1σ・±2σの意味がわかるようになる。</p>
+  <p>データ全体の特徴を1つの数字でまとめるのが代表値です。代表的なものに平均・中央値・最頻値があり、それぞれ性質が違います。平均は全データを足してデータ数で割った値、中央値はデータを大きさ順に並べたときの真ん中の値（極端に大きい/小さい外れ値があっても影響を受けにくい）、最頻値は最も多く出現する値です。</p>
+  <p>分散はデータが平均からどれだけ散らばっているかを表す指標で、標準偏差は分散の平方根（√分散）、元のデータと同じ単位に戻したばらつきの大きさです。正規分布は平均を中心にした左右対称の釣り鐘型の分布で、平均±1標準偏差(σ)の範囲に全体の約68%、平均±2σの範囲に約95%のデータが収まるという性質があります。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="正規分布の山と±1σ・±2σの範囲を示す図" viewBox="0 0 700 300" width="700">
+    <rect x="160" y="120" width="95" height="130" fill="#E3EAF3"/>
+    <rect x="445" y="120" width="95" height="130" fill="#E3EAF3"/>
+    <rect x="255" y="60" width="190" height="190" fill="#F3E5DA"/>
+    <path d="M60,250 C150,250 230,70 350,60 C470,70 550,250 640,250" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <line x1="60" y1="250" x2="640" y2="250" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="160" y1="210" x2="160" y2="250" stroke="#716C61" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="255" y1="120" x2="255" y2="250" stroke="#716C61" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="350" y1="60" x2="350" y2="250" stroke="#716C61" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="445" y1="120" x2="445" y2="250" stroke="#716C61" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <line x1="540" y1="210" x2="540" y2="250" stroke="#716C61" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="160" y="270" text-anchor="middle" font-size="12" fill="#211F1A">−2σ</text>
+    <text x="255" y="270" text-anchor="middle" font-size="12" fill="#211F1A">−1σ</text>
+    <text x="350" y="270" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">μ</text>
+    <text x="445" y="270" text-anchor="middle" font-size="12" fill="#211F1A">+1σ</text>
+    <text x="540" y="270" text-anchor="middle" font-size="12" fill="#211F1A">+2σ</text>
+    <text x="350" y="215" text-anchor="middle" font-size="14" font-weight="700" fill="#BE5A38">約68%</text>
+    <text x="350" y="292" text-anchor="middle" font-size="12" fill="#4A6FA5">±2σの範囲に約95%が収まる</text>
+  </svg>
+  <figcaption>図1-10　正規分布と±1σ・±2σに収まるデータの割合</figcaption>
+  </figure>
+  <p>相関関係（2つのデータが一緒に動く関係）があるからといって、因果関係（片方が原因でもう片方が結果になる関係）があるとは限りません。「アイスの売上と水難事故の件数」が相関しても、片方がもう片方の原因なのではなく、「気温」という共通の原因があるだけ、というのが典型例です。</p>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>外れ値に強いのは中央値（平均は外れ値に引っ張られる）。</li>
+      <li>標準偏差＝√分散、正規分布は±1σで約68%、±2σで約95%、と数値をセットで覚える。</li>
+      <li>「相関≠因果」は文章問題のひっかけの定番。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-10">代表値・標準偏差・正規分布の基本性質が説明できるようになった</label>
+</section>
+
+<!-- ============ 振り返りクイズ ============ -->
+<section class="quiz" id="quiz">
+  <h2>🔄 振り返りクイズ（基礎理論）</h2>
+  <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
+  <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
+
+  <details><summary>Q1. 10進数27を2進数で表すとどれか。 a)11011 b)11001 c)10111 d)11101</summary><div class="a">正解は a) <b>11011</b>。16+8+2+1=27（重み16・8・2・1の桁が1）。 <a class="qref" href="#fb-1">→ 解説 1-1 に戻る</a></div></details>
+
+  <details><summary>Q2. 8ビットの2の補数表現で−6を表すとどれか。 a)11111010 b)11111001 c)00000110 d)10000110</summary><div class="a">正解は a) <b>11111010</b>。6=00000110→ビット反転11111001→+1=11111010。 <a class="qref" href="#fb-2">→ 解説 1-2 に戻る</a></div></details>
+
+  <details><summary>Q3. 符号なし8ビットの数00000011（10進で3）を左に3ビットシフトすると、10進でいくつになるか。</summary><div class="a">3×2³=3×8=<b>24</b>（00011000）。左シフトn回＝×2ⁿ。 <a class="qref" href="#fb-3">→ 解説 1-3 に戻る</a></div></details>
+
+  <details><summary>Q4. A=1010、B=0110のとき、A XOR Bはどれか。</summary><div class="a">各桁を比較：1≠0→1、0≠1→1、1=1→0、0=0→0で<b>1100</b>。XORは「違うとき1」。 <a class="qref" href="#fb-4">→ 解説 1-4 に戻る</a></div></details>
+
+  <details><summary>Q5. not(A or B) と等しい式はどれか。 a)notA or notB b)notA and notB c)A and B d)A or B</summary><div class="a">正解は b) <b>notA and notB</b>。ド・モルガンの法則で「NOTを分配するとORがANDに入れ替わる」。 <a class="qref" href="#fb-5">→ 解説 1-5 に戻る</a></div></details>
+
+  <details><summary>Q6. 5ビットで表現できる場合の数はいくつか。</summary><div class="a">2⁵＝<b>32通り</b>。nビットで2ⁿ通り。 <a class="qref" href="#fb-7">→ 解説 1-7 に戻る</a></div></details>
+
+  <details><summary>Q7. 5人から3人を選ぶ組合せ（順序を問わない）は何通りか。</summary><div class="a">5C3＝5!÷(3!×2!)＝120÷12＝<b>10通り</b>。順番を問わないので組合せの公式を使う。 <a class="qref" href="#fb-9">→ 解説 1-9 に戻る</a></div></details>
+
+  <details><summary>Q8. サイコロを1回振って、出た目の数×100円もらえるとき、期待値はいくらか。</summary><div class="a">期待値＝(1+2+3+4+5+6)÷6×100＝21÷6×100＝3.5×100＝<b>350円</b>。 <a class="qref" href="#fb-9">→ 解説 1-9 に戻る</a></div></details>
+
+</section>
+
+</main>
+
+<nav class="pager">
+  <a href="fe-guide.html"><span class="dir">‹ もどる</span>基本情報ノート トップ</a>
+  <a href="fe-computer.html" class="next"><span class="dir">つぎへ ›</span>セクション2：コンピュータシステム</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ セクション1：基礎理論</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const boxes=[...document.querySelectorAll('input[data-item]')];
+function refresh(){
+  const s=loadState();let n=0;
+  boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
+  document.getElementById('done-count').textContent=n;
+}
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+refresh();
+const rnd=document.getElementById('rnd-quiz');
+if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
+</script>
+</body>
+</html>
