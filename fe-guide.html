@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>基本情報 学習ノート｜図解でおさらい</title>
-<meta name="description" content="基本情報技術者試験（FE）の頻出99項目を図解×チェック×クイズで定着させる学習ノート。科目Aの計算・用語から科目Bの擬似言語トレースまで。">
+<meta name="description" content="基本情報技術者試験（FE）の頻出104項目を図解×チェック×クイズで定着させる学習ノート。科目Aの計算・用語から科目Bの擬似言語トレースまで。">
 <meta name="theme-color" content="#F1EEE5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -115,7 +115,7 @@
 
 <header class="topbar">
   <a href="index.html">‹ ツール置き場</a>
-  <span class="prog">全体 <b id="total-mini">0</b> / 99</span>
+  <span class="prog">全体 <b id="total-mini">0</b> / 104</span>
 </header>
 
 <header class="hero">
@@ -127,7 +127,7 @@
     <line x1="45" y1="15" x2="48.5" y2="17" stroke="#BE5A38" stroke-width="2.2" stroke-linecap="round"/>
   </svg>
   <h1>基本情報 学習ノート</h1>
-  <p>試験に出る99項目を、図解×チェック×クイズで「覚えれば受かる」形に凝縮</p>
+  <p>試験に出る104項目を、図解×チェック×クイズで「覚えれば受かる」形に凝縮</p>
   <div class="rule"></div>
 </header>
 
@@ -155,7 +155,7 @@
 <section class="card">
   <h2>📊 いまの定着度</h2>
   <div class="total">
-    <div class="num"><span id="total-count">0</span><small> / 99 項目</small></div>
+    <div class="num"><span id="total-count">0</span><small> / 104 項目</small></div>
     <div class="side">
       <div class="bar"><div class="fill" id="total-fill"></div></div>
       <div class="msg" id="total-msg">各ページの「できるようになった」チェックがここに集計されます（この端末に保存）。</div>
@@ -168,8 +168,8 @@
 <a class="sec" href="fe-basics.html">
   <span class="ico" style="--accent-bg:#F4E7DB">🔢</span>
   <span class="meta">
-    <span class="t">1. 基礎理論 <span class="cnt"><b id="c-fb">0</b>/10</span></span>
-    <span class="d">2進数・補数・論理演算・情報量・確率統計 ── 計算問題の土台</span>
+    <span class="t">1. 基礎理論 <span class="cnt"><b id="c-fb">0</b>/12</span></span>
+    <span class="d">2進数・補数・論理演算・情報量・標本化・浮動小数点 ── 計算問題の土台</span>
     <span class="bar"><span class="fill" id="f-fb" style="display:block"></span></span>
   </span>
   <span class="arrow">›</span>
@@ -241,8 +241,8 @@
 <a class="sec" href="fe-algo.html">
   <span class="ico" style="--accent-bg:#F4E7DB">🧩</span>
   <span class="meta">
-    <span class="t">9. アルゴリズムと擬似言語 <span class="cnt"><b id="c-al">0</b>/15</span></span>
-    <span class="d">擬似言語の読み方・トレースの型・再帰・ソート・科目Bセキュリティの解き方</span>
+    <span class="t">9. アルゴリズムと擬似言語 <span class="cnt"><b id="c-al">0</b>/18</span></span>
+    <span class="d">擬似言語の読み方・トレースの型・再帰・ソート・木構造・グラフ・科目Bセキュリティ</span>
     <span class="bar"><span class="fill" id="f-al" style="display:block"></span></span>
   </span>
   <span class="arrow">›</span>
@@ -251,7 +251,7 @@
 <!-- 抜き打ちチェック -->
 <section class="card rndcheck">
   <h2>🎲 抜き打ちチェック（アクティブ・リコール）</h2>
-  <p style="font-size:.85rem;color:var(--ink-dim)">全99項目からランダムに1問。<b>まず何も見ずに30秒、口に出して説明</b>してみてから判定しよう。「思い出そうとする」こと自体が最強の記憶術です。「🤔 まだあやしい」にした項目は、下の<b>あやしいリスト</b>に溜まります。</p>
+  <p style="font-size:.85rem;color:var(--ink-dim)">全104項目からランダムに1問。<b>まず何も見ずに30秒、口に出して説明</b>してみてから判定しよう。「思い出そうとする」こと自体が最強の記憶術です。「🤔 まだあやしい」にした項目は、下の<b>あやしいリスト</b>に溜まります。</p>
   <div class="q hidden" id="q-box">
     <div class="sec-tag" id="q-sec">セクション1</div>
     <div class="title" id="q-title">…</div>
@@ -337,6 +337,8 @@ const ITEMS=[
  {id:'fb-8', t:'文字コード（ASCII・Unicode・UTF-8）', s:'セクション1：基礎理論', p:'fe-basics.html'},
  {id:'fb-9', t:'確率と場合の数（順列・組合せ・期待値）', s:'セクション1：基礎理論', p:'fe-basics.html'},
  {id:'fb-10', t:'統計の基礎（平均・分散・正規分布）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-11', t:'音のデジタル化と標本化定理', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-12', t:'浮動小数点と誤差（けた落ち・情報落ち）', s:'セクション1：基礎理論', p:'fe-basics.html'},
  {id:'cs-1', t:'コンピュータの5大装置とCPUの動き', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
  {id:'cs-2', t:'CPUの性能計算（クロック・CPI・MIPS）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
  {id:'cs-3', t:'パイプライン処理', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
@@ -425,11 +427,14 @@ const ITEMS=[
  {id:'al-12', t:'計算量（オーダー記法）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
  {id:'al-13', t:'ハッシュ法（衝突の解決）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
  {id:'al-14', t:'データサイエンス系問題の読み方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
- {id:'al-15', t:'科目Bセキュリティ4問の解き方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'}
+ {id:'al-15', t:'科目Bセキュリティ4問の解き方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-16', t:'木構造と二分木の走査（先行順・中間順・後行順）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-17', t:'グラフと隣接行列', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-18', t:'文字列処理のトレース', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'}
 ];
 
-const SECS={fb:10,cs:12,nw:11,sec:13,db:10,dv:9,mg:9,st:10,al:15};
-const TOTAL=99;
+const SECS={fb:12,cs:12,nw:11,sec:13,db:10,dv:9,mg:9,st:10,al:18};
+const TOTAL=104;
 
 function counts(){
   const s=loadState();
@@ -448,8 +453,8 @@ function render(){
     document.getElementById('f-'+k).style.width=(c[k]/SECS[k]*100)+'%';
   }
   const msg=document.getElementById('total-msg');
-  if(c.total===TOTAL)msg.textContent='🎉 全99項目クリア！ここからはIPAの公開問題と抜き打ちチェックで維持しよう。';
-  else if(c.total>=80)msg.textContent='あと少し！残りの項目を集中的に。';
+  if(c.total===TOTAL)msg.textContent='🎉 全104項目クリア！ここからはIPAの公開問題と抜き打ちチェックで維持しよう。';
+  else if(c.total>=85)msg.textContent='あと少し！残りの項目を集中的に。';
   else if(c.total>0)msg.textContent='いい調子。チェックは各ページの「できるようになった」と連動しています。';
   renderWeak();
 }

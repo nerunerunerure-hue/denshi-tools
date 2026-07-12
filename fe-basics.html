@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>セクション1：基礎理論｜基本情報 学習ノート</title>
-<meta name="description" content="2進数の基数変換、2の補数、論理演算、情報量、確率・統計など、科目Aの計算問題の土台になる基礎理論10項目をまとめた学習ノート。">
+<meta name="description" content="2進数の基数変換、2の補数、論理演算、情報量、確率・統計、標本化定理、浮動小数点の誤差など、科目Aの計算問題の土台になる基礎理論12項目をまとめた学習ノート。">
 <meta name="theme-color" content="#F1EEE5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,15 +137,15 @@
 <header class="topbar">
   <a href="fe-guide.html">‹ 基本情報ノート</a>
   <span class="crumb">セクション1</span>
-  <span class="prog">できた <b id="done-count">0</b> / 10</span>
+  <span class="prog">できた <b id="done-count">0</b> / 12</span>
 </header>
 
 <div class="hero">
   <div class="eyebrow">SECTION 1</div>
   <h1>🔢 基礎理論</h1>
-  <p class="lead">科目Aの計算問題はほぼ全てここの土台の上に乗っていて、2進数の変換と論理演算はどの回でもほぼ必ず出題される超定番分野です。電卓を使わず手を動かして解ける「型」を10項目で身につけていきましょう。</p>
+  <p class="lead">科目Aの計算問題はほぼ全てここの土台の上に乗っていて、2進数の変換と論理演算はどの回でもほぼ必ず出題される超定番分野です。電卓を使わず手を動かして解ける「型」を12項目で身につけていきましょう。</p>
   <nav class="toc" id="toc">
-    <a href="#fb-1">1. 2進数と基数変換</a><a href="#fb-2">2. 2の補数</a><a href="#fb-3">3. シフト演算</a><a href="#fb-4">4. 論理演算</a><a href="#fb-5">5. ド・モルガンの法則</a><a href="#fb-6">6. 論理回路(MIL記号)</a><a href="#fb-7">7. 情報量の単位</a><a href="#fb-8">8. 文字コード</a><a href="#fb-9">9. 確率と場合の数</a><a href="#fb-10">10. 統計の基礎</a>
+    <a href="#fb-1">1. 2進数と基数変換</a><a href="#fb-2">2. 2の補数</a><a href="#fb-3">3. シフト演算</a><a href="#fb-4">4. 論理演算</a><a href="#fb-5">5. ド・モルガンの法則</a><a href="#fb-6">6. 論理回路(MIL記号)</a><a href="#fb-7">7. 情報量の単位</a><a href="#fb-8">8. 文字コード</a><a href="#fb-9">9. 確率と場合の数</a><a href="#fb-10">10. 統計の基礎</a><a href="#fb-11">11. 標本化定理</a><a href="#fb-12">12. 浮動小数点と誤差</a>
   </nav>
 </div>
 
@@ -474,10 +474,10 @@
     <circle cx="55" cy="255" r="17" fill="#EAE4D5" stroke="#E2DCCD"/><text x="55" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">0</text>
     <text x="55" y="285" text-anchor="middle" font-size="11" fill="#716C61">B</text>
 
-    <line x1="72" y1="205" x2="145" y2="220" stroke="#716C61" stroke-width="1.5"/>
-    <line x1="72" y1="255" x2="145" y2="240" stroke="#716C61" stroke-width="1.5"/>
-    <rect x="150" y="200" width="80" height="55" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
-    <text x="190" y="233" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">AND</text>
+    <line x1="72" y1="205" x2="150" y2="215" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="72" y1="255" x2="150" y2="242" stroke="#716C61" stroke-width="1.5"/>
+    <path d="M150,202 H205 A25.5,25.5 0 0 1 205,253 H150 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="1.5"/>
+    <text x="188" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">AND</text>
 
     <line x1="230" y1="227" x2="290" y2="227" stroke="#716C61" stroke-width="1.5" marker-end="url(#ar6)"/>
     <circle cx="310" cy="227" r="18" fill="#EAE4D5" stroke="#E2DCCD"/><text x="310" y="232" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">0</text>
@@ -486,10 +486,10 @@
     <circle cx="380" cy="310" r="17" fill="#BE5A38"/><text x="380" y="315" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
     <text x="380" y="335" text-anchor="middle" font-size="11" fill="#716C61">C</text>
 
-    <line x1="322" y1="235" x2="420" y2="255" stroke="#716C61" stroke-width="1.5"/>
-    <line x1="380" y1="293" x2="420" y2="270" stroke="#716C61" stroke-width="1.5"/>
-    <rect x="425" y="245" width="80" height="55" rx="8" fill="#E3EAF3" stroke="#4A6FA5"/>
-    <text x="465" y="278" text-anchor="middle" font-size="13" font-weight="700" fill="#4A6FA5">OR</text>
+    <line x1="322" y1="235" x2="431" y2="262" stroke="#716C61" stroke-width="1.5"/>
+    <line x1="380" y1="293" x2="431" y2="283" stroke="#716C61" stroke-width="1.5"/>
+    <path d="M425,247 Q441,272.5 425,298 Q473,290 505,272.5 Q473,255 425,247 Z" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.5"/>
+    <text x="453" y="277" text-anchor="middle" font-size="12.5" font-weight="700" fill="#4A6FA5">OR</text>
 
     <line x1="505" y1="272" x2="565" y2="272" stroke="#716C61" stroke-width="1.5" marker-end="url(#ar6)"/>
     <circle cx="590" cy="272" r="20" fill="#BE5A38"/><text x="590" y="278" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">1</text>
@@ -650,6 +650,181 @@
   <label class="check"><input type="checkbox" data-item="fb-10">代表値・標準偏差・正規分布の基本性質が説明できるようになった</label>
 </section>
 
+<!-- ============ 1-11 音のデジタル化と標本化定理 ============ -->
+<section class="item" id="fb-11">
+  <h2><span class="no">1-11</span>音のデジタル化と標本化定理 — 波を数値の列に変える3ステップ</h2>
+  <p class="goal">🎯 ゴール：標本化・量子化・符号化の3ステップを説明でき、標本化定理と音声データ量の計算ができるようになる。</p>
+  <p>マイクが拾うアナログの音は、なめらかに変化し続ける連続的な波です。これをコンピュータで扱えるデジタルデータに変換するには、①標本化（サンプリング）＝一定の間隔で波の高さを測る、②量子化＝測った高さを決まった段階の数値に丸める、③符号化＝その数値を2進数のビット列にする、という3ステップを踏みます。1秒間に波の高さを測る回数を標本化周波数（単位はHz）、段階をどれだけ細かく分けるかを量子化ビット数と呼びます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="アナログの波を標本化・量子化・符号化でビット列に変換する4コマ図" viewBox="0 0 700 210" width="700">
+    <defs><marker id="fb11a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#BE5A38"/></marker></defs>
+    <text x="350" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">標本化 → 量子化 → 符号化：音をデジタル化する3ステップ</text>
+
+    <text x="90" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">① アナログの波</text>
+    <text x="265" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">② 標本化</text>
+    <text x="440" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">③ 量子化</text>
+    <text x="615" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">④ 符号化</text>
+
+    <rect x="15" y="48" width="150" height="150" rx="10" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <rect x="190" y="48" width="150" height="150" rx="10" fill="#E3EAF3" stroke="#B9CBE6"/>
+    <rect x="365" y="48" width="150" height="150" rx="10" fill="#E7EDDC" stroke="#CFE0B8"/>
+    <rect x="540" y="48" width="150" height="150" rx="10" fill="#F2EFE6" stroke="#E2DCCD"/>
+
+    <line x1="165" y1="130" x2="188" y2="130" stroke="#BE5A38" stroke-width="2" marker-end="url(#fb11a)"/>
+    <text x="177" y="120" text-anchor="middle" font-size="11" fill="#716C61">測る</text>
+    <line x1="340" y1="130" x2="363" y2="130" stroke="#BE5A38" stroke-width="2" marker-end="url(#fb11a)"/>
+    <text x="352" y="120" text-anchor="middle" font-size="11" fill="#716C61">丸める</text>
+    <line x1="515" y1="130" x2="538" y2="130" stroke="#BE5A38" stroke-width="2" marker-end="url(#fb11a)"/>
+    <text x="527" y="120" text-anchor="middle" font-size="11" fill="#716C61">変換</text>
+
+    <path d="M30,135 C45,110 45,90 60,90 C75,90 75,165 90,165 C105,165 105,100 120,100 C135,100 135,125 150,125" fill="none" stroke="#211F1A" stroke-width="2.2"/>
+    <line x1="25" y1="175" x2="155" y2="175" stroke="#716C61" stroke-width="1"/>
+    <text x="90" y="192" text-anchor="middle" font-size="11" fill="#716C61">連続的ななめらかな波</text>
+
+    <path d="M205,135 C220,110 220,90 235,90 C250,90 250,165 265,165 C280,165 280,100 295,100 C310,100 310,125 325,125" fill="none" stroke="#211F1A" stroke-width="1.5" opacity="0.3"/>
+    <line x1="200" y1="175" x2="330" y2="175" stroke="#716C61" stroke-width="1"/>
+    <line x1="205" y1="135" x2="205" y2="175" stroke="#716C61" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="235" y1="90" x2="235" y2="175" stroke="#716C61" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="265" y1="165" x2="265" y2="175" stroke="#716C61" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="295" y1="100" x2="295" y2="175" stroke="#716C61" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="325" y1="125" x2="325" y2="175" stroke="#716C61" stroke-width="1" stroke-dasharray="3 3"/>
+    <circle cx="205" cy="135" r="4.5" fill="#BE5A38"/>
+    <circle cx="235" cy="90" r="4.5" fill="#BE5A38"/>
+    <circle cx="265" cy="165" r="4.5" fill="#BE5A38"/>
+    <circle cx="295" cy="100" r="4.5" fill="#BE5A38"/>
+    <circle cx="325" cy="125" r="4.5" fill="#BE5A38"/>
+    <text x="265" y="192" text-anchor="middle" font-size="11" fill="#716C61">一定間隔で高さを測る</text>
+
+    <line x1="370" y1="85" x2="510" y2="85" stroke="#CFE0B8" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="370" y1="115" x2="510" y2="115" stroke="#CFE0B8" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="370" y1="145" x2="510" y2="145" stroke="#CFE0B8" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="370" y1="175" x2="510" y2="175" stroke="#CFE0B8" stroke-width="1" stroke-dasharray="2 3"/>
+    <path d="M366,145 H395 V85 H425 V175 H455 V115 H514" fill="none" stroke="#4f6b3a" stroke-width="2.5"/>
+    <text x="380" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6b3a">01</text>
+    <text x="410" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6b3a">11</text>
+    <text x="440" y="165" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6b3a">00</text>
+    <text x="484" y="105" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6b3a">10</text>
+    <text x="440" y="192" text-anchor="middle" font-size="11" fill="#716C61">決まった段階に丸める</text>
+
+    <rect x="543" y="88" width="24" height="26" rx="4" fill="#FFFEFB" stroke="#E6C3B0"/><text x="555" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">01</text>
+    <rect x="573" y="88" width="24" height="26" rx="4" fill="#FFFEFB" stroke="#E6C3B0"/><text x="585" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">11</text>
+    <rect x="603" y="88" width="24" height="26" rx="4" fill="#FFFEFB" stroke="#E6C3B0"/><text x="615" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">00</text>
+    <rect x="633" y="88" width="24" height="26" rx="4" fill="#FFFEFB" stroke="#E6C3B0"/><text x="645" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">10</text>
+    <rect x="663" y="88" width="24" height="26" rx="4" fill="#FFFEFB" stroke="#E6C3B0"/><text x="675" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">10</text>
+    <text x="615" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#BE5A38">0111001010</text>
+    <text x="615" y="192" text-anchor="middle" font-size="11" fill="#716C61">0/1のビット列に変換</text>
+  </svg>
+  <figcaption>図1-11　アナログの波を標本化→量子化→符号化でビット列に変換する流れ</figcaption>
+  </figure>
+  <p>ここで重要なのが標本化定理です。元の波を正しく復元するには、最高周波数の2倍以上の周波数で標本化する必要があります（fs ≧ 2×fmax）。人の耳が聞き取れる音の上限はおよそ20kHzといわれるため、音楽CDは余裕を持たせて44.1kHzで標本化されています。電話の音声はもっと低い約8kHzが使われています。データ量は「標本化周波数 × 量子化ビット数 × チャネル数 × 秒数 ÷ 8」という公式でバイト数を求められます。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    最高周波数4kHzの音声を忠実にデジタル化するために必要な、最低限の標本化周波数はいくつですか。
+    <details class="ans"><summary>答えを見る</summary>
+    標本化定理より、最高周波数の2倍以上が必要。4kHz×2＝<b>8kHz</b>。実際の電話の音声もこの近辺の周波数で標本化されています。
+    </details>
+  </div>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    標本化周波数40kHz・量子化16ビット・モノラル（チャネル数1）・10秒間の音声データの量は何バイトですか。
+    <details class="ans"><summary>答えを見る</summary>
+    データ量＝標本化周波数×量子化ビット数×チャネル数×秒数÷8＝40,000×16×1×10÷8＝6,400,000÷8＝<b>800,000バイト（800kバイト）</b>。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>標本化定理は「2倍以上」の一点を暗記しておけば即答できる。</li>
+      <li>ビット⇔バイトの変換は×8・÷8を忘れずに（1-7の復習）。</li>
+      <li>画像のデータ量は「画素数×1画素のビット数」（1-7）、音のデータ量は今回の公式、と対で覚える。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-11">標本化定理と音声データ量の計算ができるようになった</label>
+</section>
+
+<!-- ============ 1-12 浮動小数点と誤差 ============ -->
+<section class="item" id="fb-12">
+  <h2><span class="no">1-12</span>浮動小数点と誤差 — 小数の表し方と4つの誤差</h2>
+  <p class="goal">🎯 ゴール：浮動小数点の3つの箱（符号・指数部・仮数部）の役割を説明でき、誤差4種類を区別できるようになる。</p>
+  <p>コンピュータで小数を表す方式には、小数点の位置を固定する固定小数点と、小数点の位置を動かせる浮動小数点があります。浮動小数点は「±仮数×基数^指数」という形で数値を表し、実際のビット列は「符号」「指数部」「仮数部」の3つの箱に分かれています。指数部が数の大きさ（桁のスケール）を、仮数部が数の精度（有効桁）を受け持つことで、とても大きい数もとても小さい数も同じ形式で表現できるのが強みです。ただしビット数は有限なので、どんな計算にも必ず何らかの誤差がつきまといます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="32ビット浮動小数点の内訳と、けた落ち・情報落ちが起こる仕組みを示す図" viewBox="0 0 700 400" width="700">
+    <defs><marker id="fb12a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#716C61"/></marker></defs>
+    <text x="350" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">32ビット単精度浮動小数点の内訳</text>
+
+    <rect x="40" y="50" width="60" height="50" fill="#F3E5DA" stroke="#BE5A38" stroke-width="1.5"/>
+    <text x="70" y="72" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">符号</text>
+    <text x="70" y="90" text-anchor="middle" font-size="11" fill="#716C61">1bit</text>
+
+    <rect x="100" y="50" width="180" height="50" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.5"/>
+    <text x="190" y="72" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">指数部</text>
+    <text x="190" y="90" text-anchor="middle" font-size="11" fill="#716C61">8bit</text>
+
+    <rect x="280" y="50" width="380" height="50" fill="#E7EDDC" stroke="#4f6b3a" stroke-width="1.5"/>
+    <text x="470" y="72" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">仮数部</text>
+    <text x="470" y="90" text-anchor="middle" font-size="11" fill="#716C61">23bit</text>
+
+    <text x="70" y="118" text-anchor="middle" font-size="11" fill="#BE5A38">＋／−</text>
+    <text x="190" y="118" text-anchor="middle" font-size="11" fill="#4A6FA5">大きさ（桁）を決める</text>
+    <text x="470" y="118" text-anchor="middle" font-size="11" fill="#4f6b3a">精度（有効桁）を決める</text>
+
+    <line x1="20" y1="140" x2="680" y2="140" stroke="#E2DCCD" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="350" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">誤差の例：けた落ちと情報落ち</text>
+
+    <rect x="30" y="175" width="310" height="205" rx="10" fill="#F3E5DA" stroke="#E6C3B0"/>
+    <text x="185" y="198" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">けた落ち（ほぼ等しい数の引き算）</text>
+    <text x="230" y="225" text-anchor="end" font-size="14" fill="#211F1A">0.1234</text>
+    <text x="230" y="250" text-anchor="end" font-size="14" fill="#211F1A">− 0.1233</text>
+    <line x1="165" y1="260" x2="235" y2="260" stroke="#211F1A" stroke-width="1.5"/>
+    <text x="230" y="285" text-anchor="end" font-size="14" font-weight="700" fill="#BE5A38">0.0001</text>
+    <text x="185" y="305" text-anchor="middle" font-size="11" fill="#716C61">有効桁の変化を見える化すると</text>
+    <rect x="66" y="315" width="18" height="20" fill="#F3E5DA" stroke="#BE5A38"/><text x="75" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">1</text>
+    <rect x="86" y="315" width="18" height="20" fill="#F3E5DA" stroke="#BE5A38"/><text x="95" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">2</text>
+    <rect x="106" y="315" width="18" height="20" fill="#F3E5DA" stroke="#BE5A38"/><text x="115" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">3</text>
+    <rect x="126" y="315" width="18" height="20" fill="#F3E5DA" stroke="#BE5A38"/><text x="135" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">4</text>
+    <line x1="150" y1="325" x2="176" y2="325" stroke="#716C61" stroke-width="1.5" marker-end="url(#fb12a)"/>
+    <rect x="182" y="315" width="18" height="20" fill="#EAE4D5" stroke="#E2DCCD"/><text x="191" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">0</text>
+    <rect x="202" y="315" width="18" height="20" fill="#EAE4D5" stroke="#E2DCCD"/><text x="211" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">0</text>
+    <rect x="222" y="315" width="18" height="20" fill="#EAE4D5" stroke="#E2DCCD"/><text x="231" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#716C61">0</text>
+    <rect x="242" y="315" width="18" height="20" fill="#F3E5DA" stroke="#BE5A38"/><text x="251" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">1</text>
+    <text x="185" y="362" text-anchor="middle" font-size="11.5" font-weight="700" fill="#BE5A38">有効桁4桁 → 1桁に激減</text>
+
+    <rect x="360" y="175" width="310" height="205" rx="10" fill="#E3EAF3" stroke="#B9CBE6"/>
+    <text x="515" y="198" text-anchor="middle" font-size="12.5" font-weight="700" fill="#4A6FA5">情報落ち（桁の大きく違う数の足し算）</text>
+    <text x="565" y="225" text-anchor="end" font-size="13" fill="#211F1A">100000000</text>
+    <text x="565" y="250" text-anchor="end" font-size="13" fill="#211F1A">+ 0.0001</text>
+    <line x1="490" y1="260" x2="570" y2="260" stroke="#211F1A" stroke-width="1.5"/>
+    <text x="565" y="285" text-anchor="end" font-size="13" font-weight="700" fill="#4A6FA5">100000000</text>
+    <text x="515" y="305" text-anchor="middle" font-size="11" fill="#716C61">小さい数がどうなるか見える化すると</text>
+    <text x="420" y="333" text-anchor="middle" font-size="12" fill="#716C61" opacity="0.55">0.0001</text>
+    <line x1="450" y1="328" x2="480" y2="328" stroke="#716C61" stroke-width="1.5" marker-end="url(#fb12a)"/>
+    <rect x="485" y="320" width="115" height="26" rx="6" fill="#E3EAF3" stroke="#4A6FA5"/>
+    <text x="542" y="337" text-anchor="middle" font-size="12" font-weight="700" fill="#4A6FA5">変化なし</text>
+    <text x="515" y="362" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4A6FA5">大きい数に小さい数が埋もれて消える</text>
+  </svg>
+  <figcaption>図1-12　32ビット浮動小数点の内訳と、けた落ち・情報落ちが起こる仕組み</figcaption>
+  </figure>
+  <p>誤差には主に4種類があります。</p>
+  <table class="tbl">
+    <tr><th>誤差</th><th>起こる場面</th></tr>
+    <tr><td>丸め誤差</td><td>有限の桁数で表すために四捨五入・切り捨て・切り上げをすること</td></tr>
+    <tr><td>けた落ち</td><td>値がほぼ等しい2つの数を<b>引き算</b>したときに、有効桁数が大きく減ってしまうこと</td></tr>
+    <tr><td>情報落ち</td><td>絶対値の大きい数と小さい数を<b>足し算</b>したときに、小さい方の数が結果にほとんど反映されないこと</td></tr>
+    <tr><td>打切り誤差</td><td>無限に続く計算（無限級数など）を途中で打ち切ることによって生じること</td></tr>
+  </table>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    0.1234−0.1233のように、値がほぼ等しい数値同士の減算をしたとき、有効桁数が大きく減ってしまう現象はどれか。
+    <details class="ans"><summary>答えを見る</summary>
+    0.1234−0.1233＝0.0001。もともと4桁あった有効数字が、引き算によって1桁（1のみ）まで減ってしまっています。これは<b>けた落ち</b>です。似た名前の「情報落ち」は足し算で小さい数が無視される現象なので混同しないよう注意しましょう。丸め誤差は表現段階で生じる誤差で、今回のような演算による桁の消失とは原因が異なります。
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>けた落ち＝引き算、情報落ち＝足し算、と演算の種類とセットで覚える。</li>
+      <li>丸め誤差は「表現するとき」の誤差、打切り誤差は「計算をやめるとき」の誤差、とタイミングで区別する。</li>
+      <li>浮動小数点の3つの箱（符号・指数部・仮数部）の役割を言えるようにしておく。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="fb-12">浮動小数点の構造と誤差4種類を区別できるようになった</label>
+</section>
+
 <!-- ============ 振り返りクイズ ============ -->
 <section class="quiz" id="quiz">
   <h2>🔄 振り返りクイズ（基礎理論）</h2>
@@ -671,6 +846,10 @@
   <details><summary>Q7. 5人から3人を選ぶ組合せ（順序を問わない）は何通りか。</summary><div class="a">5C3＝5!÷(3!×2!)＝120÷12＝<b>10通り</b>。順番を問わないので組合せの公式を使う。 <a class="qref" href="#fb-9">→ 解説 1-9 に戻る</a></div></details>
 
   <details><summary>Q8. サイコロを1回振って、出た目の数×100円もらえるとき、期待値はいくらか。</summary><div class="a">期待値＝(1+2+3+4+5+6)÷6×100＝21÷6×100＝3.5×100＝<b>350円</b>。 <a class="qref" href="#fb-9">→ 解説 1-9 に戻る</a></div></details>
+
+  <details><summary>Q9. 最高20kHzの音を忠実にデジタル化するために必要な最低の標本化周波数はいくつか。</summary><div class="a">標本化定理（2倍以上）より<b>40kHz</b>。CDの44.1kHzはこれを満たしています。 <a class="qref" href="#fb-11">→ 解説 1-11 に戻る</a></div></details>
+
+  <details><summary>Q10. ほぼ等しい2つの値の引き算で有効桁数が大きく減る誤差を何と呼ぶか。</summary><div class="a">正解は<b>けた落ち</b>。足し算で小さい値が結果に反映されないのは「情報落ち」です。 <a class="qref" href="#fb-12">→ 解説 1-12 に戻る</a></div></details>
 
 </section>
 

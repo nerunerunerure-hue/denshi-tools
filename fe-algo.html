@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>セクション9：科目B アルゴリズム対策｜基本情報 学習ノート</title>
-<meta name="description" content="基本情報技術者試験 科目B（擬似言語アルゴリズム）対策。トレース表の書き方・配列・再帰・スタック/キュー・探索/ソート・ハッシュ法を図解と例題で学ぶ。">
+<meta name="description" content="基本情報技術者試験 科目B（擬似言語アルゴリズム）対策。トレース表の書き方・配列・再帰・スタック/キュー・探索/ソート・ハッシュ法・木構造・グラフ・文字列処理を図解と例題で学ぶ。">
 <meta name="theme-color" content="#F1EEE5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,7 +137,7 @@
 <header class="topbar">
   <a href="fe-guide.html">‹ 基本情報ノート</a>
   <span class="crumb">セクション9</span>
-  <span class="prog">できた <b id="done-count">0</b> / 15</span>
+  <span class="prog">できた <b id="done-count">0</b> / 18</span>
 </header>
 
 <div class="hero">
@@ -145,7 +145,7 @@
   <h1>🧩 科目B：アルゴリズムと擬似言語</h1>
   <p class="lead">科目Bは20問中16問が擬似言語のアルゴリズム問題で、配点の8割を占めます。ここは知識の暗記ではなく「手を動かしてトレースする型」を身につける章で、他のセクションよりも実際にコードを1行ずつ追う練習が前提になります。</p>
   <nav class="toc" id="toc">
-    <a href="#al-1">1. 戦い方</a><a href="#al-2">2. 宣言・代入・演算</a><a href="#al-3">3. 制御構造</a><a href="#al-4">4. トレース表</a><a href="#al-5">5. 配列</a><a href="#al-6">6. 関数と引数</a><a href="#al-7">7. 再帰</a><a href="#al-8">8. スタック/キュー</a><a href="#al-9">9. 連結リスト</a><a href="#al-10">10. 探索</a><a href="#al-11">11. ソート</a><a href="#al-12">12. 計算量</a><a href="#al-13">13. ハッシュ法</a><a href="#al-14">14. データサイエンス系</a><a href="#al-15">15. セキュリティ4問</a>
+    <a href="#al-1">1. 戦い方</a><a href="#al-2">2. 宣言・代入・演算</a><a href="#al-3">3. 制御構造</a><a href="#al-4">4. トレース表</a><a href="#al-5">5. 配列</a><a href="#al-6">6. 関数と引数</a><a href="#al-7">7. 再帰</a><a href="#al-8">8. スタック/キュー</a><a href="#al-9">9. 連結リスト</a><a href="#al-10">10. 探索</a><a href="#al-11">11. ソート</a><a href="#al-12">12. 計算量</a><a href="#al-13">13. ハッシュ法</a><a href="#al-14">14. データサイエンス系</a><a href="#al-15">15. セキュリティ4問</a><a href="#al-16">16. 木構造</a><a href="#al-17">17. グラフ</a><a href="#al-18">18. 文字列処理</a>
   </nav>
 </div>
 
@@ -161,7 +161,7 @@
     <tr><td>情報セキュリティ（シナリオ型）</td><td>4問</td><td>2割</td><td>① 先に片づける</td></tr>
     <tr><td>アルゴリズム（擬似言語）</td><td>16問</td><td>8割</td><td>② 時間を多く残す</td></tr>
   </table>
-  <p>セキュリティのシナリオ問題は読解勝負でトレース不要なぶん時間を予測しやすいので、先に解いて残り時間をアルゴリズムに回すのが定番の作戦です。アルゴリズムは1問の中でもトレースに時間がかかる設問とすぐ分かる設問が混ざっているので、詰まったら印だけ付けて次に進み、最後に見直す方が全体の得点は伸びます。</p>
+  <p>セキュリティのシナリオ問題は読解勝負でトレース不要なぶん時間を予測しやすいので、先に解いて残り時間をアルゴリズムに回すのが定番の作戦です。アルゴリズムは1問の中でもトレースに時間がかかる設問とすぐ分かる設問が混ざっているので、詰まったら印だけ付けて次に進み、最後に見直す方が全体の得点は伸びます。なお設問形式は、値を答えるトレース型よりも『プログラムの空欄に入る字句の組合せを選ぶ』穴埋め型が最多です（9-6の例題でこの形式を体験できます）。</p>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
       <li>合格ラインは600/1000点。満点を狙う試験ではないので、分からない1問に時間を溶かさない。</li>
@@ -207,7 +207,7 @@
   s <b>←</b> 0                /* 代入：sに0を入れる */
   goukei(3)             /* 呼出し：goukeiにひきすう3を渡して実行 */</pre>
   <p>演算子には優先順位があり、上から先に計算されます（高→低）。この順番は本文中でも一字一句変えずに使うので、そのまま覚えてください。</p>
-  <div class="formula">( ) 　＞　単項 not, +, −　＞　mod, ×, ÷　＞　+, −　＞　関係(≠ ≦ ≧ &lt; = &gt;)　＞　and　＞　or</div>
+  <div class="formula">( ) と .（メンバ参照）　＞　単項 not, +, −　＞　mod, ×, ÷　＞　+, −　＞　関係(≠ ≦ ≧ &lt; = &gt;)　＞　and　＞　or</div>
   <p><code>mod</code>は割り算の余りを求める演算子です（例：7 mod 2 = 1）。「掛け算・割り算・modが先、足し算・引き算は後、比較はもっと後、and/orは一番後」という順番だけ押さえれば式は読めます。</p>
   <div class="point"><span class="tt">⚡ その他の規約</span>
     <ul>
@@ -410,7 +410,7 @@
     <ul>
       <li>「値が変わる変数だけ」を列にする。ループカウンタや一時変数まで全部書くと逆に混乱する。</li>
       <li>行は「値が変わったとき」だけ増やす。1行ずつ機械的にコードをなぞるのがコツ。</li>
-      <li>本番では省略できる列を見極めて5〜7分/問のペースに近づける。</li>
+      <li>練習では正確さ優先で1問5〜7分かけてよい。省略できる列を見極めながら、本番の平均5分ペースに近づけていく。</li>
     </ul>
   </div>
   <label class="check"><input type="checkbox" data-item="al-4">トレース表を自分の手で書いて変数の変化を追える</label>
@@ -501,6 +501,31 @@ kekka ← nibai(5)</pre>
   <figcaption>図9-6　nibai(5)を呼び出したときの値の流れ（kekkaには10が入る）</figcaption>
   </figure>
   <p><code>nibai(5)</code>が呼ばれると、関数の中では<code>x</code>に5が入り、<code>x × 2 = 10</code>を戻り値として返します。呼び出し側の<code>kekka</code>にはその10が代入されます。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風・穴埋め型）</span>
+    実際の科目Bで最も多い設問形式は『空欄穴埋め（組合せ選択）』です。ここで形式に慣れておきましょう。次の関数<code>saidai</code>は、要素数n（n≧1）の整数型の配列aの最大値を返す（要素番号は1始まり）。<code>［　a　］</code>・<code>［　b　］</code>に入る字句の適切な組合せはどれか。
+    <pre class="code">○ saidai(整数型の配列: a, 整数型: n)
+  整数型: i, m
+  m ← ［ a ］
+  for (i を 2 から n まで 1 ずつ増やす)
+    if ( ［ b ］ )
+      m ← a[i]
+    endif
+  endfor
+  return m</pre>
+    <table class="tbl">
+      <tr><th></th><th>a</th><th>b</th></tr>
+      <tr><td>ア</td><td>a[1]</td><td>a[i] ＞ m</td></tr>
+      <tr><td>イ</td><td>a[1]</td><td>a[i] ＜ m</td></tr>
+      <tr><td>ウ</td><td>0</td><td>a[i] ＞ m</td></tr>
+      <tr><td>エ</td><td>0</td><td>a[i] ＜ m</td></tr>
+    </table>
+    <details class="ans"><summary>答えを見る</summary>
+    <p><b>答えはアです。</b></p>
+    <p>［b］は「暫定の最大値mより大きいときだけmを更新する」という意味なので、<code>a[i] ＞ m</code>が入ります。</p>
+    <p>［a］はmの初期値です。0で初期化してしまうと（ウ・エ）、配列の要素がすべて負の数（例：{−3, −1, −5}）だったとき、どの要素もmの0を超えられず、誤って0を返してしまいます。配列の1番目の値<code>a[1]</code>で初期化しておけば、要素数が1個のときも含めて必ず正しい値からスタートできます。</p>
+    <p>解き方のコツ：まず空欄1つ1つの役割を日本語で言ってみる（「mの初期値」「更新条件」）→選択肢どうしの差分だけを比較する→極端な入力（全部負の配列・要素数1個）を当てはめて誤りの選択肢を消去する、の3ステップです。</p>
+    </details>
+  </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
       <li>引数は「関数に渡す入力」、戻り値（return）は「関数からの出力」。向きを逆にしない。</li>
@@ -642,11 +667,27 @@ kekka ← nibai(5)</pre>
     <p>最終的にスタックに残るのは<b>Aだけ</b>です。</p>
     </details>
   </div>
+  <p>スタックの代表的な応用として、科目Aでも頻出の「逆ポーランド記法（後置記法）」があります。演算子を数の後ろに書く記法で、<code>(A＋B)×C</code> は <code>AB＋C×</code> と表されます。読み方のコツは「数が来たらpush、演算子が来たら2つpopして計算し、結果をpushする」の一文で覚えることです。</p>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    後置記法（逆ポーランド記法）で書かれた式 <code>3 4 + 2 ×</code> の値はいくつか。
+    <details class="ans"><summary>答えを見る</summary>
+    <table class="tbl">
+      <tr><th>読んだ記号</th><th>操作</th><th>スタックの中身（底→top）</th></tr>
+      <tr><td>3</td><td>push(3)</td><td>3</td></tr>
+      <tr><td>4</td><td>push(4)</td><td>3, 4</td></tr>
+      <tr><td>+</td><td>2つpop（4, 3）して3+4=7を計算しpush</td><td>7</td></tr>
+      <tr><td>2</td><td>push(2)</td><td>7, 2</td></tr>
+      <tr><td>×</td><td>2つpop（2, 7）して7×2=14を計算しpush</td><td>14</td></tr>
+    </table>
+    <p>最後にスタックに残った<b>14</b>が式の値です。</p>
+    </details>
+  </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
       <li>スタック＝LIFO（後入れ先出し）＝push/pop。9-7の再帰のコールスタックも実はスタックの一種。</li>
       <li>キュー＝FIFO（先入れ先出し）＝enqueue/dequeue。順番待ちの処理に使われる。</li>
       <li>操作列の問題は、1回ずつ表に書き出して中身を更新するのが一番確実。</li>
+      <li>逆ポーランド記法はスタックの代表応用。『数はpush・演算子は2つpopして計算しpush』の一文で解ける。</li>
     </ul>
   </div>
   <label class="check"><input type="checkbox" data-item="al-8">スタック/キューの操作列から最終的な中身を求められる</label>
@@ -672,7 +713,7 @@ kekka ← nibai(5)</pre>
     <text x="350" y="120" font-size="12.5" font-weight="700" fill="#BE5A38" text-anchor="middle">挿入後：Aの次にXを挿入 → A→X→B→C→未定義</text>
     <rect x="30" y="140" width="90" height="40" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/><text x="75" y="165" font-size="13" text-anchor="middle">A</text>
     <path d="M120,145 C130,120 150,120 165,140" fill="none" stroke="#E2DCCD" stroke-dasharray="4,3"/>
-    <text x="140" y="118" font-size="10" fill="#9a5a22">旧参照（切れる）</text>
+    <text x="48" y="133" font-size="10" fill="#9a5a22">旧参照（切れる）</text>
     <line x1="120" y1="160" x2="168" y2="160" stroke="#BE5A38" marker-end="url(#al9new)"/>
     <text x="140" y="195" font-size="10" fill="#BE5A38">新しい参照</text>
     <rect x="170" y="140" width="90" height="40" fill="#F3E5DA" stroke="#BE5A38" rx="6"/><text x="215" y="165" font-size="13" text-anchor="middle">X（新規）</text>
@@ -795,10 +836,10 @@ kekka ← nibai(5)</pre>
     <text x="515" y="42" font-size="11" text-anchor="middle" fill="#716C61">{5,2,4,1,3}　基準値(ピボット)=3</text>
     <rect x="360" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="385" y="75" font-size="12" text-anchor="middle">5</text>
     <rect x="415" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="440" y="75" font-size="12" text-anchor="middle">2</text>
-    <rect x="470" y="55" width="50" height="30" fill="#F3E5DA" stroke="#BE5A38"/><text x="495" y="75" font-size="12" text-anchor="middle">4</text>
+    <rect x="470" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="495" y="75" font-size="12" text-anchor="middle">4</text>
     <rect x="525" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="550" y="75" font-size="12" text-anchor="middle">1</text>
-    <rect x="580" y="55" width="50" height="30" fill="#F2EFE6" stroke="#E2DCCD"/><text x="605" y="75" font-size="12" text-anchor="middle">3</text>
-    <text x="515" y="45" font-size="10" text-anchor="middle" fill="#BE5A38">↑ピボットの位置は例として3番目とする</text>
+    <rect x="580" y="55" width="50" height="30" fill="#F3E5DA" stroke="#BE5A38"/><text x="605" y="75" font-size="12" text-anchor="middle">3</text>
+    <text x="605" y="103" font-size="10.5" text-anchor="middle" fill="#BE5A38">↑末尾の3をピボットに選ぶ</text>
     <line x1="515" y1="95" x2="515" y2="120" stroke="#716C61" marker-end="url(#al11arrow)"/>
     <defs><marker id="al11arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#716C61"/></marker></defs>
     <rect x="400" y="130" width="90" height="34" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
@@ -840,7 +881,7 @@ kekka ← nibai(5)</pre>
     <polyline points="120,326.5 173,326.5 227,326.5 280,326.5 333,326.5 387,326.5 440,326.5 493,326.5 547,326.5 600,326.5" fill="none" stroke="#716C61" stroke-width="2"/>
     <text x="605" y="330" font-size="11" fill="#716C61">O(1)</text>
     <polyline points="120,340 173,337.3 227,335.7 280,334.6 333,333.7 387,333.0 440,332.4 493,331.9 547,331.4 600,331.0" fill="none" stroke="#4f6b3a" stroke-width="2"/>
-    <text x="605" y="322" font-size="11" fill="#4f6b3a">O(log n)</text>
+    <text x="615" y="342" font-size="11" fill="#4f6b3a">O(log n)</text>
     <polyline points="120,337.3 173,334.6 227,331.9 280,329.2 333,326.5 387,323.8 440,321.1 493,318.4 547,315.7 600,313.0" fill="none" stroke="#4A6FA5" stroke-width="2"/>
     <text x="605" y="308" font-size="11" fill="#4A6FA5">O(n)</text>
     <polyline points="120,340 173,334.6 227,327.2 280,318.4 333,308.7 387,298.1 440,286.9 493,275.2 547,263.0 600,250.3" fill="none" stroke="#9a5a22" stroke-width="2"/>
@@ -938,6 +979,258 @@ kekka ← nibai(5)</pre>
   <label class="check"><input type="checkbox" data-item="al-15">科目Bセキュリティ4問のシナリオ型の解き方を説明できる</label>
 </section>
 
+<!-- ============ 9-16 ============ -->
+<section class="item" id="al-16">
+  <h2><span class="no">9-16</span>木構造と二分木 — 先行順・中間順・後行順</h2>
+  <p class="goal">🎯 ゴール：木構造の基本用語と、二分探索木を3つの順番（先行順・中間順・後行順）で走査したときの結果の違いを理解する。</p>
+  <p>ここからの3項目は、出題範囲に明記されている追加パターンです。9-15までの『型』があれば読めるので、仕上げとして押さえましょう。</p>
+  <p>木構造とは、データを階層状につないだ構造です。一番上の要素を<b>根（root）</b>、つながっている各要素を<b>節（node）</b>、それ以上子を持たない末端の要素を<b>葉（leaf）</b>と呼び、上下でつながる関係を親子と呼びます。特に子が最大2つまでの木を<b>二分木</b>、さらに「左の子孫＜親＜右の子孫」となるように値を配置した二分木を<b>二分探索木</b>と呼びます。</p>
+  <p>木をたどる（走査する）方法は3種類あり、名前は「親をいつ訪れるか」で決まります。先行順は親→左→右、中間順は左→親→右、後行順は左→右→親の順にたどります。この中で最も重要なのが「<b>二分探索木を中間順で走査すると、値が必ず昇順に並ぶ</b>」という性質で、科目Bで最頻出のポイントです。</p>
+  <p>関連してヒープという構造も知っておきましょう。ヒープは「親が常に子より大きい（または常に子より小さい）」というルールを持つ完全二分木で、最大値（または最小値）が必ず根にあるため、一番大きい（小さい）値をすぐに取り出せます。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="二分探索木の例と3種類の走査結果（先行順・中間順・後行順）" viewBox="0 0 700 345" width="700">
+    <text x="350" y="20" font-size="12.5" font-weight="700" fill="#BE5A38" text-anchor="middle">二分探索木の例（左の子孫＜親＜右の子孫）</text>
+    <!-- edges -->
+    <line x1="350" y1="55" x2="230" y2="140" stroke="#716C61"/>
+    <line x1="350" y1="55" x2="470" y2="140" stroke="#716C61"/>
+    <line x1="230" y1="140" x2="150" y2="225" stroke="#716C61"/>
+    <line x1="230" y1="140" x2="310" y2="225" stroke="#716C61"/>
+    <line x1="470" y1="140" x2="560" y2="225" stroke="#716C61"/>
+    <!-- nodes -->
+    <circle cx="350" cy="55" r="24" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2"/>
+    <text x="350" y="61" font-size="14" font-weight="700" text-anchor="middle" fill="#211F1A">8</text>
+    <text x="350" y="34" font-size="10.5" text-anchor="middle" fill="#716C61">根(root)</text>
+    <circle cx="230" cy="140" r="22" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.6"/>
+    <text x="230" y="146" font-size="13" text-anchor="middle" fill="#211F1A">3</text>
+    <text x="230" y="119" font-size="10.5" text-anchor="middle" fill="#716C61">節(node)</text>
+    <circle cx="470" cy="140" r="22" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.6"/>
+    <text x="470" y="146" font-size="13" text-anchor="middle" fill="#211F1A">10</text>
+    <text x="470" y="119" font-size="10.5" text-anchor="middle" fill="#716C61">節(node)</text>
+    <circle cx="150" cy="225" r="20" fill="#E7EDDC" stroke="#4f6b3a" stroke-width="1.4"/>
+    <text x="150" y="231" font-size="12.5" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="150" y="261" font-size="10.5" text-anchor="middle" fill="#716C61">葉(leaf)</text>
+    <circle cx="310" cy="225" r="20" fill="#E7EDDC" stroke="#4f6b3a" stroke-width="1.4"/>
+    <text x="310" y="231" font-size="12.5" text-anchor="middle" fill="#211F1A">6</text>
+    <text x="310" y="261" font-size="10.5" text-anchor="middle" fill="#716C61">葉(leaf)</text>
+    <circle cx="560" cy="225" r="20" fill="#E7EDDC" stroke="#4f6b3a" stroke-width="1.4"/>
+    <text x="560" y="231" font-size="12.5" text-anchor="middle" fill="#211F1A">14</text>
+    <text x="560" y="261" font-size="10.5" text-anchor="middle" fill="#716C61">葉(leaf)</text>
+    <!-- traversal results -->
+    <rect x="30" y="278" width="640" height="60" fill="#FFFEFB" stroke="#E2DCCD" rx="8"/>
+    <text x="45" y="296" font-size="11" fill="#211F1A"><tspan font-weight="700" fill="#BE5A38">先行順</tspan>（親→左→右）：8, 3, 1, 6, 10, 14</text>
+    <text x="45" y="314" font-size="11" fill="#211F1A"><tspan font-weight="700" fill="#4f6b3a">中間順</tspan>（左→親→右）：1, 3, 6, 8, 10, 14　※必ず昇順になる</text>
+    <text x="45" y="332" font-size="11" fill="#211F1A"><tspan font-weight="700" fill="#9a5a22">後行順</tspan>（左→右→親）：1, 6, 3, 14, 10, 8</text>
+  </svg>
+  <figcaption>図9-16　二分探索木の例と3種類の走査結果</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    上の図の二分探索木を中間順で走査したとき、出力される値の順番はどれか。
+    <details class="ans"><summary>答えを見る</summary>
+    <p><b>答えは 1 → 3 → 6 → 8 → 10 → 14</b>です。中間順（左→親→右）は「左の子孫を全部訪れてから親、その後右の子孫」という順なので、二分探索木の性質どおり必ず昇順になります。</p>
+    <p>参考までに、先行順（親→左→右）でたどると<b>8, 3, 1, 6, 10, 14</b>、後行順（左→右→親）でたどると<b>1, 6, 3, 14, 10, 8</b>になります。同じ木でも訪れる順番が変わると出力順が変わることを確認しておきましょう。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>走査の名前は「親をいつ訪れるか」で決まる：先行順＝先に親、中間順＝真ん中で親、後行順＝後で親。</li>
+      <li>「二分探索木を中間順で走査すると昇順になる」は即答できるレベルで覚えておく。</li>
+      <li>後行順（左→右→親）は、式を木の形で表した「式の木」を9-8の逆ポーランド記法へ変換するときのたどり方でもある。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-16">二分探索木を3つの走査順でたどれるようになった</label>
+</section>
+
+<!-- ============ 9-17 ============ -->
+<section class="item" id="al-17">
+  <h2><span class="no">9-17</span>グラフと隣接行列 — つながりを表として持つ</h2>
+  <p class="goal">🎯 ゴール：グラフの基本用語（節点・辺・無向/有向）を知り、隣接行列への変換ができるようになる。</p>
+  <p>グラフとは、いくつかの点（<b>節点・ノード</b>）を線（<b>辺・エッジ</b>）でつないだ構造です。路線図や友達関係のネットワークなどが身近な例です。辺に向きがないものを<b>無向グラフ</b>、向きがあるものを<b>有向グラフ</b>と呼びます。</p>
+  <p>プログラムでグラフを扱うときの定番は、二次元配列で表す<b>隣接行列</b>です。節点iと節点jの間に辺があれば<code>m[i,j] ＝ 1</code>、なければ0とします。無向グラフの場合、iからjへの辺とjからiへの辺は同じ1本なので<code>m[i,j] ＝ m[j,i]</code>となり、行列は対角線に対して対称になります。2024年公開問題 問3では「辺の一覧から隣接行列へ変換する」処理が出題されています。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="4節点グラフと4×4隣接行列の対応関係" viewBox="0 0 700 270" width="700">
+    <text x="350" y="20" font-size="12.5" font-weight="700" fill="#BE5A38" text-anchor="middle">グラフ（辺：1-2, 1-3, 2-3, 3-4）と隣接行列の対応</text>
+    <!-- graph edges -->
+    <line x1="90" y1="60" x2="230" y2="60" stroke="#716C61" stroke-width="1.6"/>
+    <line x1="90" y1="60" x2="90" y2="180" stroke="#716C61" stroke-width="1.6"/>
+    <line x1="230" y1="60" x2="90" y2="180" stroke="#BE5A38" stroke-width="1.8"/>
+    <line x1="90" y1="180" x2="230" y2="180" stroke="#716C61" stroke-width="1.6"/>
+    <text x="160" y="108" font-size="10.5" fill="#BE5A38" text-anchor="middle">辺2-3</text>
+    <!-- graph nodes -->
+    <circle cx="90" cy="60" r="20" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.6"/>
+    <text x="90" y="66" font-size="13" text-anchor="middle" fill="#211F1A">1</text>
+    <circle cx="230" cy="60" r="20" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.6"/>
+    <text x="230" y="66" font-size="13" text-anchor="middle" fill="#211F1A">2</text>
+    <circle cx="90" cy="180" r="20" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.6"/>
+    <text x="90" y="186" font-size="13" text-anchor="middle" fill="#211F1A">3</text>
+    <circle cx="230" cy="180" r="20" fill="#E3EAF3" stroke="#4A6FA5" stroke-width="1.6"/>
+    <text x="230" y="186" font-size="13" text-anchor="middle" fill="#211F1A">4</text>
+    <!-- matrix grid -->
+    <rect x="400" y="98" width="232" height="128" fill="#FFFEFB" stroke="#E2DCCD"/>
+    <line x1="458" y1="98" x2="458" y2="226" stroke="#E2DCCD"/>
+    <line x1="516" y1="98" x2="516" y2="226" stroke="#E2DCCD"/>
+    <line x1="574" y1="98" x2="574" y2="226" stroke="#E2DCCD"/>
+    <line x1="400" y1="130" x2="632" y2="130" stroke="#E2DCCD"/>
+    <line x1="400" y1="162" x2="632" y2="162" stroke="#E2DCCD"/>
+    <line x1="400" y1="194" x2="632" y2="194" stroke="#E2DCCD"/>
+    <text x="385" y="90" font-size="11" text-anchor="middle" fill="#716C61">i＼j</text>
+    <text x="429" y="85" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">1</text>
+    <text x="487" y="85" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">2</text>
+    <text x="545" y="85" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">3</text>
+    <text x="603" y="85" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">4</text>
+    <text x="385" y="118" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">1</text>
+    <text x="385" y="150" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">2</text>
+    <text x="385" y="182" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">3</text>
+    <text x="385" y="214" font-size="11" font-weight="700" text-anchor="middle" fill="#BE5A38">4</text>
+    <!-- highlighted cells m[2,3] and m[3,2] -->
+    <rect x="516" y="130" width="58" height="32" fill="#F3E5DA" stroke="#BE5A38" stroke-width="1.6"/>
+    <rect x="458" y="162" width="58" height="32" fill="#F3E5DA" stroke="#BE5A38" stroke-width="1.6"/>
+    <!-- values -->
+    <text x="429" y="118" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="487" y="118" font-size="12" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="545" y="118" font-size="12" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="603" y="118" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="429" y="150" font-size="12" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="487" y="150" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="545" y="150" font-size="12" text-anchor="middle" font-weight="700" fill="#BE5A38">1</text>
+    <text x="603" y="150" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="429" y="182" font-size="12" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="487" y="182" font-size="12" text-anchor="middle" font-weight="700" fill="#BE5A38">1</text>
+    <text x="545" y="182" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="603" y="182" font-size="12" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="429" y="214" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="487" y="214" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="545" y="214" font-size="12" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="603" y="214" font-size="12" text-anchor="middle" fill="#211F1A">0</text>
+    <!-- dashed connectors from edge2-3 to matrix cells -->
+    <path d="M160,120 C260,120 330,146 458,178" fill="none" stroke="#BE5A38" stroke-dasharray="3,2"/>
+    <path d="M160,120 C260,110 340,130 516,146" fill="none" stroke="#BE5A38" stroke-dasharray="3,2"/>
+    <text x="350" y="248" font-size="11" text-anchor="middle" fill="#716C61">1本の辺（2-3）が行列の2マス m[2,3] と m[3,2] に対応する</text>
+    <text x="350" y="264" font-size="11" text-anchor="middle" fill="#716C61">無向グラフなので m[i,j] ＝ m[j,i]（対角線に対して対称）</text>
+  </svg>
+  <figcaption>図9-17　4節点グラフと隣接行列の対応（1本の辺＝行列の2マス）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風・穴埋め型）</span>
+    次の手続きは、辺の一覧（edge配列）から隣接行列mを作成するものである。<code>edge[i,1]</code>と<code>edge[i,2]</code>はi本目の辺の両端の節点番号、mはすべて0で初期化されたn×nの二次元配列とする。<code>［　a　］</code>・<code>［　b　］</code>に入る字句の適切な組合せはどれか。
+    <pre class="code">/* edge[i,1] と edge[i,2] は i本目の辺の両端の節点番号 */
+/* m はすべて0で初期化された n×n の二次元配列 */
+整数型: i
+for (i を 1 から 辺の本数 まで 1 ずつ増やす)
+  m[edge[i,1], edge[i,2]] ← 1
+  m[［ a ］, ［ b ］] ← 1   /* 無向グラフなので逆向きも1にする */
+endfor</pre>
+    <table class="tbl">
+      <tr><th></th><th>a</th><th>b</th></tr>
+      <tr><td>ア</td><td>edge[i,1]</td><td>edge[i,2]</td></tr>
+      <tr><td>イ</td><td>edge[i,2]</td><td>edge[i,1]</td></tr>
+      <tr><td>ウ</td><td>edge[i,1]</td><td>edge[i,1]</td></tr>
+      <tr><td>エ</td><td>edge[i,2]</td><td>edge[i,2]</td></tr>
+    </table>
+    <details class="ans"><summary>答えを見る</summary>
+    <p><b>答えはイです。</b></p>
+    <p>1行目の<code>m[edge[i,1], edge[i,2]] ← 1</code>で片方向（例：辺{2,3}ならm[2,3]）を1にしているので、2行目のコメントにある「逆向きも1にする」を実現するには、行と列を入れ替えた<code>m[edge[i,2], edge[i,1]]</code>（イ）が必要です。</p>
+    <p>アは1行目とまったく同じマスをもう一度1にするだけで、逆向きのマスが更新されません。ウ・エは<code>edge[i,1], edge[i,1]</code>や<code>edge[i,2], edge[i,2]</code>のように行と列が同じ節点番号になり、対角線上（自分自身への辺）を立ててしまう誤りです。</p>
+    <p>解き方のコツは、まず選択肢の差分（どの添字がedge[i,1]かedge[i,2]か）だけを比較し、具体的な辺（例：節点2と3を結ぶ辺）を1つ当てはめて、どの選択肢が「m[2,3]とm[3,2]の両方を1にする」動きになるかを消去法で絞り込むことです。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li>無向グラフの隣接行列は対角線に対して対称（m[i,j]＝m[j,i]）になる。</li>
+      <li>有向グラフの場合は「行＝辺の出発点、列＝辺の到着点」で、対称にはならない。</li>
+      <li>見た目は新しくても、正体は9-5で学んだ二次元配列の読み書きそのもの。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-17">辺の一覧と隣接行列を相互に変換できるようになった</label>
+</section>
+
+<!-- ============ 9-18 ============ -->
+<section class="item" id="al-18">
+  <h2><span class="no">9-18</span>文字列処理 — 1文字ずつの配列として攻める</h2>
+  <p class="goal">🎯 ゴール：文字列問題の定番パターン（1文字ずつ取り出して調べる・変換する）を、配列トレースの応用として読み解けるようになる。</p>
+  <p>擬似言語の文字列問題は、ほとんどが「文字列を1文字ずつ取り出して調べる・変換する」という形で出題されます。2024年問2では2進数の文字列を10進数に変換する処理、2025年問4ではパターンマッチ（文字列の中から一致する位置を探す処理）が出題されました。どちらも9-5で学んだ配列のトレースと同じ型で読み解けます。定番の型は「結果を入れる変数を初期化する→先頭から1文字ずつループする→文字の中身に応じて結果を更新する」という3ステップです。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="文字列s=1011を1文字ずつ処理してvが0から11まで変化する様子" viewBox="0 0 700 235" width="700">
+    <defs>
+      <marker id="al18a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#716C61"/></marker>
+    </defs>
+    <text x="350" y="16" font-size="12.5" font-weight="700" fill="#BE5A38" text-anchor="middle">s ＝ "1011" を1文字ずつ処理して v を更新する（v ← v×2＋その桁の数）</text>
+    <!-- string s boxes -->
+    <text x="112" y="30" font-size="10.5" text-anchor="middle" fill="#4A6FA5">s[1]</text>
+    <rect x="87" y="34" width="50" height="38" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
+    <text x="112" y="59" font-size="14" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="267" y="30" font-size="10.5" text-anchor="middle" fill="#4A6FA5">s[2]</text>
+    <rect x="242" y="34" width="50" height="38" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
+    <text x="267" y="59" font-size="14" text-anchor="middle" fill="#211F1A">0</text>
+    <text x="422" y="30" font-size="10.5" text-anchor="middle" fill="#4A6FA5">s[3]</text>
+    <rect x="397" y="34" width="50" height="38" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
+    <text x="422" y="59" font-size="14" text-anchor="middle" fill="#211F1A">1</text>
+    <text x="577" y="30" font-size="10.5" text-anchor="middle" fill="#4A6FA5">s[4]</text>
+    <rect x="552" y="34" width="50" height="38" fill="#E3EAF3" stroke="#4A6FA5" rx="6"/>
+    <text x="577" y="59" font-size="14" text-anchor="middle" fill="#211F1A">1</text>
+    <!-- dashed connectors down to formula row -->
+    <line x1="112" y1="72" x2="112" y2="118" stroke="#E2DCCD" stroke-dasharray="3,2"/>
+    <line x1="267" y1="72" x2="267" y2="118" stroke="#E2DCCD" stroke-dasharray="3,2"/>
+    <line x1="422" y1="72" x2="422" y2="118" stroke="#E2DCCD" stroke-dasharray="3,2"/>
+    <line x1="577" y1="72" x2="577" y2="118" stroke="#E2DCCD" stroke-dasharray="3,2"/>
+    <!-- v chain -->
+    <rect x="10" y="140" width="50" height="40" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="35" y="164" font-size="13" text-anchor="middle" fill="#211F1A">v=0</text>
+    <rect x="165" y="140" width="50" height="40" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="190" y="164" font-size="13" text-anchor="middle" fill="#211F1A">v=1</text>
+    <rect x="320" y="140" width="50" height="40" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="345" y="164" font-size="13" text-anchor="middle" fill="#211F1A">v=2</text>
+    <rect x="475" y="140" width="50" height="40" rx="8" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="500" y="164" font-size="13" text-anchor="middle" fill="#211F1A">v=5</text>
+    <rect x="630" y="140" width="50" height="40" rx="8" fill="#F3E5DA" stroke="#BE5A38"/>
+    <text x="655" y="164" font-size="13" font-weight="700" text-anchor="middle" fill="#211F1A">v=11</text>
+    <!-- arrows between v boxes -->
+    <line x1="60" y1="160" x2="163" y2="160" stroke="#716C61" marker-end="url(#al18a)"/>
+    <line x1="215" y1="160" x2="318" y2="160" stroke="#716C61" marker-end="url(#al18a)"/>
+    <line x1="370" y1="160" x2="473" y2="160" stroke="#716C61" marker-end="url(#al18a)"/>
+    <line x1="525" y1="160" x2="628" y2="160" stroke="#716C61" marker-end="url(#al18a)"/>
+    <!-- formulas below arrows -->
+    <text x="112" y="198" font-size="10.5" text-anchor="middle" fill="#716C61">0×2+1=1</text>
+    <text x="267" y="198" font-size="10.5" text-anchor="middle" fill="#716C61">1×2+0=2</text>
+    <text x="422" y="198" font-size="10.5" text-anchor="middle" fill="#716C61">2×2+1=5</text>
+    <text x="577" y="198" font-size="10.5" text-anchor="middle" fill="#716C61">5×2+1=11</text>
+    <text x="350" y="222" font-size="11" text-anchor="middle" fill="#716C61">結果変数vを初期化→先頭から1文字ずつ見てvを更新、を繰り返す型</text>
+  </svg>
+  <figcaption>図9-18　文字列s="1011"を1文字ずつ処理してvが変化する様子（2進→10進変換）</figcaption>
+  </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    次の手続き<code>henkan(s)</code>は、"0"と"1"だけからなる文字列sを10進数の整数に変換して返す（<code>s[i]</code>でi文字目を参照、1始まり。<code>len</code>はsの文字数とする）。<code>henkan("1011")</code>の戻り値はいくつか。
+    <pre class="code">○ henkan(文字列型: s)  /* sは"0"と"1"だけからなる。s[i]でi文字目を参照（1始まり）、
+                          len は s の文字数とする */
+  整数型: i, v
+  v ← 0
+  for (i を 1 から len まで 1 ずつ増やす)
+    if (s[i] が "1" と等しい)
+      v ← v × 2 + 1
+    else
+      v ← v × 2
+    endif
+  endfor
+  return v</pre>
+    <details class="ans"><summary>答えを見る</summary>
+    <table class="tbl">
+      <tr><th>i</th><th>s[i]</th><th>処理</th><th>v</th></tr>
+      <tr><td>1</td><td>"1"</td><td>v ← 0×2+1</td><td>1</td></tr>
+      <tr><td>2</td><td>"0"</td><td>v ← 1×2</td><td>2</td></tr>
+      <tr><td>3</td><td>"1"</td><td>v ← 2×2+1</td><td>5</td></tr>
+      <tr><td>4</td><td>"1"</td><td>v ← 5×2+1</td><td>11</td></tr>
+    </table>
+    <p><b>戻り値は11</b>です。実はこれ、1-1（fe-basics）で学んだ2進→10進変換を、プログラムの繰返しでやっているだけです。</p>
+    </details>
+  </div>
+  <div class="point"><span class="tt">⚡ ポイント</span>
+    <ul>
+      <li><code>s[i]</code>・文字数・添字が1始まりかどうかは、まず問題文の定義を確認する。</li>
+      <li>「v ← v×2＋数字」で1文字ずつ処理するのは、2進数→10進数変換の定番イディオム。</li>
+      <li>パターンマッチ（文字列の一致探し）は「開始位置を1つずつずらす外側ループ」＋「1文字ずつ比較する内側ループ」の二重ループが基本の型。</li>
+    </ul>
+  </div>
+  <label class="check"><input type="checkbox" data-item="al-18">文字列を1文字ずつトレースして変換・探索できるようになった</label>
+</section>
+
 <!-- ============ 振り返りクイズ ============ -->
 <section class="quiz" id="quiz">
   <h2>🔄 振り返りクイズ（科目B：アルゴリズムと擬似言語）</h2>
@@ -981,7 +1274,21 @@ endwhile</pre></summary>
 
   <details><summary>Q8. O(n²)、O(log n)、O(n)、O(n log n) を、nが大きくなったときの処理量が小さい順に並べなさい。</summary>
   <div class="a"><b>O(log n) ＜ O(n) ＜ O(n log n) ＜ O(n²)</b>。二分探索がO(log n)、バブルソートがO(n²)にあたる。 <a class="qref" href="#al-12">→ 解説 9-12 に戻る</a></div></details>
+
+  <details><summary>Q9. 二分探索木を中間順（左→親→右）で走査すると、値はどんな順番で取り出されるか。</summary>
+  <div class="a">二分探索木は「左の子孫＜親＜右の子孫」の順に値が並ぶので、左→親→右の中間順でたどると、値は必ず<b>昇順（小さい順）</b>に取り出される。「二分探索木＋中間順＝昇順」は即答できるようにしておきたいペア。 <a class="qref" href="#al-16">→ 解説 9-16 に戻る</a></div></details>
+
+  <details><summary>Q10. 無向グラフを隣接行列で表したとき、行列に必ず現れる特徴は何か。</summary>
+  <div class="a">1本の辺は行列の2マス（m[i,j]とm[j,i]）に対応するため、無向グラフの隣接行列は<b>対角線に対して対称（m[i,j]＝m[j,i]）</b>になる。 <a class="qref" href="#al-17">→ 解説 9-17 に戻る</a></div></details>
+
+  <details><summary>Q11. 逆ポーランド記法（後置記法）の式「5 3 − 4 ×」の値はいくつか。</summary>
+  <div class="a">数はpush、演算子が来たら2つpopして計算しpushする。「5 3 −」＝5−3＝2をpush、続けて「2 4 ×」＝2×4＝<b>8</b>。 <a class="qref" href="#al-8">→ 解説 9-8 に戻る</a></div></details>
+
+  <details><summary>Q12. 文字列 "1101" を先頭から1文字ずつ「v ← v×2＋その桁の数」で処理すると、最終的なvはいくつか。</summary>
+  <div class="a">v=0→(1文字目"1")v=1→(2文字目"1")v=3→(3文字目"0")v=6→(4文字目"1")v=<b>13</b>。 <a class="qref" href="#al-18">→ 解説 9-18 に戻る</a></div></details>
 </section>
+
+</main>
 
 <nav class="pager">
   <a href="fe-strategy.html"><span class="dir">‹ もどる</span>セクション8：ストラテジ</a>
