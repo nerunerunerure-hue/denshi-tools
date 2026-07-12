@@ -104,6 +104,26 @@
   .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
   .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
   svg text{font-family:var(--sans)}
+  /* --- 読みやすさ改善（スマホ図解・クイズ復習リンク・目次ボタン） --- */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
 </style>
 </head>
 <body>
@@ -119,7 +139,7 @@
   <div class="eyebrow">SECTION 2</div>
   <h1>📻 半導体・アナログ回路</h1>
   <p class="lead">主役はダイオードとトランジスタ。「一方向にしか流さない」「小さな信号で大きな電流を操る」——この2つの性質から、整流も増幅もぜんぶつながっていきます。</p>
-  <nav class="toc">
+  <nav class="toc" id="toc">
     <a href="#s2-1">1. 半導体</a><a href="#s2-2">2. ダイオードの性質</a><a href="#s2-3">3. 整流回路</a><a href="#s2-4">4. 静特性</a><a href="#s2-5">5. 増幅度</a><a href="#s2-6">6. 増幅とスイッチング</a><a href="#s2-7">7. オペアンプ</a><a href="#s2-8">8. 基本増幅回路</a><a href="#s2-9">9. 増幅回路の製作</a><a href="#s2-10">10. オシロで実測</a>
   </nav>
 </div>
@@ -132,7 +152,7 @@
   <p class="goal">🎯 ゴール：半導体を「導体・絶縁体との違い」と「N型・P型」で説明できる</p>
   <p>物質は電気の流れやすさで3つに分けられます。半導体はその中間で、<b>不純物をほんの少し混ぜる（ドーピング）ことで流れやすさを自由に設計できる</b>のが最大の特徴。だからこそ「電子部品の材料」になります。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 345" width="700">
+  <svg role="img" aria-label="図2-1 半導体は導体と絶縁体の中間。不純物の種類でN型（電子）とP型（ホール）を作り分ける" viewBox="0 0 700 345" width="700">
     <g text-anchor="middle">
       <rect x="40" y="36" width="195" height="74" rx="10" fill="#E7EDDC" stroke="#D5DFC6"/>
       <text x="137" y="62" font-size="13.5" font-weight="700" fill="#4f6b3a">導体</text>
@@ -193,7 +213,7 @@
   <p class="goal">🎯 ゴール：整流性（一方向にしか流さない）を図と数字で説明できる</p>
   <p>ダイオードはPN接合の2端子素子。<b>アノード→カソードの向き（順方向）だけ電流を通し、逆向き（逆方向）はブロック</b>します。水道の逆止弁のイメージです。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 285" width="700">
+  <svg role="img" aria-label="図2-2 順方向なら点灯、逆方向なら消灯。ダイオードの向き＝三角の向き＝電流の向き" viewBox="0 0 700 285" width="700">
     <g text-anchor="middle">
       <text x="180" y="30" font-size="13.5" font-weight="700" fill="#4f6b3a">順方向 → 流れる</text>
       <text x="528" y="30" font-size="13.5" font-weight="700" fill="#b23a2e">逆方向 → 流れない</text>
@@ -262,7 +282,7 @@
   <p class="goal">🎯 ゴール：半波整流と全波整流の違いを波形で説明できる</p>
   <p>コンセントの電気は交流（＋と−が交互に入れかわる）。電子回路は直流で動くので、<b>ダイオードで「向きをそろえる」＝整流</b>が必要です。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 395" width="700">
+  <svg role="img" aria-label="図2-3 半波整流は山が半分、全波整流（ブリッジ）はマイナスの山も上向きに折り返す" viewBox="0 0 700 395" width="700">
     <!-- 半波 -->
     <text x="30" y="28" font-size="13.5" font-weight="700" fill="#211F1A">半波整流（ダイオード1本）— マイナス側は捨てる</text>
     <circle cx="70" cy="105" r="20" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
@@ -317,7 +337,7 @@
   </figure>
   <p>整流しただけの出力はまだ「脈打つ直流」。<b>平滑コンデンサ</b>が山と山の間を埋めて、なめらかな直流に近づけます。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 235" width="700">
+  <svg role="img" aria-label="図2-4 平滑コンデンサの働き。残った小さな波を「リプル」と呼ぶ" viewBox="0 0 700 235" width="700">
     <rect x="30" y="70" width="90" height="46" rx="9" fill="#F2EFE6" stroke="#716C61"/>
     <text x="75" y="90" font-size="11" text-anchor="middle" fill="#211F1A">全波整流の</text>
     <text x="75" y="106" font-size="11" text-anchor="middle" fill="#211F1A">出力</text>
@@ -359,7 +379,7 @@
   <p class="goal">🎯 ゴール：V-I特性グラフの読み方がわかる</p>
   <p>静特性とは、素子に<b>電圧をかけたとき電流がどう流れるかの関係（V-I特性）</b>をグラフにしたもの。素子の「性格表」です。抵抗なら直線（オームの法則）ですが、ダイオードはこんな曲線になります。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 330" width="700">
+  <svg role="img" aria-label="図2-5 ダイオードの静特性（V-I特性）。直線にならない＝オームの法則に従わない素子" viewBox="0 0 700 330" width="700">
     <line x1="80" y1="170" x2="660" y2="170" stroke="#716C61" stroke-width="2"/>
     <line x1="390" y1="40" x2="390" y2="300" stroke="#716C61" stroke-width="2"/>
     <path d="M660,170 l-12,-5 v10 z" fill="#716C61"/>
@@ -401,7 +421,7 @@
   <h2><span class="no">2-5</span>増幅度 — 何倍になったか</h2>
   <p class="goal">🎯 ゴール：入力と出力から増幅度を計算できる（dBも）</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 250" width="700">
+  <svg role="img" aria-label="図2-6 増幅度＝出力÷入力。同じ形のまま「背の高さ」だけ大きくするのが理想の増幅" viewBox="0 0 700 250" width="700">
     <line x1="30" y1="120" x2="160" y2="120" stroke="#B9B2A0" stroke-width="1.2"/>
     <path d="M30,120 q16,-24 32,0 q16,24 32,0 q16,-24 32,0 q16,24 32,0" fill="none" stroke="#4A6FA5" stroke-width="2.5"/>
     <text x="95" y="160" font-size="11.5" fill="#4A6FA5" text-anchor="middle">入力 Vin＝0.2Vpp</text>
@@ -446,7 +466,7 @@
   <p class="goal">🎯 ゴール：1つの素子の2つの使い方を説明できる</p>
   <p>トランジスタ（NPN）は3本足（ベースB・コレクタC・エミッタE）。<b>ベースに流すわずかな電流で、コレクタに流れる大きな電流をコントロール</b>できます。これを「じわじわ」使えば増幅、「全開/全閉」で使えばスイッチです。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 345" width="700">
+  <svg role="img" aria-label="図2-7 同じトランジスタでも、中間領域で使えば「増幅」、両端（遮断⇄飽和）で使えば「スイッチ」" viewBox="0 0 700 345" width="700">
     <g text-anchor="middle">
       <text x="175" y="30" font-size="13.5" font-weight="700" fill="#BE5A38">増幅作用（水道の蛇口のイメージ）</text>
       <text x="525" y="30" font-size="13.5" font-weight="700" fill="#4A6FA5">スイッチング作用（ON / OFF）</text>
@@ -530,7 +550,7 @@
   <p class="goal">🎯 ゴール：「差を巨大に増幅するIC」と2つの約束事を説明できる</p>
   <p>オペアンプは<b>2つの入力の「電圧差」を、10万倍以上というケタ違いの倍率で増幅するIC</b>。そのままでは出力がすぐ振り切れる（飽和する）ので、実際は出力の一部を−入力に戻す<b>負帰還</b>をかけて、ちょうどよい倍率にして使います。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 300" width="700">
+  <svg role="img" aria-label="図2-8 オペアンプの記号と「2つの約束事」。この2つだけで増幅回路の計算ができる" viewBox="0 0 700 300" width="700">
     <path d="M220,60 L220,240 L420,150 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2.5" stroke-linejoin="round"/>
     <line x1="140" y1="105" x2="220" y2="105" stroke="#211F1A" stroke-width="2"/>
     <line x1="140" y1="195" x2="220" y2="195" stroke="#211F1A" stroke-width="2"/>
@@ -574,7 +594,7 @@
   <p class="goal">🎯 ゴール：代表的な増幅回路の形とゲインの式がわかる</p>
   <p>まずはオペアンプの2大定番。<b>倍率が抵抗2本の比で決まる</b>のが最大の魅力です。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 330" width="700">
+  <svg role="img" aria-label="図2-9 オペアンプの2大基本回路。倍率は抵抗の比だけで決まる" viewBox="0 0 700 330" width="700">
     <g text-anchor="middle">
       <text x="175" y="28" font-size="13.5" font-weight="700" fill="#211F1A">反転増幅回路</text>
       <text x="528" y="28" font-size="13.5" font-weight="700" fill="#211F1A">非反転増幅回路</text>
@@ -644,7 +664,7 @@
   </figure>
   <p>トランジスタ1石の代表は<b>エミッタ接地増幅回路</b>。エミッタを共通（接地側）にして、ベースに入れた小さな信号をコレクタ側で大きく取り出します。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 330" width="700">
+  <svg role="img" aria-label="図2-10 エミッタ接地増幅回路。出力は入力の逆位相（180°反転）になるのが特徴" viewBox="0 0 700 330" width="700">
     <!-- 電源レール -->
     <line x1="150" y1="55" x2="560" y2="55" stroke="#211F1A" stroke-width="2"/>
     <text x="580" y="60" font-size="12" fill="#BE5A38" font-weight="600">VCC（＋9V）</text>
@@ -728,7 +748,7 @@
     <li><b>動作確認</b>：電源電圧 → 直流（バイアス）電圧 → 信号、の順に確認</li>
   </ol>
   <figure class="fig">
-  <svg viewBox="0 0 700 235" width="700">
+  <svg role="img" aria-label="図2-11 はんだの良否。パッドとリードの両方を温めてから、はんだを送るのがコツ" viewBox="0 0 700 235" width="700">
     <g text-anchor="middle">
       <text x="180" y="34" font-size="13.5" font-weight="700" fill="#4f6b3a">✓ 良いはんだ（富士山型）</text>
       <text x="520" y="34" font-size="13.5" font-weight="700" fill="#b23a2e">✕ イモはんだ（団子型）</text>
@@ -760,7 +780,7 @@
   <p class="goal">🎯 ゴール：入出力を同時観測して増幅度と位相を実測できる</p>
   <p>作った増幅回路の仕上げは実測。<b>CH1に入力、CH2に出力</b>をつないで同時に見ると、増幅度も位相も一目でわかります。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 320" width="700">
+  <svg role="img" aria-label="図2-12 2ch同時観測。振幅の比＝増幅度、山谷のずれ＝位相。振りすぎると波形の頭が切れる" viewBox="0 0 700 320" width="700">
     <rect x="55" y="35" width="400" height="250" fill="#FFFFFF" stroke="#211F1A" stroke-width="2"/>
     <g stroke="#EAE4D5" stroke-width="1">
       <line x1="105" y1="35" x2="105" y2="285"/><line x1="155" y1="35" x2="155" y2="285"/><line x1="205" y1="35" x2="205" y2="285"/><line x1="255" y1="35" x2="255" y2="285"/><line x1="305" y1="35" x2="305" y2="285"/><line x1="355" y1="35" x2="355" y2="285"/><line x1="405" y1="35" x2="405" y2="285"/>
@@ -802,18 +822,18 @@
   <h2>🔄 振り返りクイズ（セクション2）</h2>
   <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
   <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
-  <details><summary>Q1. 半導体とは何か。代表的な材料は？</summary><div class="a">導体と絶縁体の中間の性質を持ち、<b>不純物添加で電気的性質を制御できる</b>物質。代表はシリコン（Si）、ゲルマニウム（Ge）。</div></details>
-  <details><summary>Q2. N型・P型で電気を運ぶもの（キャリア）はそれぞれ何？</summary><div class="a">N型＝<b>自由電子（−）</b>、P型＝<b>ホール（＋）</b>。5価の不純物でN型、3価でP型になる。</div></details>
-  <details><summary>Q3. ダイオードに電流が流れる向きと、流れ始める電圧は？</summary><div class="a"><b>アノード→カソード（順方向）のみ</b>。シリコンでは約<b>0.6〜0.7V</b>を超えると流れ始める。</div></details>
-  <details><summary>Q4. 半波整流と全波整流の違いは？ブリッジのダイオードは何本？</summary><div class="a">半波は交流の半分だけ使う（1本）、全波はマイナス側も折り返して使う。ブリッジ整流は<b>4本</b>。全波はリプル周波数が入力の2倍になり平滑しやすい。</div></details>
-  <details><summary>Q5. 平滑コンデンサの役割は？</summary><div class="a">整流後の脈流の<b>山と山の間を充放電で埋めて</b>、直流に近づける。残る脈動をリプルという。</div></details>
-  <details><summary>Q6. 静特性とは何と何の関係を示すグラフ？</summary><div class="a">素子にかける<b>電圧（V）と流れる電流（I）の関係</b>（V-I特性）。抵抗は直線、ダイオードは0.6V付近から急に立ち上がる曲線。</div></details>
-  <details><summary>Q7. 入力0.1V・出力1Vの増幅回路。増幅度は何倍？何dB？</summary><div class="a">Av＝1÷0.1＝<b>10倍</b>＝<b>20dB</b>（Gv＝20log₁₀10）。</div></details>
-  <details><summary>Q8. hFE＝100、IB＝20µAのときICは？</summary><div class="a">IC＝hFE×IB＝100×0.02mA＝<b>2mA</b>。</div></details>
-  <details><summary>Q9. トランジスタをスイッチとして使うときの2つの状態は？</summary><div class="a"><b>遮断（OFF：IB=0でICも0）と飽和（ON：十分なIBで全開）</b>。中間の活性領域を使うのが増幅。</div></details>
-  <details><summary>Q10. バーチャルショートとは？成り立つ条件は？</summary><div class="a">オペアンプの<b>＋入力と−入力の電圧がほぼ等しくなる</b>こと。<b>負帰還がかかっている</b>ときに成り立つ。実際に短絡しているわけではない。</div></details>
-  <details><summary>Q11. 反転増幅回路で Rin＝10kΩ、Rf＝47kΩ のとき増幅度は？</summary><div class="a">Av＝−Rf/Rin＝<b>−4.7倍</b>（4.7倍に増幅し、位相が反転）。</div></details>
-  <details><summary>Q12. エミッタ接地増幅回路の出力位相は入力に対してどうなる？</summary><div class="a"><b>180°反転（逆位相）</b>。オシロの2ch観測で山と谷が逆になることで確認できる。</div></details>
+  <details><summary>Q1. 半導体とは何か。代表的な材料は？</summary><div class="a">導体と絶縁体の中間の性質を持ち、<b>不純物添加で電気的性質を制御できる</b>物質。代表はシリコン（Si）、ゲルマニウム（Ge）。 <a class="qref" href="#s2-1">→ 解説 2-1 に戻る</a></div></details>
+  <details><summary>Q2. N型・P型で電気を運ぶもの（キャリア）はそれぞれ何？</summary><div class="a">N型＝<b>自由電子（−）</b>、P型＝<b>ホール（＋）</b>。5価の不純物でN型、3価でP型になる。 <a class="qref" href="#s2-1">→ 解説 2-1 に戻る</a></div></details>
+  <details><summary>Q3. ダイオードに電流が流れる向きと、流れ始める電圧は？</summary><div class="a"><b>アノード→カソード（順方向）のみ</b>。シリコンでは約<b>0.6〜0.7V</b>を超えると流れ始める。 <a class="qref" href="#s2-2">→ 解説 2-2 に戻る</a></div></details>
+  <details><summary>Q4. 半波整流と全波整流の違いは？ブリッジのダイオードは何本？</summary><div class="a">半波は交流の半分だけ使う（1本）、全波はマイナス側も折り返して使う。ブリッジ整流は<b>4本</b>。全波はリプル周波数が入力の2倍になり平滑しやすい。 <a class="qref" href="#s2-3">→ 解説 2-3 に戻る</a></div></details>
+  <details><summary>Q5. 平滑コンデンサの役割は？</summary><div class="a">整流後の脈流の<b>山と山の間を充放電で埋めて</b>、直流に近づける。残る脈動をリプルという。 <a class="qref" href="#s2-3">→ 解説 2-3 に戻る</a></div></details>
+  <details><summary>Q6. 静特性とは何と何の関係を示すグラフ？</summary><div class="a">素子にかける<b>電圧（V）と流れる電流（I）の関係</b>（V-I特性）。抵抗は直線、ダイオードは0.6V付近から急に立ち上がる曲線。 <a class="qref" href="#s2-4">→ 解説 2-4 に戻る</a></div></details>
+  <details><summary>Q7. 入力0.1V・出力1Vの増幅回路。増幅度は何倍？何dB？</summary><div class="a">Av＝1÷0.1＝<b>10倍</b>＝<b>20dB</b>（Gv＝20log₁₀10）。 <a class="qref" href="#s2-5">→ 解説 2-5 に戻る</a></div></details>
+  <details><summary>Q8. hFE＝100、IB＝20µAのときICは？</summary><div class="a">IC＝hFE×IB＝100×0.02mA＝<b>2mA</b>。 <a class="qref" href="#s2-6">→ 解説 2-6 に戻る</a></div></details>
+  <details><summary>Q9. トランジスタをスイッチとして使うときの2つの状態は？</summary><div class="a"><b>遮断（OFF：IB=0でICも0）と飽和（ON：十分なIBで全開）</b>。中間の活性領域を使うのが増幅。 <a class="qref" href="#s2-6">→ 解説 2-6 に戻る</a></div></details>
+  <details><summary>Q10. バーチャルショートとは？成り立つ条件は？</summary><div class="a">オペアンプの<b>＋入力と−入力の電圧がほぼ等しくなる</b>こと。<b>負帰還がかかっている</b>ときに成り立つ。実際に短絡しているわけではない。 <a class="qref" href="#s2-7">→ 解説 2-7 に戻る</a></div></details>
+  <details><summary>Q11. 反転増幅回路で Rin＝10kΩ、Rf＝47kΩ のとき増幅度は？</summary><div class="a">Av＝−Rf/Rin＝<b>−4.7倍</b>（4.7倍に増幅し、位相が反転）。 <a class="qref" href="#s2-8">→ 解説 2-8 に戻る</a></div></details>
+  <details><summary>Q12. エミッタ接地増幅回路の出力位相は入力に対してどうなる？</summary><div class="a"><b>180°反転（逆位相）</b>。オシロの2ch観測で山と谷が逆になることで確認できる。 <a class="qref" href="#s2-8">→ 解説 2-8 に戻る</a></div></details>
 </section>
 
 <nav class="pager">
@@ -822,6 +842,7 @@
 </nav>
 
 <footer>電子回路 学習ノート ─ セクション2：半導体・アナログ回路</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
 </div>
 
 <script>
@@ -838,6 +859,8 @@ boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.check
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
 </script>
 </body>
 </html>

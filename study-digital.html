@@ -99,6 +99,26 @@
   footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
   .ovl{text-decoration:overline}
   svg text{font-family:var(--sans)}
+  /* --- 読みやすさ改善（スマホ図解・クイズ復習リンク・目次ボタン） --- */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
 </style>
 </head>
 <body>
@@ -114,7 +134,7 @@
   <div class="eyebrow">SECTION 3</div>
   <h1>💡 デジタル回路</h1>
   <p class="lead">デジタルの世界は「0か1か」の2択だけ。論理ゲートで判断し、フリップフロップで記憶する——コンピュータの中身も、この2つの組み合わせでできています。</p>
-  <nav class="toc">
+  <nav class="toc" id="toc">
     <a href="#s3-1">1. 論理式</a><a href="#s3-2">2. 真理値表</a><a href="#s3-3">3. ディジタルIC</a><a href="#s3-4">4. ICで回路作成</a><a href="#s3-5">5. 正論理</a><a href="#s3-6">6. 負論理</a><a href="#s3-7">7. 2進数</a><a href="#s3-8">8. 16進数</a><a href="#s3-9">9. 進数変換</a><a href="#s3-10">10. 7segLED</a><a href="#s3-11">11. 7segで回路作成</a><a href="#s3-12">12. フリップフロップ</a><a href="#s3-13">13. FFで回路作成</a><a href="#s3-14">14. カウンタIC</a><a href="#s3-15">15. レジスタ</a>
   </nav>
 </div>
@@ -127,7 +147,7 @@
   <p class="goal">🎯 ゴール：基本ゲートの記号・論理式・動作をセットで言える</p>
   <p>デジタル回路の判断はすべて<b>AND（〜かつ〜）・OR（〜または〜）・NOT（〜でない）</b>の組み合わせ。論理式はそれを数式の形で書いたものです。ANDは「・」、ORは「＋」、NOTは上線（バー）で表します。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 465" width="700">
+  <svg role="img" aria-label="図3-1 6つの基本ゲート：MIL記号・論理式・真理値表。出力側の小さな○が「否定」の印" viewBox="0 0 700 465" width="700">
     <g font-size="12">
       <!-- AND -->
       <rect x="5" y="6" width="222" height="218" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
@@ -276,7 +296,7 @@
     <tr><td class="mono">7486</td><td>2入力XOR × 4個</td><td>一致・不一致の判定に</td></tr>
   </table>
   <figure class="fig">
-  <svg viewBox="0 0 700 320" width="700">
+  <svg role="img" aria-label="図3-2 7400（NAND×4）のピン配置。向きの目印 → 1番ピン → 反時計回り、の順で数える" viewBox="0 0 700 320" width="700">
     <!-- DIP本体 -->
     <rect x="240" y="45" width="200" height="230" rx="8" fill="#3A362E"/>
     <path d="M320,45 a20,20 0 0 0 40,0" fill="#F1EEE5"/>
@@ -332,7 +352,7 @@
   <p class="goal">🎯 ゴール：スイッチ入力→ゲート→LED出力の回路を組める</p>
   <p>「真理値表 → 論理式 → ゲートのつなぎ」と決めたら、実際の配線ではロジック以外の3点セット——<b>入力の処理・出力の電流制限・電源まわり</b>——が成功のカギになります。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 300" width="700">
+  <svg role="img" aria-label="図3-3 「両方のスイッチを押すと点灯」するAND回路の実配線。入力を宙ぶらりんにしないのが鉄則" viewBox="0 0 700 300" width="700">
     <line x1="50" y1="50" x2="650" y2="50" stroke="#BE5A38" stroke-width="2.5"/>
     <text x="666" y="55" font-size="12" fill="#BE5A38" font-weight="600">＋5V</text>
     <line x1="50" y1="255" x2="650" y2="255" stroke="#716C61" stroke-width="2.5"/>
@@ -406,7 +426,7 @@
   <p class="goal">🎯 ゴール：電圧のH/Lと論理の1/0の対応を説明できる</p>
   <p>デジタル信号の実体は電圧です。電圧が高い状態を<b>H（High）</b>、低い状態を<b>L（Low）</b>と呼び、<b>H＝1、L＝0と割り当てるのが正論理</b>。ふだんの論理回路はほぼ正論理で考えます。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 300" width="700">
+  <svg role="img" aria-label="図3-4 電圧レベル（H/L）と論理値（1/0）の割り当て。正論理はH＝1、負論理はL＝1" viewBox="0 0 700 300" width="700">
     <!-- 電圧帯 -->
     <rect x="90" y="40" width="90" height="80" fill="#E7EDDC" stroke="#4f6b3a"/>
     <rect x="90" y="120" width="90" height="70" fill="#F5E8D4" stroke="#E8D3B0"/>
@@ -452,6 +472,42 @@
   <h2><span class="no">3-6</span>負論理 — Lを1とみなす（アクティブ・ロー）</h2>
   <p class="goal">🎯 ゴール：バー付き信号・○付きピンの意味を読み取れる</p>
   <p>負論理は<b>L＝1（有効）、H＝0</b>とみなす約束。「Lになったときに動く」信号は<b>アクティブ・ロー</b>と呼ばれ、リセットやチップ選択など制御信号の定番です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="図3-5 負論理の読み方：信号名の上線（バー）も、ICピンの小さな○も「Lで有効」のしるし" viewBox="0 0 700 250" width="700">
+    <text x="170" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">バー付き信号の動き</text>
+    <text x="525" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">ICピンの「○」も同じ意味</text>
+    <line x1="350" y1="20" x2="350" y2="235" stroke="#E2DCCD" stroke-dasharray="4 4"/>
+    <!-- 左：バー付き信号のタイムチャート -->
+    <line x1="63" y1="48" x2="110" y2="48" stroke="#211F1A" stroke-width="1.6"/>
+    <text x="63" y="63" font-size="13" font-weight="700" fill="#211F1A">RESET</text>
+    <text x="118" y="63" font-size="11" fill="#716C61">（上線＝バー）</text>
+    <text x="52" y="94" text-anchor="end" font-size="12" fill="#716C61">H</text>
+    <text x="52" y="164" text-anchor="end" font-size="12" fill="#716C61">L</text>
+    <line x1="58" y1="90" x2="330" y2="90" stroke="#E2DCCD" stroke-dasharray="3 3"/>
+    <line x1="58" y1="160" x2="330" y2="160" stroke="#E2DCCD" stroke-dasharray="3 3"/>
+    <path d="M60,90 H150 V160 H240 V90 H328" fill="none" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="150" y1="160" x2="240" y2="160" stroke="#BE5A38" stroke-width="4"/>
+    <text x="103" y="80" text-anchor="middle" font-size="11" fill="#716C61">ふだんは H（待機）</text>
+    <text x="286" y="80" text-anchor="middle" font-size="11" fill="#716C61">H に戻すと解除</text>
+    <path d="M195,168 l-6,11 h12 z" fill="#BE5A38"/>
+    <text x="195" y="198" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">L の間だけリセット発動</text>
+    <text x="195" y="218" text-anchor="middle" font-size="11" fill="#716C61">＝「Lで有効」（アクティブ・ロー）</text>
+    <!-- 右：ICピンの○ -->
+    <rect x="470" y="60" width="185" height="150" rx="10" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <text x="562" y="142" text-anchor="middle" font-size="13" font-weight="600" fill="#211F1A">カウンタIC</text>
+    <line x1="401" y1="66" x2="429" y2="66" stroke="#211F1A" stroke-width="1.6"/>
+    <text x="400" y="81" font-size="12.5" font-weight="700" fill="#211F1A">CLR</text>
+    <line x1="395" y1="95" x2="456" y2="95" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="463" cy="95" r="6" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <line x1="437" y1="122" x2="452" y2="108" stroke="#BE5A38" stroke-width="1.6"/>
+    <path d="M459,102 l-10,2 l5,-9 z" fill="#BE5A38"/>
+    <text x="383" y="140" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">この○＝「Lで有効」のしるし</text>
+    <line x1="395" y1="180" x2="470" y2="180" stroke="#211F1A" stroke-width="2"/>
+    <text x="400" y="170" font-size="12.5" font-weight="700" fill="#211F1A">EN</text>
+    <text x="380" y="232" font-size="11" fill="#716C61">○なし ＝ Hで有効（正論理）</text>
+  </svg>
+  <figcaption>図3-5　負論理の読み方：信号名の上線（バー）も、ICピンの小さな○も「Lで有効」のしるし</figcaption>
+  </figure>
   <table class="tbl">
     <tr><th>見た目</th><th>意味</th></tr>
     <tr><td>信号名の上線：<span class="ovl">RESET</span>、<span class="ovl">CS</span></td><td>Lにするとリセット／選択が働く（アクティブ・ロー）</td></tr>
@@ -479,7 +535,7 @@
   <p class="goal">🎯 ゴール：位の重みを使って2進数を読める</p>
   <p>デジタル回路はH/Lの2状態しか持てないので、数は<b>0と1だけで表す2進数</b>を使います。各桁には<b>重み（1, 2, 4, 8, 16…と倍々）</b>があり、「1が立っている桁の重みを足す」と10進数になります。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 235" width="700">
+  <svg role="img" aria-label="図3-6 2進数の読み方。左端が最上位ビット（MSB）、右端が最下位ビット（LSB）" viewBox="0 0 700 235" width="700">
     <g text-anchor="middle" font-size="13">
       <text x="350" y="32" font-size="12.5" fill="#716C61">桁の重み（右から 1, 2, 4, 8, …と倍々に増える）</text>
       <g font-family="JetBrains Mono,monospace" font-size="14" fill="#716C61">
@@ -502,7 +558,7 @@
       <text x="350" y="204" font-size="12.5" fill="#716C61">00011001（2進） ＝ 25（10進）　／　1桁＝1ビット、この8桁＝8ビット＝1バイト</text>
     </g>
   </svg>
-  <figcaption>図3-5　2進数の読み方。左端が最上位ビット（MSB）、右端が最下位ビット（LSB）</figcaption>
+  <figcaption>図3-6　2進数の読み方。左端が最上位ビット（MSB）、右端が最下位ビット（LSB）</figcaption>
   </figure>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
@@ -544,7 +600,7 @@
   <h2><span class="no">3-9</span>進数変換 — 3つの方法で行き来する</h2>
   <p class="goal">🎯 ゴール:2進⇄10進⇄16進を自力で変換できる</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 420" width="700">
+  <svg role="img" aria-label="図3-7 変換の3パターン。「重みを足す」「2で割る」「4ビット区切り」でどの方向にも行ける" viewBox="0 0 700 420" width="700">
     <!-- (a) 2進→10進 -->
     <text x="30" y="30" font-size="13" font-weight="700" fill="#211F1A">① 2進 → 10進：重みを足す</text>
     <g font-family="JetBrains Mono,monospace" font-size="16" text-anchor="middle">
@@ -588,7 +644,7 @@
     </g>
     <text x="480" y="390" font-size="14" font-family="JetBrains Mono,monospace" fill="#211F1A">11010110₂ ＝ <tspan font-weight="700" fill="#BE5A38">D6</tspan>（16進）</text>
   </svg>
-  <figcaption>図3-6　変換の3パターン。「重みを足す」「2で割る」「4ビット区切り」でどの方向にも行ける</figcaption>
+  <figcaption>図3-7　変換の3パターン。「重みを足す」「2で割る」「4ビット区切り」でどの方向にも行ける</figcaption>
   </figure>
   <div class="example"><span class="tt">✏️ 例題</span>
     ① 2進 <span style="font-family:var(--mono)">11111111</span> を10進と16進に　② 16進 <span style="font-family:var(--mono)">A3</span> を2進に
@@ -612,7 +668,7 @@
   <p class="goal">🎯 ゴール：セグメント名（a〜g）と点灯パターン、コモンの種類がわかる</p>
   <p>7セグメントLEDは<b>7本の棒状LED（＋小数点dp）の点灯パターンで数字を表す</b>表示器。中身はただのLEDが8個入っているだけ、と考えると怖くありません。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 425" width="700">
+  <svg role="img" aria-label="図3-8 セグメント名は上からa、時計回り。コモン（共通端子）が＋か−かで駆動のH/Lが逆になる" viewBox="0 0 700 425" width="700">
     <text x="150" y="36" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">セグメントの名前</text>
     <g stroke="#FFFEFB" stroke-width="1">
       <rect x="105" y="60" width="90" height="18" rx="6" fill="#BE5A38"/>
@@ -677,7 +733,7 @@
       <g transform="translate(612,330)"><rect x="11" y="0" width="22" height="5" fill="#BE5A38"/><rect x="4" y="7" width="5" height="26" fill="#BE5A38"/><rect x="35" y="7" width="5" height="26" fill="#BE5A38"/><rect x="11" y="33" width="22" height="5" fill="#BE5A38"/><rect x="4" y="40" width="5" height="26" fill="#EDE8DA"/><rect x="35" y="40" width="5" height="26" fill="#BE5A38"/><rect x="11" y="66" width="22" height="5" fill="#BE5A38"/><text x="22" y="92" text-anchor="middle" font-size="12" fill="#716C61">9</text></g>
     </g>
   </svg>
-  <figcaption>図3-7　セグメント名は上からa、時計回り。コモン（共通端子）が＋か−かで駆動のH/Lが逆になる</figcaption>
+  <figcaption>図3-8　セグメント名は上からa、時計回り。コモン（共通端子）が＋か−かで駆動のH/Lが逆になる</figcaption>
   </figure>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
@@ -695,7 +751,7 @@
   <p class="goal">🎯 ゴール：デコーダICを使って数値を表示する構成を説明できる</p>
   <p>7本のセグメントを1本ずつ自力で制御するのは大変。そこで<b>「BCD（2進化10進）の4ビットを入れると、a〜gの7本を自動で作ってくれる」デコーダIC</b>を使います。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 250" width="700">
+  <svg role="img" aria-label="図3-9 BCD入力 → デコーダIC → 電流制限抵抗 → 7seg。この3段構成が基本形" viewBox="0 0 700 250" width="700">
     <rect x="35" y="70" width="130" height="76" rx="10" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
     <text x="100" y="100" text-anchor="middle" font-size="12.5" font-weight="600" fill="#211F1A">BCDスイッチ</text>
     <text x="100" y="122" text-anchor="middle" font-size="12" font-family="JetBrains Mono,monospace" fill="#BE5A38" font-weight="700">0101</text>
@@ -726,7 +782,7 @@
     <text x="560" y="222" font-size="10.5" fill="#716C61">共通端子→GND</text>
     <text x="240" y="226" text-anchor="middle" font-size="12" fill="#211F1A">0101（＝5）を入力すると「5」が点灯する</text>
   </svg>
-  <figcaption>図3-8　BCD入力 → デコーダIC → 電流制限抵抗 → 7seg。この3段構成が基本形</figcaption>
+  <figcaption>図3-9　BCD入力 → デコーダIC → 電流制限抵抗 → 7seg。この3段構成が基本形</figcaption>
   </figure>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
@@ -744,7 +800,7 @@
   <p class="goal">🎯 ゴール：RS・D・JKの違いと動作表がわかる</p>
   <p>ゲートは「今の入力」だけで出力が決まりますが、フリップフロップ（FF）は<b>1ビット（0か1）を覚えておける記憶回路</b>。カウンタもレジスタもメモリも、元をたどればFFの集まりです。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 455" width="700">
+  <svg role="img" aria-label="図3-10 FF3種の記号と動作。CKピンの「▷」はエッジ（変化の瞬間）で動く印" viewBox="0 0 700 455" width="700">
     <g text-anchor="middle">
       <!-- RS -->
       <rect x="8" y="10" width="218" height="215" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
@@ -817,7 +873,7 @@
     </g>
     <text x="350" y="446" text-anchor="middle" font-size="11" fill="#716C61">エッジの「瞬間」だけ見る。途中のDの変化は無視される＝ノイズに強い記憶</text>
   </svg>
-  <figcaption>図3-9　FF3種の記号と動作。CKピンの「▷」はエッジ（変化の瞬間）で動く印</figcaption>
+  <figcaption>図3-10　FF3種の記号と動作。CKピンの「▷」はエッジ（変化の瞬間）で動く印</figcaption>
   </figure>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
@@ -835,7 +891,7 @@
   <p class="goal">🎯 ゴール：T-FFをつなぐと2進カウンタになる理由を波形で説明できる</p>
   <p>JK-FFをJ＝K＝1（T-FF）にすると「クロックのたびに反転」します。反転＝<b>周波数が半分（2分周）</b>。これを数珠つなぎにすると、各段が1/2, 1/4, 1/8…となり、<b>そのまま2進数のカウントアップ</b>になります。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 330" width="700">
+  <svg role="img" aria-label="図3-11 カウンタの正体は「反転の連鎖」。各段の周波数が半分になっていく＝分周" viewBox="0 0 700 330" width="700">
     <g stroke="#D9D2C0" stroke-width="1" stroke-dasharray="3 3">
       <line x1="100" y1="58" x2="100" y2="248"/><line x1="160" y1="58" x2="160" y2="248"/><line x1="220" y1="58" x2="220" y2="248"/><line x1="280" y1="58" x2="280" y2="248"/><line x1="340" y1="58" x2="340" y2="248"/><line x1="400" y1="58" x2="400" y2="248"/><line x1="460" y1="58" x2="460" y2="248"/><line x1="520" y1="58" x2="520" y2="248"/><line x1="580" y1="58" x2="580" y2="248"/>
     </g>
@@ -856,7 +912,7 @@
     <text x="350" y="296" text-anchor="middle" font-size="11.5" fill="#716C61">（Q2 Q1 Q0）を2進数として読むと 001→010→011→100…と数えている！</text>
     <text x="350" y="318" text-anchor="middle" font-size="11.5" fill="#211F1A" font-weight="600">T-FF（J＝K＝1のJK-FF）を3個つなぐ → 0〜7を数える3ビット2進カウンタ（＝8分周）</text>
   </svg>
-  <figcaption>図3-10　カウンタの正体は「反転の連鎖」。各段の周波数が半分になっていく＝分周</figcaption>
+  <figcaption>図3-11　カウンタの正体は「反転の連鎖」。各段の周波数が半分になっていく＝分周</figcaption>
   </figure>
   <div class="caution"><span class="tt">⚠️ 実験でハマりがち：チャタリング</span>
     押しボタンをクロックにすると、接点が跳ねて1回押しただけで数回カウントが進むことがある（チャタリング）。コンデンサやシュミットトリガICで対策するか、「そういう現象がある」と知っておくだけでも切り分けが速くなる。
@@ -876,6 +932,54 @@
   <h2><span class="no">3-14</span>カウンタIC</h2>
   <p class="goal">🎯 ゴール：カウンタICの役割と代表的な端子がわかる</p>
   <p>FFを自分でつながなくても、1チップでカウンタになっているICがあります。<b>クロックが入るたびに2進数で＋1（または−1）</b>してくれる部品です。</p>
+  <figure class="fig">
+  <svg role="img" aria-label="図3-12 カウンタICの基本形：CLKが入るたびに＋1し、CLRで0に戻る。Q0〜Q3の重みは1・2・4・8" viewBox="0 0 700 252" width="700">
+    <text x="350" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">カウンタICのブロックイメージ（例：74HC161）</text>
+    <!-- IC本体 -->
+    <rect x="270" y="55" width="170" height="150" rx="10" fill="#FCFBF7" stroke="#211F1A" stroke-width="2"/>
+    <text x="355" y="126" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">4ビット</text>
+    <text x="355" y="146" text-anchor="middle" font-size="13.5" font-weight="700" fill="#211F1A">2進カウンタ</text>
+    <!-- CLK入力 -->
+    <path d="M60,86 h12 v-12 h14 v12 h14 v-12 h14 v12 h12" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <text x="136" y="68" font-size="12" font-weight="600" fill="#211F1A">CLK（クロック）</text>
+    <line x1="126" y1="86" x2="266" y2="86" stroke="#211F1A" stroke-width="2"/>
+    <path d="M272,78 L284,86 L272,94 Z" fill="none" stroke="#211F1A" stroke-width="2"/>
+    <!-- CLR入力 -->
+    <line x1="91" y1="120" x2="119" y2="120" stroke="#211F1A" stroke-width="1.6"/>
+    <text x="90" y="135" font-size="12.5" font-weight="700" fill="#211F1A">CLR</text>
+    <text x="126" y="135" font-size="11" fill="#716C61">0に戻す</text>
+    <line x1="90" y1="146" x2="256" y2="146" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="263" cy="146" r="6" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <!-- LD入力 -->
+    <line x1="91" y1="168" x2="110" y2="168" stroke="#211F1A" stroke-width="1.6"/>
+    <text x="90" y="183" font-size="12.5" font-weight="700" fill="#211F1A">LD</text>
+    <text x="118" y="183" font-size="11" fill="#716C61">好きな値から開始</text>
+    <line x1="90" y1="194" x2="256" y2="194" stroke="#211F1A" stroke-width="2"/>
+    <circle cx="263" cy="194" r="6" fill="#FFFEFB" stroke="#211F1A" stroke-width="2"/>
+    <!-- 出力 Q0〜Q3 -->
+    <line x1="440" y1="75" x2="490" y2="75" stroke="#211F1A" stroke-width="2"/>
+    <line x1="440" y1="110" x2="490" y2="110" stroke="#211F1A" stroke-width="2"/>
+    <line x1="440" y1="145" x2="490" y2="145" stroke="#211F1A" stroke-width="2"/>
+    <line x1="440" y1="180" x2="490" y2="180" stroke="#211F1A" stroke-width="2"/>
+    <text x="497" y="79" font-size="12.5" font-weight="700" fill="#211F1A">Q0</text><text x="529" y="79" font-size="11" fill="#716C61">重み1</text>
+    <text x="497" y="114" font-size="12.5" font-weight="700" fill="#211F1A">Q1</text><text x="529" y="114" font-size="11" fill="#716C61">重み2</text>
+    <text x="497" y="149" font-size="12.5" font-weight="700" fill="#211F1A">Q2</text><text x="529" y="149" font-size="11" fill="#716C61">重み4</text>
+    <text x="497" y="184" font-size="12.5" font-weight="700" fill="#211F1A">Q3</text><text x="529" y="184" font-size="11" fill="#716C61">重み8</text>
+    <!-- カウント例 -->
+    <rect x="585" y="55" width="105" height="150" rx="9" fill="#F2EFE6" stroke="#E2DCCD"/>
+    <text x="637" y="76" text-anchor="middle" font-size="11" fill="#716C61">カウント例</text>
+    <g font-family="JetBrains Mono,SFMono-Regular,Consolas,monospace" font-size="13" fill="#211F1A" text-anchor="middle">
+      <text x="637" y="99">0000</text>
+      <text x="637" y="122">0001</text>
+      <text x="637" y="145">0010</text>
+      <text x="637" y="168">0011</text>
+      <text x="637" y="190">…</text>
+    </g>
+    <text x="350" y="222" text-anchor="middle" font-size="12.5" font-weight="700" fill="#BE5A38">クロックが入るたびに Q3Q2Q1Q0 ＝ ＋1</text>
+    <text x="60" y="243" font-size="11" fill="#716C61">バー・○付きの端子 ＝ Lで動作（負論理、3-6参照）</text>
+  </svg>
+  <figcaption>図3-12　カウンタICの基本形：CLKが入るたびに＋1し、<span class="ovl">CLR</span>で0に戻る。Q0〜Q3の重みは1・2・4・8</figcaption>
+  </figure>
   <table class="tbl">
     <tr><th>型番（例）</th><th>種類</th><th>特徴</th></tr>
     <tr><td class="mono">74HC161</td><td>4ビット2進（16進）カウンタ</td><td>0〜15を数える。同期式・プリセット可</td></tr>
@@ -898,7 +1002,7 @@
   <p class="goal">🎯 ゴール：シフトレジスタの動きをクロックごとに追える</p>
   <p>D-FFを並べて<b>複数ビットをまとめて記憶する回路がレジスタ</b>。中でも、クロックごとにデータを隣へ送っていく<b>シフトレジスタ</b>は「バケツリレーの記憶装置」です。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 235" width="700">
+  <svg role="img" aria-label="図3-13 4ビットシフトレジスタ。1本の線から入れたデータが、4クロックで4ビット並列に揃う" viewBox="0 0 700 235" width="700">
     <text x="60" y="88" font-size="11.5" fill="#4A6FA5" text-anchor="middle">直列データ</text>
     <text x="60" y="104" font-size="11.5" fill="#4A6FA5" text-anchor="middle">入力</text>
     <line x1="88" y1="110" x2="122" y2="110" stroke="#4A6FA5" stroke-width="2.2"/>
@@ -932,7 +1036,7 @@
     <text x="628" y="198" font-size="11.5" fill="#4f6b3a">CLK（共通）</text>
     <text x="350" y="215" text-anchor="middle" font-size="11.5" fill="#716C61">クロックが来るたびに、全FFが一斉に「左隣の値」を取り込む → データが1つずつ右へ進む</text>
   </svg>
-  <figcaption>図3-11　4ビットシフトレジスタ。1本の線から入れたデータが、4クロックで4ビット並列に揃う</figcaption>
+  <figcaption>図3-13　4ビットシフトレジスタ。1本の線から入れたデータが、4クロックで4ビット並列に揃う</figcaption>
   </figure>
   <div class="example"><span class="tt">✏️ 動きを追ってみる（1→0→1→1 の順に入力）</span>
     <table class="tbl">
@@ -960,22 +1064,22 @@
   <h2>🔄 振り返りクイズ（セクション3）</h2>
   <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
   <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
-  <details><summary>Q1. AND・OR・NOTの論理式の書き方は？</summary><div class="a">AND＝A・B、OR＝A＋B、NOT＝<span class="ovl">A</span>（上線）。</div></details>
-  <details><summary>Q2. 2入力の真理値表は何行？3入力では？</summary><div class="a">2ⁿ行なので、2入力＝<b>4行</b>、3入力＝<b>8行</b>。2進数のカウント順（00,01,10,11）に書くと漏れない。</div></details>
-  <details><summary>Q3. NANDゲートの出力がLになるのはどんなとき？</summary><div class="a"><b>入力が両方H（1・1）のときだけ</b>。それ以外はすべてH。ANDの逆と覚える。</div></details>
-  <details><summary>Q4. 7400はどんなIC？VCCとGNDは何番ピン？</summary><div class="a">2入力<b>NANDが4個</b>入ったIC。<b>VCC＝14番、GND＝7番</b>（切り欠きを上にして左上が1番、反時計回り）。</div></details>
-  <details><summary>Q5. 使わない入力ピンはどうする？</summary><div class="a"><b>HかLに固定する（開放にしない）</b>。宙ぶらりんだとレベルが不定になり誤動作の原因になる。</div></details>
-  <details><summary>Q6. 正論理と負論理の違いは？</summary><div class="a">正論理＝<b>H を1</b>とする。負論理＝<b>L を1</b>とする。電圧（H/L）と意味（1/0）の割り当て方の違い。</div></details>
-  <details><summary>Q7. <span class="ovl">RESET</span>（バー付き）端子の意味は？</summary><div class="a"><b>Lにするとリセットがかかる（アクティブ・ロー）</b>。ふだんはHにしておく。</div></details>
-  <details><summary>Q8. 2進数 1101 を10進数に。</summary><div class="a">8＋4＋1＝<b>13</b>（16進ならD）。</div></details>
-  <details><summary>Q9. 10進数 25 を2進数に。</summary><div class="a">2で割って余りを下から読む → <b>11001</b>（16＋8＋1で検算OK）。</div></details>
-  <details><summary>Q10. 2進数 11111111 を16進数と10進数に。</summary><div class="a">1111|1111 → <b>FF</b>。10進では<b>255</b>（8ビットの最大値）。</div></details>
-  <details><summary>Q11. 7segで「1」を出すとき点灯するセグメントは？</summary><div class="a"><b>bとc</b>（右側の縦2本）。ちなみに「8」は7本全部。</div></details>
-  <details><summary>Q12. アノードコモンとカソードコモンの違いは？</summary><div class="a">アノードコモン＝<b>＋側が共通（セグメントをLにすると点灯）</b>、カソードコモン＝<b>−側が共通（Hで点灯）</b>。デコーダICもそれに合わせて選ぶ（4511はカソードコモン用）。</div></details>
-  <details><summary>Q13. D-FFがDを取り込むのはいつ？</summary><div class="a"><b>クロックの立ち上がりエッジの瞬間</b>。それ以外ではDが変化してもQは保持される。</div></details>
-  <details><summary>Q14. JK-FFでJ＝K＝1にすると？</summary><div class="a">クロックのたびに出力が<b>反転（トグル）</b>する。これがT-FFで、カウンタ（2分周）の基本になる。</div></details>
-  <details><summary>Q15. FFを3個つないだカウンタは何がどこまで数えられる？</summary><div class="a"><b>3ビット2進カウンタで0〜7</b>（＝8分周）。n個なら0〜2ⁿ−1。</div></details>
-  <details><summary>Q16. シフトレジスタはどんな動きをする？</summary><div class="a">クロックごとに<b>データを隣のFFへ1つずつ送って</b>保持する。直列で入れたデータを並列で取り出す、などピン数の節約に使われる。</div></details>
+  <details><summary>Q1. AND・OR・NOTの論理式の書き方は？</summary><div class="a">AND＝A・B、OR＝A＋B、NOT＝<span class="ovl">A</span>（上線）。 <a class="qref" href="#s3-1">→ 解説 3-1 に戻る</a></div></details>
+  <details><summary>Q2. 2入力の真理値表は何行？3入力では？</summary><div class="a">2ⁿ行なので、2入力＝<b>4行</b>、3入力＝<b>8行</b>。2進数のカウント順（00,01,10,11）に書くと漏れない。 <a class="qref" href="#s3-2">→ 解説 3-2 に戻る</a></div></details>
+  <details><summary>Q3. NANDゲートの出力がLになるのはどんなとき？</summary><div class="a"><b>入力が両方H（1・1）のときだけ</b>。それ以外はすべてH。ANDの逆と覚える。 <a class="qref" href="#s3-1">→ 解説 3-1 に戻る</a></div></details>
+  <details><summary>Q4. 7400はどんなIC？VCCとGNDは何番ピン？</summary><div class="a">2入力<b>NANDが4個</b>入ったIC。<b>VCC＝14番、GND＝7番</b>（切り欠きを上にして左上が1番、反時計回り）。 <a class="qref" href="#s3-3">→ 解説 3-3 に戻る</a></div></details>
+  <details><summary>Q5. 使わない入力ピンはどうする？</summary><div class="a"><b>HかLに固定する（開放にしない）</b>。宙ぶらりんだとレベルが不定になり誤動作の原因になる。 <a class="qref" href="#s3-4">→ 解説 3-4 に戻る</a></div></details>
+  <details><summary>Q6. 正論理と負論理の違いは？</summary><div class="a">正論理＝<b>H を1</b>とする。負論理＝<b>L を1</b>とする。電圧（H/L）と意味（1/0）の割り当て方の違い。 <a class="qref" href="#s3-5">→ 解説 3-5 に戻る</a></div></details>
+  <details><summary>Q7. <span class="ovl">RESET</span>（バー付き）端子の意味は？</summary><div class="a"><b>Lにするとリセットがかかる（アクティブ・ロー）</b>。ふだんはHにしておく。 <a class="qref" href="#s3-6">→ 解説 3-6 に戻る</a></div></details>
+  <details><summary>Q8. 2進数 1101 を10進数に。</summary><div class="a">8＋4＋1＝<b>13</b>（16進ならD）。 <a class="qref" href="#s3-7">→ 解説 3-7 に戻る</a></div></details>
+  <details><summary>Q9. 10進数 25 を2進数に。</summary><div class="a">2で割って余りを下から読む → <b>11001</b>（16＋8＋1で検算OK）。 <a class="qref" href="#s3-9">→ 解説 3-9 に戻る</a></div></details>
+  <details><summary>Q10. 2進数 11111111 を16進数と10進数に。</summary><div class="a">1111|1111 → <b>FF</b>。10進では<b>255</b>（8ビットの最大値）。 <a class="qref" href="#s3-9">→ 解説 3-9 に戻る</a></div></details>
+  <details><summary>Q11. 7segで「1」を出すとき点灯するセグメントは？</summary><div class="a"><b>bとc</b>（右側の縦2本）。ちなみに「8」は7本全部。 <a class="qref" href="#s3-10">→ 解説 3-10 に戻る</a></div></details>
+  <details><summary>Q12. アノードコモンとカソードコモンの違いは？</summary><div class="a">アノードコモン＝<b>＋側が共通（セグメントをLにすると点灯）</b>、カソードコモン＝<b>−側が共通（Hで点灯）</b>。デコーダICもそれに合わせて選ぶ（4511はカソードコモン用）。 <a class="qref" href="#s3-10">→ 解説 3-10 に戻る</a></div></details>
+  <details><summary>Q13. D-FFがDを取り込むのはいつ？</summary><div class="a"><b>クロックの立ち上がりエッジの瞬間</b>。それ以外ではDが変化してもQは保持される。 <a class="qref" href="#s3-12">→ 解説 3-12 に戻る</a></div></details>
+  <details><summary>Q14. JK-FFでJ＝K＝1にすると？</summary><div class="a">クロックのたびに出力が<b>反転（トグル）</b>する。これがT-FFで、カウンタ（2分周）の基本になる。 <a class="qref" href="#s3-12">→ 解説 3-12 に戻る</a></div></details>
+  <details><summary>Q15. FFを3個つないだカウンタは何がどこまで数えられる？</summary><div class="a"><b>3ビット2進カウンタで0〜7</b>（＝8分周）。n個なら0〜2ⁿ−1。 <a class="qref" href="#s3-13">→ 解説 3-13 に戻る</a></div></details>
+  <details><summary>Q16. シフトレジスタはどんな動きをする？</summary><div class="a">クロックごとに<b>データを隣のFFへ1つずつ送って</b>保持する。直列で入れたデータを並列で取り出す、などピン数の節約に使われる。 <a class="qref" href="#s3-15">→ 解説 3-15 に戻る</a></div></details>
 </section>
 
 <nav class="pager">
@@ -984,6 +1088,7 @@
 </nav>
 
 <footer>電子回路 学習ノート ─ セクション3：デジタル回路</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
 </div>
 
 <script>
@@ -1000,6 +1105,8 @@ boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.check
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
 </script>
 </body>
 </html>

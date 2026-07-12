@@ -105,6 +105,26 @@
   .dont .tt{color:#b23a2e;font-weight:700;display:block;font-size:.8rem;margin-bottom:3px}
   .do ul,.dont ul{padding-left:1.3em;margin:2px 0}
   svg text{font-family:var(--sans)}
+  /* --- 読みやすさ改善（スマホ図解・クイズ復習リンク・目次ボタン） --- */
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  .toc{scroll-margin-top:56px}
+  @media (max-width:640px){
+    table.tbl{display:block;overflow-x:auto}
+    .fig svg{min-width:600px}
+    .fig::before{content:"← 図は横にスクロールできます →";display:block;position:sticky;left:0;
+      font-size:.7rem;color:var(--ink-dim);text-align:center;padding-bottom:4px}
+    .fig figcaption{position:sticky;left:0}
+  }
+  .quiz .a .qref{display:inline-block;margin-top:6px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .quiz .a .qref:hover{border-color:var(--accent)}
+  .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+    background:var(--surface);border:1px solid var(--border);color:var(--accent);border-radius:99px;
+    padding:9px 15px;font-size:.8rem;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 16px -8px rgba(50,38,24,.4);opacity:0;pointer-events:none;transition:opacity .2s}
+  .totop.show{opacity:1;pointer-events:auto}
+  .fig svg text[font-size="9.5"],.fig svg text[font-size="10"],
+  .fig svg text[font-size="10.5"],.fig svg g[font-size="10.5"]{font-size:11px}
 </style>
 </head>
 <body>
@@ -120,7 +140,7 @@
   <div class="eyebrow">SECTION 1</div>
   <h1>⚡ 電気回路基礎</h1>
   <p class="lead">すべての土台になるセクション。「電気の3つの量」と「測り方」がわかると、この先のアナログもデジタルも一気に読みやすくなります。</p>
-  <nav class="toc">
+  <nav class="toc" id="toc">
     <a href="#s1-1">1. 電流・電圧・抵抗</a><a href="#s1-2">2. オームの法則</a><a href="#s1-3">3. 直列と並列</a><a href="#s1-4">4. 合成抵抗</a><a href="#s1-5">5. 図記号</a><a href="#s1-6">6. テスタで測れるもの</a><a href="#s1-7">7. オシロで測れるもの</a><a href="#s1-8">8. 部品の極性</a><a href="#s1-9">9. 結線場所の判断</a><a href="#s1-10">10. テスタの使い方</a><a href="#s1-11">11. オシロの使い方</a><a href="#s1-12">12. 理論値と実測値</a><a href="#s1-13">13. 安全な操作</a><a href="#s1-14">14. 整理整頓</a>
   </nav>
 </div>
@@ -133,7 +153,7 @@
   <p class="goal">🎯 ゴール：3つの量のちがいを、単位つきで自分の言葉で説明できる</p>
   <p>電気は目に見えないので、まず<b>水の流れ</b>に置きかえてイメージするのが近道です。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 285" width="700">
+  <svg role="img" aria-label="図1-1 水流モデル：ポンプ＝電池（電圧）、水の流れ＝電流、細い管＝抵抗" viewBox="0 0 700 285" width="700">
     <text x="170" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#4A6FA5">水の回路にたとえると…</text>
     <text x="530" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#BE5A38">電気の回路</text>
     <line x1="350" y1="20" x2="350" y2="265" stroke="#E2DCCD" stroke-dasharray="4 4"/>
@@ -201,7 +221,7 @@
   <p class="goal">🎯 ゴール：電圧・電流・抵抗のうち2つがわかれば残り1つを計算できる</p>
   <p>3つの量は勝手バラバラではなく、いつも <b>V = I × R</b> の関係で結ばれています。これが回路計算の出発点です。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 250" width="700">
+  <svg role="img" aria-label="図1-2 オームの法則の三角形と3つの形。右は「電圧と抵抗から電流を求める」例" viewBox="0 0 700 250" width="700">
     <!-- 三角形 -->
     <path d="M115,38 L35,198 L195,198 Z" fill="#F3E5DA" stroke="#BE5A38" stroke-width="2.5" stroke-linejoin="round"/>
     <line x1="72" y1="124" x2="158" y2="124" stroke="#BE5A38" stroke-width="2"/>
@@ -265,7 +285,7 @@
   <p class="goal">🎯 ゴール：直列＝電流が共通、並列＝電圧が共通、を図で説明できる</p>
   <p>部品のつなぎ方は大きく2通り。<b>道が1本</b>なら直列、<b>道が枝分かれ</b>していれば並列です。「何が共通になるか」がいちばん大事な違いです。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 330" width="700">
+  <svg role="img" aria-label="図1-3 直列は「電流が共通・電圧を分け合う」、並列は「電圧が共通・電流が分かれる」" viewBox="0 0 700 330" width="700">
     <text x="170" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">直列回路（道は1本）</text>
     <text x="530" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">並列回路（道が分かれる）</text>
     <line x1="350" y1="20" x2="350" y2="310" stroke="#E2DCCD" stroke-dasharray="4 4"/>
@@ -330,7 +350,7 @@
   <p class="goal">🎯 ゴール：直列・並列の合成抵抗を計算できる</p>
   <p>複数の抵抗を「まとめて1本の抵抗とみなす」のが合成抵抗。直列は<b>足すだけ</b>、並列は<b>逆数の和の逆数</b>です。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 300" width="700">
+  <svg role="img" aria-label="図1-4 合成抵抗：直列は和、並列は「積÷和」。同じ値2本の並列はちょうど半分" viewBox="0 0 700 300" width="700">
     <!-- 直列 -->
     <text x="30" y="34" font-size="13.5" font-weight="700" fill="#211F1A">直列 ＝ 足すだけ</text>
     <line x1="30" y1="80" x2="70" y2="80" stroke="#211F1A" stroke-width="2"/>
@@ -392,7 +412,7 @@
   <p class="goal">🎯 ゴール：図記号を見て部品の名称を答えられる</p>
   <p>回路図は部品を記号で描いた「地図」。まずはこの12個を覚えれば、訓練で出てくる回路図はほぼ読めます。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 440" width="700">
+  <svg role="img" aria-label="図1-5 基本の図記号12個。「接続点（黒丸）の有無」は配線ミスに直結するので特に注意" viewBox="0 0 700 440" width="700">
     <g font-size="12.5" fill="#211F1A" text-anchor="middle">
       <!-- row1 -->
       <rect x="4" y="4" width="166" height="136" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
@@ -506,7 +526,7 @@
   <p class="goal">🎯 ゴール：テスタで測定できる項目を列挙できる</p>
   <p>テスタ1台で「電圧・電流・抵抗・導通」が測れます。ダイヤルで<b>何を測るか</b>を選んでから使う道具です。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 310" width="700">
+  <svg role="img" aria-label="図1-6 デジタルテスタの基本。黒プローブはCOM、赤プローブはVΩmA端子へ" viewBox="0 0 700 310" width="700">
     <!-- 本体 -->
     <rect x="55" y="25" width="230" height="262" rx="16" fill="#F2EFE6" stroke="#211F1A" stroke-width="2"/>
     <rect x="80" y="45" width="180" height="52" rx="6" fill="#E7EDDC" stroke="#716C61"/>
@@ -559,7 +579,7 @@
   <p class="goal">🎯 ゴール：オシロが「何を見る道具か」を説明できる</p>
   <p>テスタは電圧を「1つの数字」で表示しますが、オシロスコープは<b>電圧が時間とともにどう変化するか＝波形</b>をグラフで見せてくれます。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 335" width="700">
+  <svg role="img" aria-label="図1-7 オシロの画面。マス目（div）×つまみの設定値で振幅・周期を読み取り、f＝1/T で周波数を出す" viewBox="0 0 700 335" width="700">
     <!-- 画面 -->
     <rect x="58" y="38" width="402" height="242" fill="#FFFFFF" stroke="#211F1A" stroke-width="2"/>
     <g stroke="#EAE4D5" stroke-width="1">
@@ -619,7 +639,7 @@
   <p class="goal">🎯 ゴール：ダイオード・LED・電解コンデンサの向きを実物で判断できる</p>
   <p>「向きのある部品」を逆に付けると、動かないだけでなく壊れることがあります。見分け方は部品ごとにお決まりのマークがあります。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 290" width="700">
+  <svg role="img" aria-label="図1-8 極性の見分け方。「長い足が＋」はLEDも電解コンデンサも共通" viewBox="0 0 700 290" width="700">
     <g text-anchor="middle">
       <!-- LED -->
       <rect x="6" y="6" width="222" height="252" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
@@ -682,7 +702,7 @@
   <p class="goal">🎯 ゴール：回路図を見てブレッドボードのどこに挿すか決められる</p>
   <p>回路図とブレッドボードをつなぐカギは、<b>「ボードの中で最初からつながっている場所」</b>を知ること。あとは回路図の線を1本ずつ置き換えるだけです。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 345" width="700">
+  <svg role="img" aria-label="図1-9 ブレッドボードの内部接続と、LED点灯回路の配線例。「同じ縦列に挿した足はつながる」が基本ルール" viewBox="0 0 700 345" width="700">
     <rect x="40" y="44" width="480" height="270" rx="12" fill="#F7F5EE" stroke="#C9C2B0" stroke-width="1.5"/>
     <!-- 電源レール -->
     <line x1="60" y1="64" x2="500" y2="64" stroke="#b23a2e" stroke-width="3"/>
@@ -762,7 +782,7 @@
   <p class="goal">🎯 ゴール：電圧・電流・抵抗それぞれの正しい測り方ができる</p>
   <p>テスタ操作の基本は「レンジ選択 → プローブの当て方」。特に<b>測るものによって「つなぎ方」が全く違う</b>ことが最重要ポイントです。</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 315" width="700">
+  <svg role="img" aria-label="図1-10 測るものでつなぎ方が変わる：電圧＝並列、電流＝直列、抵抗＝電源を切って単体で" viewBox="0 0 700 315" width="700">
     <g text-anchor="middle">
       <!-- 電圧 -->
       <rect x="6" y="6" width="222" height="290" rx="10" fill="#FCFBF7" stroke="#E2DCCD"/>
@@ -821,7 +841,7 @@
   <h2><span class="no">1-11</span>オシロスコープの使い方</h2>
   <p class="goal">🎯 ゴール：プローブ接続→スケール調整→トリガ設定の流れで波形を表示できる</p>
   <figure class="fig">
-  <svg viewBox="0 0 700 320" width="700">
+  <svg role="img" aria-label="図1-11 オシロの基本操作。トリガは「毎回同じ条件で描き始めるための目印」＝波形を止める仕組み" viewBox="0 0 700 320" width="700">
     <!-- 本体 -->
     <rect x="40" y="30" width="330" height="210" rx="12" fill="#F2EFE6" stroke="#211F1A" stroke-width="2"/>
     <rect x="60" y="52" width="160" height="120" fill="#FFFFFF" stroke="#716C61"/>
@@ -886,7 +906,7 @@
   <p>計算どおりの値が出なくても、それは失敗ではありません。<b>どれくらいズレたか（誤差率）</b>を数字にして、<b>なぜズレたか</b>を考えるところまでが実験です。</p>
   <div class="formula">誤差率〔%〕＝（実測値 − 理論値）÷ 理論値 × 100</div>
   <figure class="fig">
-  <svg viewBox="0 0 700 220" width="700">
+  <svg role="img" aria-label="図1-12 カラーコードの最後の帯は公差。±5%品の100Ωは「95〜105Ω」なら仕様どおり" viewBox="0 0 700 220" width="700">
     <line x1="50" y1="86" x2="145" y2="86" stroke="#211F1A" stroke-width="2.5"/>
     <line x1="355" y1="86" x2="450" y2="86" stroke="#211F1A" stroke-width="2.5"/>
     <rect x="145" y="60" width="210" height="52" rx="24" fill="#EFDDBB" stroke="#8a7a55" stroke-width="1.5"/>
@@ -1005,19 +1025,19 @@
   <h2>🔄 振り返りクイズ（セクション1）</h2>
   <p>答えを見る前に、まず口に出して答えてみるのが定着のコツ。</p>
   <button class="rnd" id="rnd-quiz">🎲 ランダムに1問ひらく</button>
-  <details><summary>Q1. オームの法則を3つの形で書くと？</summary><div class="a">V＝I×R、I＝V÷R、R＝V÷I。三角形（上V、下I・R）で覚えると変形しやすい。</div></details>
-  <details><summary>Q2. 9Vの電池に1.5kΩをつなぐと電流は？</summary><div class="a">I＝V÷R＝9÷1.5k＝<b>6mA</b>。（V÷kΩ＝mA）</div></details>
-  <details><summary>Q3. 直列回路で「どの部品も同じ」なのは電流？電圧？</summary><div class="a"><b>電流</b>。道が1本なので通る量はどこも同じ。電圧は各抵抗で分け合う。</div></details>
-  <details><summary>Q4. 並列回路で「どの枝も同じ」なのは？</summary><div class="a"><b>電圧</b>。同じ2点間につながっているため。電流は枝ごとに分かれる。</div></details>
-  <details><summary>Q5. ①100Ω＋150Ωの直列、②300Ωと600Ωの並列。合成抵抗は？</summary><div class="a">①250Ω　②(300×600)÷(300＋600)＝<b>200Ω</b>。並列は最小値（300Ω）より小さくなればOK。</div></details>
-  <details><summary>Q6. 電流を測るとき、テスタはどうつなぐ？</summary><div class="a">回路を切って<b>直列に割り込ませる</b>。並列に当てるとテスタ経由で大電流が流れて危険（ヒューズ断）。</div></details>
-  <details><summary>Q7. 抵抗を測る前に必ずやることは？</summary><div class="a"><b>電源を切る</b>（できれば部品を回路から外す）。通電中に測ると値が狂い、テスタを傷めることもある。</div></details>
-  <details><summary>Q8. LEDの長い足はアノード？カソード？</summary><div class="a"><b>アノード（＋側）</b>。短い足・ふちの平らな側がカソード（−側）。</div></details>
-  <details><summary>Q9. ダイオード本体の「帯」はどっち側？</summary><div class="a"><b>カソード側</b>。回路図記号の縦棒に対応する。電流はアノード→カソードにだけ流れる。</div></details>
-  <details><summary>Q10. オシロで周期が2msのとき、周波数は？</summary><div class="a">f＝1/T＝1/0.002s＝<b>500Hz</b>。</div></details>
-  <details><summary>Q11. ブレッドボードの縦5穴と電源レール、内部はどうつながっている？</summary><div class="a">縦5穴は<b>1グループとして内部で接続</b>、電源レールは<b>横一列が接続</b>。中央の溝で上下は切れている。</div></details>
-  <details><summary>Q12. 理論値100Ω・実測103Ωのとき誤差率は？考えられる原因は？</summary><div class="a">（103−100）÷100×100＝<b>＋3%</b>。抵抗の公差（金帯±5%）内なので部品は正常の範囲。ほかに接触抵抗・測定器の影響など。</div></details>
-  <details><summary>Q13. 「電源を入れる前」と「配線を変える前」、それぞれ何をする？</summary><div class="a">電源ON前＝配線・極性・レンジを見直す。配線変更前＝<b>電源を切る</b>。この順序を毎回守るのが安全操作の基本。</div></details>
+  <details><summary>Q1. オームの法則を3つの形で書くと？</summary><div class="a">V＝I×R、I＝V÷R、R＝V÷I。三角形（上V、下I・R）で覚えると変形しやすい。 <a class="qref" href="#s1-2">→ 解説 1-2 に戻る</a></div></details>
+  <details><summary>Q2. 9Vの電池に1.5kΩをつなぐと電流は？</summary><div class="a">I＝V÷R＝9÷1.5k＝<b>6mA</b>。（V÷kΩ＝mA） <a class="qref" href="#s1-2">→ 解説 1-2 に戻る</a></div></details>
+  <details><summary>Q3. 直列回路で「どの部品も同じ」なのは電流？電圧？</summary><div class="a"><b>電流</b>。道が1本なので通る量はどこも同じ。電圧は各抵抗で分け合う。 <a class="qref" href="#s1-3">→ 解説 1-3 に戻る</a></div></details>
+  <details><summary>Q4. 並列回路で「どの枝も同じ」なのは？</summary><div class="a"><b>電圧</b>。同じ2点間につながっているため。電流は枝ごとに分かれる。 <a class="qref" href="#s1-3">→ 解説 1-3 に戻る</a></div></details>
+  <details><summary>Q5. ①100Ω＋150Ωの直列、②300Ωと600Ωの並列。合成抵抗は？</summary><div class="a">①250Ω　②(300×600)÷(300＋600)＝<b>200Ω</b>。並列は最小値（300Ω）より小さくなればOK。 <a class="qref" href="#s1-4">→ 解説 1-4 に戻る</a></div></details>
+  <details><summary>Q6. 電流を測るとき、テスタはどうつなぐ？</summary><div class="a">回路を切って<b>直列に割り込ませる</b>。並列に当てるとテスタ経由で大電流が流れて危険（ヒューズ断）。 <a class="qref" href="#s1-10">→ 解説 1-10 に戻る</a></div></details>
+  <details><summary>Q7. 抵抗を測る前に必ずやることは？</summary><div class="a"><b>電源を切る</b>（できれば部品を回路から外す）。通電中に測ると値が狂い、テスタを傷めることもある。 <a class="qref" href="#s1-10">→ 解説 1-10 に戻る</a></div></details>
+  <details><summary>Q8. LEDの長い足はアノード？カソード？</summary><div class="a"><b>アノード（＋側）</b>。短い足・ふちの平らな側がカソード（−側）。 <a class="qref" href="#s1-8">→ 解説 1-8 に戻る</a></div></details>
+  <details><summary>Q9. ダイオード本体の「帯」はどっち側？</summary><div class="a"><b>カソード側</b>。回路図記号の縦棒に対応する。電流はアノード→カソードにだけ流れる。 <a class="qref" href="#s1-8">→ 解説 1-8 に戻る</a></div></details>
+  <details><summary>Q10. オシロで周期が2msのとき、周波数は？</summary><div class="a">f＝1/T＝1/0.002s＝<b>500Hz</b>。 <a class="qref" href="#s1-7">→ 解説 1-7 に戻る</a></div></details>
+  <details><summary>Q11. ブレッドボードの縦5穴と電源レール、内部はどうつながっている？</summary><div class="a">縦5穴は<b>1グループとして内部で接続</b>、電源レールは<b>横一列が接続</b>。中央の溝で上下は切れている。 <a class="qref" href="#s1-9">→ 解説 1-9 に戻る</a></div></details>
+  <details><summary>Q12. 理論値100Ω・実測103Ωのとき誤差率は？考えられる原因は？</summary><div class="a">（103−100）÷100×100＝<b>＋3%</b>。抵抗の公差（金帯±5%）内なので部品は正常の範囲。ほかに接触抵抗・測定器の影響など。 <a class="qref" href="#s1-12">→ 解説 1-12 に戻る</a></div></details>
+  <details><summary>Q13. 「電源を入れる前」と「配線を変える前」、それぞれ何をする？</summary><div class="a">電源ON前＝配線・極性・レンジを見直す。配線変更前＝<b>電源を切る</b>。この順序を毎回守るのが安全操作の基本。 <a class="qref" href="#s1-13">→ 解説 1-13 に戻る</a></div></details>
 </section>
 
 <nav class="pager">
@@ -1026,6 +1046,7 @@
 </nav>
 
 <footer>電子回路 学習ノート ─ セクション1：電気回路基礎</footer>
+<a class="totop" id="totop" href="#toc" aria-label="目次へ戻る">↑ 目次</a>
 </div>
 
 <script>
@@ -1042,6 +1063,8 @@ boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.check
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
+const totop=document.getElementById('totop');
+if(totop){const upd=()=>totop.classList.toggle('show',scrollY>700);addEventListener('scroll',upd,{passive:true});upd();}
 </script>
 </body>
 </html>
