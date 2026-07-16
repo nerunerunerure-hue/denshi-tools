@@ -43,6 +43,8 @@
   .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
   .toc a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
   .toc a.done::before{content:'✓ ';font-weight:700}
+  .toc a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  .toc a.weak::before{content:'🤔 '}
   main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
   .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
     padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
@@ -68,6 +70,7 @@
   .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
     padding:12px 16px;margin:14px 0;font-size:.9rem}
   .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  code{overflow-wrap:anywhere}
   .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
     border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
   table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
@@ -80,6 +83,11 @@
     border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
   .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
   .check.done{color:var(--green)}
+  .weakbtn{margin-left:auto;flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--ink-dim);
+    background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 10px;
+    cursor:pointer;user-select:none;transition:.12s}
+  .weakbtn:hover{border-color:#E8D3B0;color:var(--warn)}
+  .weakbtn.on{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
   .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
   .quiz h2{font-size:1.13rem;margin-bottom:6px}
   .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
@@ -217,7 +225,7 @@
   <figure class="fig">
   <svg role="img" aria-label="クロックの拍と命令実行の対応図" viewBox="0 0 700 240" width="700">
     <text x="350" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">クロック信号（1秒間に何回拍を刻むか＝クロック周波数）</text>
-    <polyline points="40,70 40,50 90,50 90,70 140,70 140,50 190,50 190,70 240,70 240,50 290,50 290,70 340,70 340,50 390,50 390,70 440,70 440,50 490,50 490,70 540,70 540,50 590,50 590,70 640,70 640,50 660,50" fill="none" stroke="#4A6FA5" stroke-width="2"/>
+    <polyline points="40,70 40,50 77.5,50 77.5,70 115,70 115,50 152.5,50 152.5,70 190,70 190,50 227.5,50 227.5,70 265,70 265,50 302.5,50 302.5,70 340,70 340,50 377.5,50 377.5,70 415,70 415,50 452.5,50 452.5,70 490,70 490,50 527.5,50 527.5,70 565,70 565,50 602.5,50 602.5,70 640,70 640,50 660,50" fill="none" stroke="#4A6FA5" stroke-width="2"/>
     <text x="350" y="95" text-anchor="middle" font-size="11" fill="#716C61">1クロックの時間 ＝ 1 ÷ クロック周波数</text>
     <path d="M40,120 L40,110 L340,110 L340,120" fill="none" stroke="#BE5A38" stroke-width="1.5"/>
     <text x="190" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#BE5A38">命令①：CPI＝4（4クロック分）</text>
@@ -513,7 +521,7 @@
   <h2><span class="no">2-10</span>信頼性のシステム構成 — 似た用語をひっかけに注意</h2>
   <p class="goal">🎯 ゴール：デュプレックス/デュアル、フォールトトレラント系の用語を正しく区別できる</p>
   <p>システムの信頼性を高めるために、複数の装置や系統を用意する構成方法があります。デュプレックスシステムは、本番系（現用系）と待機系の2系統を用意し、普段は本番系だけが動く構成です。待機系がすぐに動ける状態を保つホットスタンバイ、電源は入っているが起動に少し時間がかかるウォームスタンバイ、電源すら切ってあるコールドスタンバイに分かれます。デュアルシステムは、2系統が常に同じ処理を行い、結果を照合しながら運用する構成です。</p>
-  <p>「フォールト〇〇」「フール〇〇」のように似た名前が並ぶので、事例とセットで覚えるのがコツです。</p>
+  <p>「フォールト〇〇」「フェール〇〇」「フール〇〇」のように似た名前が並ぶので、事例とセットで覚えるのがコツです。</p>
   <table class="tbl">
     <tr><th>用語</th><th>意味</th><th>具体例</th></tr>
     <tr><td>フォールトトレラント</td><td>壊れても全体としては動き続ける性質</td><td>航空機の制御系</td></tr>
@@ -537,7 +545,7 @@
   <p>稼働率とは、あるシステムが正常に動いている時間の割合のことです。次の式で求められます。</p>
   <div class="formula">稼働率 ＝ MTBF ÷（MTBF ＋ MTTR）</div>
   <p>MTBF（Mean Time Between Failures：平均故障間隔）は、どのくらいの間隔で壊れずに動き続けられるかを表し、MTTR（Mean Time To Repair：平均修理時間）は、壊れてから直るまでの平均時間を表します。</p>
-  <p>複数の装置を組み合わせたときの計算は、直列構成と並列構成で式が変わります。直列構成は、バケツリレーのように1人でも手を止めたら全体が止まる構成で、どちらの装置も動いていないとシステム全体が動きません。並列構成は、道が2本あって片方が通行止めでももう片方が通れれば大丈夫、というように、どちらか一方でも動いていればシステム全体は動く構成です。</p>
+  <p>複数の装置を組み合わせたときの計算は、直列構成と並列構成で式が変わります。直列構成は、バケツリレーのように1人でも手を止めたら全体が止まる構成で、どちらか一方の装置が止まるだけでシステム全体が動かなくなります。並列構成は、道が2本あって片方が通行止めでももう片方が通れれば大丈夫、というように、どちらか一方でも動いていればシステム全体は動く構成です。</p>
   <figure class="fig">
   <svg role="img" aria-label="稼働率の直列構成と並列構成を比較する図。それぞれ対応する計算式を示す" viewBox="0 0 700 320" width="700">
     <text x="195" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">直列構成</text>
@@ -681,14 +689,36 @@
 const KEY='feStudy.v1';
 function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const WKEY='feStudy.weak.v1';
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
 const boxes=[...document.querySelectorAll('input[data-item]')];
 function refresh(){
-  const s=loadState();let n=0;
+  const s=loadState(),w=loadWeak();let n=0;
   boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
   document.getElementById('done-count').textContent=n;
-  document.querySelectorAll('.toc a').forEach(a=>a.classList.toggle('done',!!s[a.getAttribute('href').slice(1)]));
+  document.querySelectorAll('.toc a').forEach(a=>{const id=a.getAttribute('href').slice(1);const on=!!s[id];a.classList.toggle('done',on);a.classList.toggle('weak',!on&&!!w[id]);});
+  document.querySelectorAll('.weakbtn').forEach(b=>{const on=!!w[b.dataset.weak];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
 }
-boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked){s[b.dataset.item]=true;const w=loadWeak();if(w[b.dataset.item]){delete w[b.dataset.item];saveWeak(w);}}else delete s[b.dataset.item];saveState(s);refresh();}));
+// 各項目に「あやしい」トグルを付ける（fe-guideのあやしいリスト・優先出題と連動）
+boxes.forEach(b=>{
+  const id=b.dataset.item;
+  const btn=document.createElement('span');
+  btn.className='weakbtn';btn.dataset.weak=id;btn.textContent='🤔 あやしい';
+  btn.setAttribute('role','button');btn.tabIndex=0;btn.setAttribute('aria-pressed','false');
+  btn.title='復習リストに入れる（「できるようになった」を付けると自動で外れます）';
+  const toggleWeak=e=>{
+    e.preventDefault();e.stopPropagation();
+    const w=loadWeak();
+    if(w[id])delete w[id];
+    else{w[id]=true;const s=loadState();if(s[id]){delete s[id];saveState(s);}}
+    saveWeak(w);refresh();
+  };
+  btn.addEventListener('click',toggleWeak);
+  btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')toggleWeak(e);});
+  b.closest('.check').appendChild(btn);
+});
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}

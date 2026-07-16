@@ -101,6 +101,12 @@
   .weaklist a{font-size:.8rem;text-decoration:none;color:var(--ink);background:var(--surface2);
     border:1px solid var(--border);border-radius:99px;padding:4px 12px;transition:.12s}
   .weaklist a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .weaklist a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
+  .weaklist a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  #find-input{width:100%;font-family:var(--sans);font-size:.9rem;padding:10px 14px;margin-top:4px;
+    border:1px solid var(--border);border-radius:11px;background:var(--surface2);color:var(--ink);outline:none}
+  #find-input:focus{border-color:var(--accent-dim);background:var(--surface)}
+  #find-list{margin-top:12px}
   .prefopt{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--ink-dim);
     margin:12px 2px 0;cursor:pointer;user-select:none}
   .prefopt input{accent-color:var(--accent);width:16px;height:16px;flex-shrink:0}
@@ -158,7 +164,7 @@
     <tr><th>科目B</th><td>100分・20問 ── アルゴリズム（擬似言語）16問＋情報セキュリティ4問</td></tr>
     <tr><th>合格基準</th><td>両科目とも 600点／1,000点 以上（片方だけ高得点でも不合格）</td></tr>
     <tr><th>採点方式</th><td>IRT（項目応答理論）── 正答数×配点の単純合計ではなく、解答パターンから1,000点満点に換算される</td></tr>
-    <tr><th>合格率</th><td>直近は 35〜40% 前後</td></tr>
+    <tr><th>合格率</th><td>近年は 40% 前後（令和6年度 40.8%／令和7年度 約38%）</td></tr>
   </table>
   <div class="caution"><span class="tt">⚠️ 受験時期のはなし</span>
     2027年度に試験制度の大幅刷新が予定されていて、<b>現行制度（＝このノートの前提）は2026年度が最終年度</b>。
@@ -177,6 +183,14 @@
       <div class="msg" id="total-msg">各ページの「できるようになった」チェックがここに集計されます（この端末に保存）。</div>
     </div>
   </div>
+</section>
+
+<!-- 項目検索 -->
+<section class="card">
+  <h2>🔎 項目をさがす</h2>
+  <input id="find-input" type="search" placeholder="キーワードで104項目から検索（例：サブネット、稼働率、正規化）" autocomplete="off">
+  <div class="weaklist hidden" id="find-list"></div>
+  <p class="mini hidden" id="find-none">見つかりませんでした。別の言い方で試してみて。</p>
 </section>
 
 <!-- セクション（科目A） -->
@@ -203,7 +217,7 @@
   <span class="ico" style="--accent-bg:#E7EDDC">🌐</span>
   <span class="meta">
     <span class="t">3. ネットワーク <span class="cnt"><b id="c-nw">0</b>/11</span></span>
-    <span class="d">OSI/TCPIP・ポート番号・IPアドレス・サブネット計算・DNS</span>
+    <span class="d">OSIとTCP/IP・ポート番号・IPアドレス・サブネット計算・DNS</span>
     <span class="bar"><span class="fill" id="f-nw" style="display:block"></span></span>
   </span>
   <span class="arrow">›</span>
@@ -288,9 +302,9 @@
 <!-- あやしいリスト -->
 <section class="card">
   <h2>🤔 あやしいリスト <span class="mini">（<b id="weak-count">0</b> 件）</span></h2>
-  <p style="font-size:.85rem;color:var(--ink-dim)">抜き打ちチェックで「まだあやしい」と判定した項目。リンク先で復習して「✔ できるようになった」を付けると、自動でここから消えます。</p>
+  <p style="font-size:.85rem;color:var(--ink-dim)">抜き打ちチェックで「まだあやしい」と判定した項目と、各ページで「🤔 あやしい」を付けた項目。リンク先で復習して「✔ できるようになった」を付けると、自動でここから消えます。</p>
   <div class="weaklist hidden" id="weak-list"></div>
-  <p class="mini" id="weak-empty">いまは空っぽ。抜き打ちチェックで「🤔 まだあやしい」を押すと、ここに溜まっていきます。</p>
+  <p class="mini" id="weak-empty">いまは空っぽ。抜き打ちチェックの「🤔 まだあやしい」か、各ページの「🤔 あやしい」ボタンで、ここに溜まっていきます。</p>
 </section>
 
 <!-- 進捗の共有（端末間同期） -->
@@ -318,7 +332,7 @@
 <section class="card">
   <h2>📖 このノートの使い方（おすすめの回し方）</h2>
   <ol>
-    <li><b>1周目：</b>セクション1から順に、図を眺めながら読む。理解できた項目は「✔ できるようになった」にチェック。</li>
+    <li><b>1周目：</b>セクション1から順に、図を眺めながら読む。理解できた項目は「✔ できるようになった」、不安が残る項目は「🤔 あやしい」を付けて先へ進む。</li>
     <li><b>計算問題は手を動かす：</b>稼働率・サブネット・損益分岐点などは、例題を紙で解いてからチェック。</li>
     <li><b>科目Bはトレースの型：</b>セクション9の「トレース表の書き方」を身につけてから、IPAの公開問題で練習する。</li>
     <li><b>隙間時間（5分でOK）：</b>上の<b>抜き打ちチェック</b>か、各ページ末の<b>🎲ランダムクイズ</b>を数問。見ずに答える→答え合わせ。</li>
@@ -337,7 +351,7 @@
     <li><b>Day 6：</b>IPA公開問題を時間を計って通しで1回（科目Bは1問5分厳守、セキュリティ4問を先に）。</li>
     <li><b>Day 7：</b>抜き打ちチェックを回して、<b>🤔あやしいリスト</b>に残った項目をゼロにする。夜は早く寝る。</li>
   </ol>
-  <p class="tips">🎯 満点は要らない。<b>両科目600/1000</b>＝6割ちょっとで合格。取れる問題を確実に。</p>
+  <p class="tips">🎯 満点は要らない。<b>両科目600/1000</b>＝ちょうど6割で合格。取れる問題を確実に。</p>
 </section>
 
 <!-- 本試験の過去問 -->
@@ -555,6 +569,26 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
   if(confirm('チェック進捗とあやしいリストをすべてリセットします。よろしいですか？')){saveState({});saveWeak({});render();}
 });
 render();
+
+/* ===== 項目検索 ===== */
+const kataN=t=>String(t).toLowerCase().replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+96));
+document.getElementById('find-input').addEventListener('input',function(){
+  const q=kataN(this.value.trim());
+  const box=document.getElementById('find-list'),none=document.getElementById('find-none');
+  box.innerHTML='';
+  if(!q){box.classList.add('hidden');none.classList.add('hidden');return}
+  const s=loadState(),w=loadWeak();
+  const hits=ITEMS.filter(it=>kataN(it.t+' '+it.s+' '+it.id).includes(q)).slice(0,15);
+  hits.forEach(it=>{
+    const a=document.createElement('a');
+    a.href=it.p+'#'+it.id;
+    a.textContent=(s[it.id]?'✓ ':w[it.id]?'🤔 ':'')+it.t;
+    if(s[it.id])a.classList.add('done');else if(w[it.id])a.classList.add('weak');
+    box.appendChild(a);
+  });
+  box.classList.toggle('hidden',!hits.length);
+  none.classList.toggle('hidden',!!hits.length);
+});
 
 /* ===== 進捗の共有（端末間同期） =====
    ITEMSの並び順をビット位置の台帳として使う。

@@ -43,6 +43,8 @@
   .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
   .toc a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
   .toc a.done::before{content:'✓ ';font-weight:700}
+  .toc a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  .toc a.weak::before{content:'🤔 '}
   main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
   .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
     padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
@@ -68,6 +70,7 @@
   .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
     padding:12px 16px;margin:14px 0;font-size:.9rem}
   .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  code{overflow-wrap:anywhere}
   .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
     border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
   table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
@@ -80,6 +83,11 @@
     border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
   .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
   .check.done{color:var(--green)}
+  .weakbtn{margin-left:auto;flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--ink-dim);
+    background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 10px;
+    cursor:pointer;user-select:none;transition:.12s}
+  .weakbtn:hover{border-color:#E8D3B0;color:var(--warn)}
+  .weakbtn.on{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
   .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
   .quiz h2{font-size:1.13rem;margin-bottom:6px}
   .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
@@ -663,10 +671,10 @@
     <defs><marker id="fb11a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#BE5A38"/></marker></defs>
     <text x="350" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="#211F1A">標本化 → 量子化 → 符号化：音をデジタル化する3ステップ</text>
 
-    <text x="90" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">① アナログの波</text>
-    <text x="265" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">② 標本化</text>
-    <text x="440" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">③ 量子化</text>
-    <text x="615" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">④ 符号化</text>
+    <text x="90" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">アナログの波</text>
+    <text x="265" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">① 標本化</text>
+    <text x="440" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">② 量子化</text>
+    <text x="615" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#211F1A">③ 符号化</text>
 
     <rect x="15" y="48" width="150" height="150" rx="10" fill="#F3E5DA" stroke="#E6C3B0"/>
     <rect x="190" y="48" width="150" height="150" rx="10" fill="#E3EAF3" stroke="#B9CBE6"/>
@@ -736,7 +744,7 @@
     <ul>
       <li>標本化定理は「2倍以上」の一点を暗記しておけば即答できる。</li>
       <li>ビット⇔バイトの変換は×8・÷8を忘れずに（1-7の復習）。</li>
-      <li>画像のデータ量は「画素数×1画素のビット数」（1-7）、音のデータ量は今回の公式、と対で覚える。</li>
+      <li>画像のデータ量は「画素数×1画素のバイト数」（1-7、ビット数は÷8でバイトに直す）、音のデータ量は今回の公式、と対で覚える。</li>
     </ul>
   </div>
   <label class="check"><input type="checkbox" data-item="fb-11">標本化定理と音声データ量の計算ができるようになった</label>
@@ -871,14 +879,36 @@
 const KEY='feStudy.v1';
 function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const WKEY='feStudy.weak.v1';
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
 const boxes=[...document.querySelectorAll('input[data-item]')];
 function refresh(){
-  const s=loadState();let n=0;
+  const s=loadState(),w=loadWeak();let n=0;
   boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
   document.getElementById('done-count').textContent=n;
-  document.querySelectorAll('.toc a').forEach(a=>a.classList.toggle('done',!!s[a.getAttribute('href').slice(1)]));
+  document.querySelectorAll('.toc a').forEach(a=>{const id=a.getAttribute('href').slice(1);const on=!!s[id];a.classList.toggle('done',on);a.classList.toggle('weak',!on&&!!w[id]);});
+  document.querySelectorAll('.weakbtn').forEach(b=>{const on=!!w[b.dataset.weak];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
 }
-boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked){s[b.dataset.item]=true;const w=loadWeak();if(w[b.dataset.item]){delete w[b.dataset.item];saveWeak(w);}}else delete s[b.dataset.item];saveState(s);refresh();}));
+// 各項目に「あやしい」トグルを付ける（fe-guideのあやしいリスト・優先出題と連動）
+boxes.forEach(b=>{
+  const id=b.dataset.item;
+  const btn=document.createElement('span');
+  btn.className='weakbtn';btn.dataset.weak=id;btn.textContent='🤔 あやしい';
+  btn.setAttribute('role','button');btn.tabIndex=0;btn.setAttribute('aria-pressed','false');
+  btn.title='復習リストに入れる（「できるようになった」を付けると自動で外れます）';
+  const toggleWeak=e=>{
+    e.preventDefault();e.stopPropagation();
+    const w=loadWeak();
+    if(w[id])delete w[id];
+    else{w[id]=true;const s=loadState();if(s[id]){delete s[id];saveState(s);}}
+    saveWeak(w);refresh();
+  };
+  btn.addEventListener('click',toggleWeak);
+  btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')toggleWeak(e);});
+  b.closest('.check').appendChild(btn);
+});
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}

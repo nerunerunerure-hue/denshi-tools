@@ -43,6 +43,8 @@
   .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
   .toc a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
   .toc a.done::before{content:'✓ ';font-weight:700}
+  .toc a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  .toc a.weak::before{content:'🤔 '}
   main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
   .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
     padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
@@ -68,6 +70,7 @@
   .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
     padding:12px 16px;margin:14px 0;font-size:.9rem}
   .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  code{overflow-wrap:anywhere}
   .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
     border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
   table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
@@ -80,6 +83,11 @@
     border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
   .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
   .check.done{color:var(--green)}
+  .weakbtn{margin-left:auto;flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--ink-dim);
+    background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 10px;
+    cursor:pointer;user-select:none;transition:.12s}
+  .weakbtn:hover{border-color:#E8D3B0;color:var(--warn)}
+  .weakbtn.on{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
   .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
   .quiz h2{font-size:1.13rem;margin-bottom:6px}
   .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
@@ -207,7 +215,7 @@
   <pre class="code"><b>○</b> goukei(整数型: n)   /* goukeiという関数の宣言。引数nは整数型 */
   整数型: i, s          /* i と s を 整数型で変数宣言 */
   s <b>←</b> 0                /* 代入：sに0を入れる */
-  goukei(3)             /* 呼出し：goukeiにひきすう3を渡して実行 */</pre>
+  goukei(3)             /* 呼出し：goukeiに引数3を渡して実行 */</pre>
   <p>演算子には優先順位があり、上から先に計算されます（高→低）。この順番は本文中でも一字一句変えずに使うので、そのまま覚えてください。</p>
   <div class="formula">( ) と .（メンバ参照）　＞　単項 not, +, −　＞　mod, ×, ÷　＞　+, −　＞　関係(≠ ≦ ≧ &lt; = &gt;)　＞　and　＞　or</div>
   <p><code>mod</code>は割り算の余りを求める演算子です（例：7 mod 2 = 1）。「掛け算・割り算・modが先、足し算・引き算は後、比較はもっと後、and/orは一番後」という順番だけ押さえれば式は読めます。</p>
@@ -330,7 +338,7 @@
     <text x="30" y="114" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">3</text>
     <text x="45" y="114" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  s ← 0</text>
     <text x="30" y="140" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">4</text>
-    <text x="45" y="140" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  for(iを1からnまで1ずつ増加)</text>
+    <text x="45" y="140" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">  for(iを1からnまで1ずつ増やす)</text>
     <text x="30" y="166" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">5</text>
     <text x="45" y="166" font-size="12" fill="#211F1A" font-family="'JetBrains Mono',monospace">    s ← s + i</text>
     <text x="30" y="192" font-size="11" fill="#716C61" font-family="'JetBrains Mono',monospace">6</text>
@@ -968,7 +976,7 @@ kekka ← nibai(5)</pre>
     <tr><th>年度</th><th>テーマ</th></tr>
     <tr><td>2022年（サンプル）</td><td>クラウドの責任分界（PaaS利用時に誰が脆弱性対処するか）</td></tr>
     <tr><td>2023年</td><td>複合機メール初期設定のリスク（フィッシング誘導等の選択）</td></tr>
-    <tr><td>2024年</td><td>テレワーク／BYOD＋SaaS直接続の不正アクセス対策（2要素認証）</td></tr>
+    <tr><td>2024年</td><td>テレワーク／BYOD＋SaaS直接接続の不正アクセス対策（2要素認証）</td></tr>
     <tr><td>2025年</td><td>バックアップ運用のRPO/RTO計算＋ISMS認証（JIS Q 27001:2023）</td></tr>
   </table>
   <p>解き方のコツは、登場人物（自社／委託先／クラウド事業者）とそれぞれの責任範囲を簡単にメモへ図示してから、「誰が対処すべきか」「最も適切なリスク対応・対策はどれか」を選択肢から消去法で絞り込むことです。SECTION 4（セキュリティ）の「アクセス管理と組織的対策」「バックアップとBCP」の内容が直結するので、忘れていたらそちらを復習してください。</p>
@@ -1306,14 +1314,36 @@ endwhile</pre></summary>
 const KEY='feStudy.v1';
 function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const WKEY='feStudy.weak.v1';
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
 const boxes=[...document.querySelectorAll('input[data-item]')];
 function refresh(){
-  const s=loadState();let n=0;
+  const s=loadState(),w=loadWeak();let n=0;
   boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
   document.getElementById('done-count').textContent=n;
-  document.querySelectorAll('.toc a').forEach(a=>a.classList.toggle('done',!!s[a.getAttribute('href').slice(1)]));
+  document.querySelectorAll('.toc a').forEach(a=>{const id=a.getAttribute('href').slice(1);const on=!!s[id];a.classList.toggle('done',on);a.classList.toggle('weak',!on&&!!w[id]);});
+  document.querySelectorAll('.weakbtn').forEach(b=>{const on=!!w[b.dataset.weak];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
 }
-boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked){s[b.dataset.item]=true;const w=loadWeak();if(w[b.dataset.item]){delete w[b.dataset.item];saveWeak(w);}}else delete s[b.dataset.item];saveState(s);refresh();}));
+// 各項目に「あやしい」トグルを付ける（fe-guideのあやしいリスト・優先出題と連動）
+boxes.forEach(b=>{
+  const id=b.dataset.item;
+  const btn=document.createElement('span');
+  btn.className='weakbtn';btn.dataset.weak=id;btn.textContent='🤔 あやしい';
+  btn.setAttribute('role','button');btn.tabIndex=0;btn.setAttribute('aria-pressed','false');
+  btn.title='復習リストに入れる（「できるようになった」を付けると自動で外れます）';
+  const toggleWeak=e=>{
+    e.preventDefault();e.stopPropagation();
+    const w=loadWeak();
+    if(w[id])delete w[id];
+    else{w[id]=true;const s=loadState();if(s[id]){delete s[id];saveState(s);}}
+    saveWeak(w);refresh();
+  };
+  btn.addEventListener('click',toggleWeak);
+  btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')toggleWeak(e);});
+  b.closest('.check').appendChild(btn);
+});
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}

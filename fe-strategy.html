@@ -43,6 +43,8 @@
   .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
   .toc a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
   .toc a.done::before{content:'✓ ';font-weight:700}
+  .toc a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  .toc a.weak::before{content:'🤔 '}
   main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
   .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
     padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
@@ -68,6 +70,7 @@
   .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
     padding:12px 16px;margin:14px 0;font-size:.9rem}
   .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  code{overflow-wrap:anywhere}
   .formula{font-family:var(--mono);text-align:center;font-size:1.02rem;background:var(--surface2);
     border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
   table.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
@@ -80,6 +83,11 @@
     border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
   .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
   .check.done{color:var(--green)}
+  .weakbtn{margin-left:auto;flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--ink-dim);
+    background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 10px;
+    cursor:pointer;user-select:none;transition:.12s}
+  .weakbtn:hover{border-color:#E8D3B0;color:var(--warn)}
+  .weakbtn.on{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
   .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
   .quiz h2{font-size:1.13rem;margin-bottom:6px}
   .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
@@ -499,7 +507,7 @@
   <h2><span class="no">8-8</span>IT関連の法律 — 派遣と請負、指揮命令はどっちから</h2>
   <p class="goal">🎯 ゴール：派遣と請負の指揮命令の違いを言える。偽装請負がなぜ問題になるか説明できるようになる</p>
   <p><b>不正アクセス禁止法</b>は、他人のID・パスワードを勝手に使ってログインする行為を禁止する法律で、他人にそれを教えて手助けする行為（助長行為）も処罰の対象になります。<b>個人情報保護法</b>は、氏名などから特定の個人を識別できる情報を保護する法律で、人種・病歴・犯罪歴などは特に慎重に扱うべき「要配慮個人情報」として扱われます。</p>
-  <p>試験で頻出なのが、労働者派遣と請負における<b>指揮命令の違い</b>です。派遣は、派遣元（雇用主）と契約した労働者が、実際には<b>派遣先の指揮命令</b>を受けて働きます。一方、請負は、発注元は「仕事を完成させること」だけを依頼するもので、実際に働く人への指揮命令は<b>受託会社自身</b>が行います。もし発注元が受託会社の社員に直接指示を出してしまうと、契約上は請負なのに実態は派遣のような働き方になってしまう「<b>偽装請負</b>」という違法な状態になります。</p>
+  <p>試験で頻出なのが、労働者派遣と請負における<b>指揮命令の違い</b>です。派遣は、派遣元（雇用主）と契約した労働者が、実際には<b>派遣先の指揮命令</b>を受けて働きます。一方、請負は、発注者は「仕事を完成させること」だけを依頼するもので、実際に働く人への指揮命令は<b>受託会社自身</b>が行います。もし発注者が受託会社の社員に直接指示を出してしまうと、契約上は請負なのに実態は派遣のような働き方になってしまう「<b>偽装請負</b>」という違法な状態になります。</p>
   <figure class="fig">
   <svg role="img" aria-label="請負と労働者派遣における指揮命令の違いを示す図。請負は自社の管理下、派遣は派遣先が指揮命令する" viewBox="0 0 700 320" width="700">
     <text x="175" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#211F1A">請負</text>
@@ -561,14 +569,14 @@
   <table class="tbl">
     <tr><th></th><th>請負</th><th>労働者派遣</th></tr>
     <tr><td>指揮命令を出すのは</td><td>受託会社自身</td><td>派遣先</td></tr>
-    <tr><td>発注元・派遣先が直接指示すると</td><td>偽装請負（違法）</td><td>正しい働き方</td></tr>
+    <tr><td>発注者・派遣先が直接指示すると</td><td>偽装請負（違法）</td><td>正しい働き方</td></tr>
     <tr><td>契約の目的</td><td>仕事の完成</td><td>労働力の提供</td></tr>
   </table>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
-      <li>請負＝指揮命令は受託側の中で完結、発注元は直接指示しない</li>
+      <li>請負＝指揮命令は受託側の中で完結、発注者は直接指示しない</li>
       <li>派遣＝指揮命令は派遣先から出る（これが正しい働き方）</li>
-      <li>請負契約なのに発注元が直接指示＝偽装請負という違法状態</li>
+      <li>請負契約なのに発注者が直接指示＝偽装請負という違法状態</li>
     </ul>
   </div>
   <label class="check"><input type="checkbox" data-item="st-8">派遣と請負の指揮命令の違いを説明できるようになった</label>
@@ -648,14 +656,36 @@
 const KEY='feStudy.v1';
 function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const WKEY='feStudy.weak.v1';
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
 const boxes=[...document.querySelectorAll('input[data-item]')];
 function refresh(){
-  const s=loadState();let n=0;
+  const s=loadState(),w=loadWeak();let n=0;
   boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
   document.getElementById('done-count').textContent=n;
-  document.querySelectorAll('.toc a').forEach(a=>a.classList.toggle('done',!!s[a.getAttribute('href').slice(1)]));
+  document.querySelectorAll('.toc a').forEach(a=>{const id=a.getAttribute('href').slice(1);const on=!!s[id];a.classList.toggle('done',on);a.classList.toggle('weak',!on&&!!w[id]);});
+  document.querySelectorAll('.weakbtn').forEach(b=>{const on=!!w[b.dataset.weak];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
 }
-boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked){s[b.dataset.item]=true;const w=loadWeak();if(w[b.dataset.item]){delete w[b.dataset.item];saveWeak(w);}}else delete s[b.dataset.item];saveState(s);refresh();}));
+// 各項目に「あやしい」トグルを付ける（fe-guideのあやしいリスト・優先出題と連動）
+boxes.forEach(b=>{
+  const id=b.dataset.item;
+  const btn=document.createElement('span');
+  btn.className='weakbtn';btn.dataset.weak=id;btn.textContent='🤔 あやしい';
+  btn.setAttribute('role','button');btn.tabIndex=0;btn.setAttribute('aria-pressed','false');
+  btn.title='復習リストに入れる（「できるようになった」を付けると自動で外れます）';
+  const toggleWeak=e=>{
+    e.preventDefault();e.stopPropagation();
+    const w=loadWeak();
+    if(w[id])delete w[id];
+    else{w[id]=true;const s=loadState();if(s[id]){delete s[id];saveState(s);}}
+    saveWeak(w);refresh();
+  };
+  btn.addEventListener('click',toggleWeak);
+  btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')toggleWeak(e);});
+  b.closest('.check').appendChild(btn);
+});
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
