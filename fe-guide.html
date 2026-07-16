@@ -107,6 +107,22 @@
   .reset{text-align:center;margin-top:4px}
   .reset button{background:none;border:none;color:var(--ink-dim);font-size:.74rem;font-family:var(--sans);
     text-decoration:underline;cursor:pointer}
+  /* 進捗の共有（端末間同期） */
+  .sync-grid{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin-top:14px}
+  .sync-qr{flex-shrink:0;width:186px;min-height:186px;background:#fff;border:1px solid var(--border);
+    border-radius:12px;display:grid;place-items:center;padding:10px;font-size:.76rem;color:var(--ink-dim);text-align:center}
+  .sync-qr img{display:block;width:166px;height:166px;image-rendering:pixelated}
+  .sync-main{flex:1;min-width:220px}
+  .sync-row{display:flex;gap:8px;margin:8px 0}
+  .sync-row input{flex:1;min-width:0;font-family:var(--sans);font-size:.78rem;padding:9px 11px;
+    border:1px solid var(--border);border-radius:9px;background:var(--surface2);color:var(--ink)}
+  .sync-row button{flex-shrink:0;border:none;border-radius:9px;padding:9px 16px;font-family:var(--sans);
+    font-weight:700;font-size:.82rem;cursor:pointer;background:var(--accent);color:#fff;transition:.12s}
+  .sync-row button:hover{background:#A84C2E}
+  .sync-msg{font-size:.84rem;font-weight:700;margin:10px 0 0;padding:10px 12px;border-radius:9px}
+  .sync-msg.ok{color:var(--green);background:var(--green-soft);border:1px solid #D5DFC6}
+  .sync-msg.ng{color:#b23a2e;background:#F7E3DE;border:1px solid #E8C4BA}
+  #sync-card details summary{cursor:pointer;user-select:none}
   footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
 </style>
 </head>
@@ -275,6 +291,27 @@
   <p style="font-size:.85rem;color:var(--ink-dim)">抜き打ちチェックで「まだあやしい」と判定した項目。リンク先で復習して「✔ できるようになった」を付けると、自動でここから消えます。</p>
   <div class="weaklist hidden" id="weak-list"></div>
   <p class="mini" id="weak-empty">いまは空っぽ。抜き打ちチェックで「🤔 まだあやしい」を押すと、ここに溜まっていきます。</p>
+</section>
+
+<!-- 進捗の共有（端末間同期） -->
+<section class="card" id="sync-card">
+  <h2>📱 進捗をほかの端末と共有</h2>
+  <p style="font-size:.85rem;color:var(--ink-dim)">チェックは端末（ブラウザ）ごとに保存されるため、PCとスマホでは別々になります。共有コードを使うと、チェックとあやしいリストを<b>合算（マージ）</b>できます。取り込んでも、取り込み先に既にあるチェックは消えません。</p>
+  <div class="btns"><button class="btn-draw" id="btn-sync-make">この端末の進捗から共有コードを作る</button></div>
+  <div id="sync-out" class="hidden">
+    <div class="sync-grid">
+      <div class="sync-qr" id="sync-qr">QRを生成中…</div>
+      <div class="sync-main">
+        <p class="mini">スマホのカメラでQRを読み取って開くと、この端末の進捗が取り込まれます。URLをコピーしてメモアプリ等で送ってもOK。</p>
+        <div class="sync-row"><input id="sync-url" readonly><button id="btn-sync-copy">コピー</button></div>
+      </div>
+    </div>
+  </div>
+  <details style="margin-top:12px">
+    <summary class="mini">逆方向（スマホ→PCなど）：コードを貼り付けて取り込む</summary>
+    <div class="sync-row"><input id="sync-in" placeholder="共有コード または URL を貼り付け"><button id="btn-sync-import">取り込む</button></div>
+  </details>
+  <p id="sync-msg" class="sync-msg hidden"></p>
 </section>
 
 <!-- 使い方 -->
@@ -518,6 +555,81 @@ document.getElementById('btn-reset').addEventListener('click',()=>{
   if(confirm('チェック進捗とあやしいリストをすべてリセットします。よろしいですか？')){saveState({});saveWeak({});render();}
 });
 render();
+
+/* ===== 進捗の共有（端末間同期） =====
+   ITEMSの並び順をビット位置の台帳として使う。
+   ※項目を増やすときは必ずITEMSの末尾に追加すること（途中挿入・並べ替えをすると過去の共有コードがズレる） */
+const SYNC_IDS=ITEMS.map(it=>it.id);
+function b64e(bytes){return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function b64d(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';return [...atob(str)].map(c=>c.charCodeAt(0))}
+function packMap(m){const bytes=new Array(Math.ceil(SYNC_IDS.length/8)).fill(0);SYNC_IDS.forEach((id,i)=>{if(m[id])bytes[i>>3]|=1<<(i&7)});return bytes}
+function unpackMap(bytes,n){const m={};const lim=Math.min(n,SYNC_IDS.length);for(let i=0;i<lim;i++){if((bytes[i>>3]>>(i&7))&1)m[SYNC_IDS[i]]=true}return m}
+function makeSyncCode(){return b64e([1,SYNC_IDS.length,...packMap(loadState()),...packMap(loadWeak())])}
+function parseSyncCode(text){
+  const mrx=String(text).match(/#s=([A-Za-z0-9\-_]+)/);
+  const code=mrx?mrx[1]:String(text).trim();
+  if(!/^[A-Za-z0-9\-_]{6,}$/.test(code))return null;
+  let bytes;try{bytes=b64d(code)}catch(e){return null}
+  if(bytes[0]!==1)return null;
+  const n=bytes[1],nb=Math.ceil(n/8);
+  if(bytes.length<2+nb*2)return null;
+  return {checks:unpackMap(bytes.slice(2,2+nb),n),weak:unpackMap(bytes.slice(2+nb,2+nb*2),n)};
+}
+function showSyncMsg(text,ok){
+  const el=document.getElementById('sync-msg');
+  el.textContent=text;el.classList.remove('hidden');
+  el.classList.toggle('ok',!!ok);el.classList.toggle('ng',!ok);
+}
+function importSyncCode(text){
+  const p=parseSyncCode(text);
+  if(!p){showSyncMsg('コードを読み取れませんでした。共有コードまたはURLをそのまま貼り付けてください。',false);return}
+  const s=loadState(),w=loadWeak();
+  let added=0,wadded=0;
+  for(const id in p.checks){if(!s[id]){s[id]=true;added++}}
+  for(const id in p.weak){if(!w[id]){w[id]=true;wadded++}}
+  saveState(s);saveWeak(w);render();
+  showSyncMsg(`✅ 取り込みました：チェック +${added}件・あやしい +${wadded}件（この端末は現在 ${counts().total}/${TOTAL}）`,true);
+}
+function showSyncQR(url){
+  const box=document.getElementById('sync-qr');
+  const draw=()=>{try{
+    const qr=qrcode(0,'M');qr.addData(url);qr.make();
+    box.innerHTML=qr.createImgTag(4,8);
+    const img=box.querySelector('img');img.style.width='166px';img.style.height='166px';
+  }catch(e){box.textContent='QRを表示できませんでした。URLをコピーして送ってください。'}};
+  if(window.qrcode){draw();return}
+  const sc=document.createElement('script');
+  sc.src='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
+  sc.onload=draw;
+  sc.onerror=()=>{box.textContent='QRを表示できません（オフライン？）。URLをコピーして送ってください。'};
+  document.head.appendChild(sc);
+}
+document.getElementById('btn-sync-make').addEventListener('click',()=>{
+  const url=location.href.split('#')[0]+'#s='+makeSyncCode();
+  document.getElementById('sync-url').value=url;
+  document.getElementById('sync-out').classList.remove('hidden');
+  showSyncQR(url);
+});
+document.getElementById('btn-sync-copy').addEventListener('click',()=>{
+  const inp=document.getElementById('sync-url');
+  const done=()=>{const b=document.getElementById('btn-sync-copy');b.textContent='コピーしました';setTimeout(()=>b.textContent='コピー',1600)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(inp.value).then(done).catch(()=>{inp.select();document.execCommand('copy');done()})}
+  else{inp.select();document.execCommand('copy');done()}
+});
+document.getElementById('btn-sync-import').addEventListener('click',()=>{
+  importSyncCode(document.getElementById('sync-in').value);
+});
+// URLの #s=… 付きで開かれたら自動で取り込む（QR読み取り・共有URLタップ時）
+// 開きっぱなしのタブにURLを貼った場合はリロードされずhashchangeだけ起きるので、そちらでも取り込む
+function handleSyncHash(){
+  if(!location.hash.startsWith('#s='))return;
+  const t=location.hash;
+  history.replaceState(null,'',location.pathname+location.search);
+  importSyncCode(t);
+  document.getElementById('sync-card').scrollIntoView();
+}
+addEventListener('hashchange',handleSyncHash);
+handleSyncHash();
 </script>
 </body>
 </html>
