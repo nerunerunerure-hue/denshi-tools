@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基本情報 直前対策ドリル｜一問一答×計算ドリル</title>
+<meta name="description" content="基本情報技術者試験（FE）の直前仕上げ用ドリル。全104項目の一問一答スピードランと、数値が毎回変わる計算ドリルで最後の詰めを。学習ノートのチェック・あやしいリストと連動。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
+    --border:#E2DCCD;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bg)}
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.85;
+    padding:0 14px calc(48px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
+    margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
+  .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
+  .topbar .prog b{color:var(--warn)}
+  .hero{padding:26px 4px 6px}
+  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
+  .hero p.lead{color:var(--ink-dim);font-size:.9rem}
+  .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px;scroll-margin-top:56px}
+  .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
+    border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:22px 20px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
+  .card h2{font-size:1.13rem;margin-bottom:6px}
+  .card>p{font-size:.9rem;margin:8px 0}
+  .card p.sub{font-size:.85rem;color:var(--ink-dim)}
+  .card ul,.card ol{font-size:.9rem;padding-left:1.5em;margin:8px 0}
+  .card li{margin:4px 0}
+  .mini{font-size:.78rem;color:var(--ink-dim)}
+  .formula{font-family:var(--mono);text-align:center;font-size:.95rem;background:var(--surface2);
+    border-radius:10px;padding:10px 14px;margin:12px 0;letter-spacing:.02em}
+  /* ── コントロール ── */
+  .ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+  .ctl select{font-family:var(--sans);font-size:.88rem;padding:8px 12px;border:1px solid var(--border);
+    border-radius:10px;background:var(--surface2);color:var(--ink);outline:none;max-width:100%}
+  .ctl select:focus{border-color:var(--accent-dim)}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg label{font-size:.8rem;font-weight:600;color:var(--ink-dim);background:var(--surface2);
+    border:1px solid var(--border);border-radius:99px;padding:5px 13px;cursor:pointer;user-select:none;transition:.12s}
+  .seg input{display:none}
+  .seg label:has(input:checked){background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+  .btn{border:none;border-radius:11px;padding:12px 18px;font-family:var(--sans);font-weight:700;
+    font-size:.9rem;cursor:pointer;transition:.12s}
+  .btn-main{background:var(--accent);color:#fff}
+  .btn-main:hover{background:#A84C2E}
+  .btn-main:disabled{background:var(--accent-dim);cursor:not-allowed}
+  .btn-sub{background:var(--surface2);color:var(--ink);border:1px solid var(--border)}
+  .btn-sub:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .btn-ok{background:var(--green-soft);color:var(--green);border:1px solid #D5DFC6}
+  .btn-ng{background:var(--warn-soft);color:var(--warn);border:1px solid #E8D3B0}
+  .btn-ok:hover,.btn-ng:hover{filter:brightness(.97)}
+  /* ── 出題カード ── */
+  .qcard{background:#FFFEFB;border:1px solid var(--border);border-radius:14px;padding:18px 16px;margin:12px 0}
+  .qcard .tag{font-size:.72rem;color:var(--ink-dim);letter-spacing:.04em;font-weight:600}
+  .qcard .tag b{color:var(--accent)}
+  .qcard .qt{font-size:1.06rem;font-weight:700;line-height:1.7;margin:8px 0 4px;white-space:pre-line}
+  .qcard .ansbox{border-top:1px dashed var(--border);margin-top:12px;padding-top:12px}
+  .qcard .ansbox .a{font-size:1.02rem;font-weight:700;color:var(--accent)}
+  .qcard .ansbox .note{font-size:.84rem;color:var(--ink-dim);margin-top:4px}
+  .qcard .ansbox ol{font-size:.86rem;padding-left:1.5em;margin:8px 0 2px}
+  .qcard .ansbox .goref{display:inline-block;margin-top:8px;font-size:.8rem;color:var(--accent);
+    text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
+  .statline{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.82rem;color:var(--ink-dim);font-weight:600;margin:6px 0}
+  .statline b{color:var(--accent)}
+  .statline .g{color:var(--green)}
+  .statline .w{color:var(--warn)}
+  .gradebtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .gradebtns .btn{flex:1;min-width:120px}
+  .endchips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px}
+  .endchips a{font-size:.78rem;text-decoration:none;color:var(--warn);background:var(--warn-soft);
+    border:1px solid #E8D3B0;border-radius:99px;padding:4px 12px;transition:.12s}
+  .endchips a:hover{filter:brightness(.97)}
+  .stopline{text-align:center;margin-top:8px}
+  .stopline button{background:none;border:none;color:var(--ink-dim);font-size:.76rem;font-family:var(--sans);
+    text-decoration:underline;cursor:pointer}
+  .hidden{display:none}
+  /* ── 計算ドリルのトピック ── */
+  .topics{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+  .tp{font-size:.78rem;font-weight:600;color:var(--ink-dim);background:var(--surface2);
+    border:1px solid var(--border);border-radius:99px;padding:4px 12px;cursor:pointer;user-select:none;transition:.12s}
+  .tp.on{background:var(--blue-soft);border-color:#B9CBE6;color:var(--blue)}
+  .tp.on::before{content:'✓ ';font-weight:700}
+  .tpall{font-size:.74rem;color:var(--accent);background:none;border:none;font-family:var(--sans);
+    font-weight:700;cursor:pointer;text-decoration:underline;padding:4px 6px}
+  /* ── チェックリスト ── */
+  .ck{display:flex;align-items:flex-start;gap:9px;padding:8px 4px;font-size:.9rem;cursor:pointer;user-select:none;
+    border-bottom:1px dashed var(--border)}
+  .ck:last-of-type{border-bottom:none}
+  .ck input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;margin-top:6px}
+  .ck.done{color:var(--ink-dim);text-decoration:line-through;text-decoration-color:var(--accent-dim)}
+  .ck b{font-weight:700}
+  .ckhead{font-size:.84rem;font-weight:700;color:var(--accent);margin:14px 0 2px}
+  .ckhead:first-of-type{margin-top:6px}
+  .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
+    padding:12px 16px;margin:14px 0 2px;font-size:.88rem}
+  .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
+  .reset{text-align:center;margin-top:10px}
+  .reset button{background:none;border:none;color:var(--ink-dim);font-size:.74rem;font-family:var(--sans);
+    text-decoration:underline;cursor:pointer}
+  /* ── リンク集 ── */
+  .related{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .related a{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;
+    background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;
+    font-size:.84rem;font-weight:600;transition:.12s}
+  .related a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .seclinks{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 2px}
+  .seclinks a{font-size:.78rem;text-decoration:none;color:var(--ink);background:var(--surface2);
+    border:1px solid var(--border);border-radius:99px;padding:4px 12px;transition:.12s}
+  .seclinks a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
+  .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a.next{text-align:right}
+  .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
+  footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <a href="fe-guide.html">‹ 基本情報ノート</a>
+  <span class="crumb">直前対策</span>
+  <span class="prog">🤔 あやしい <b id="weak-count">0</b> 件</span>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">LAST SPURT</div>
+  <h1>⚡ 直前対策ドリル</h1>
+  <p class="lead">試験直前の総仕上げ用ページ。全104項目の一問一答スピードランと、数値が毎回変わる計算ドリルで「わかったつもり」を潰します。🤔を付けた項目は学習ノートの<b>あやしいリスト</b>にそのまま入るので、間違えたらすぐ解説に戻れます。</p>
+  <nav class="toc">
+    <a href="#speedrun">🃏 一問一答</a>
+    <a href="#calcdrill">🧮 計算ドリル</a>
+    <a href="#checklist">📋 本番チェックリスト</a>
+    <a href="#links">🔗 復習リンク</a>
+  </nav>
+</div>
+
+<main>
+
+<section class="card">
+  <h2>🗓️ 直前3日間の回し方（目安）</h2>
+  <ul>
+    <li><b>3日前〜2日前</b>：一問一答を全範囲で1周。即答できなかったものは🤔 → 解説に戻って読み直す。</li>
+    <li><b>毎日</b>：計算ドリルを1周（数値が毎回変わるので「型」が身につきます）。</li>
+    <li><b>前日</b>：🤔あやしいだけモードでもう1周＋本番チェックリストを上から確認。夜はさっさと寝る。</li>
+  </ul>
+</section>
+
+<!-- ============ 一問一答スピードラン ============ -->
+<section class="card" id="speedrun">
+  <h2>🃏 一問一答スピードラン</h2>
+  <p class="sub">口に出して（頭の中で）即答→タップで答え合わせ。3秒で出てこなければ🤔でOK、それが正しい直前対策です。</p>
+
+  <div id="sr-setup">
+    <div class="ctl">
+      <select id="sr-range" aria-label="出題範囲">
+        <option value="all">全セクション（104項目）</option>
+        <option value="fb">1：基礎理論</option>
+        <option value="cs">2：コンピュータシステム</option>
+        <option value="nw">3：ネットワーク</option>
+        <option value="sec">4：セキュリティ</option>
+        <option value="db">5：データベース</option>
+        <option value="dv">6：開発技術</option>
+        <option value="mg">7：マネジメント</option>
+        <option value="st">8：ストラテジ</option>
+        <option value="al">9：科目B アルゴリズム</option>
+      </select>
+      <div class="seg" role="radiogroup" aria-label="出題対象">
+        <label><input type="radio" name="sr-mode" value="all" checked>全部</label>
+        <label><input type="radio" name="sr-mode" value="weak">🤔あやしいだけ</label>
+        <label><input type="radio" name="sr-mode" value="unchecked">未チェックだけ</label>
+      </div>
+    </div>
+    <div class="ctl">
+      <button class="btn btn-main" id="sr-start">▶ スタート</button>
+      <span class="mini" id="sr-hint"></span>
+    </div>
+  </div>
+
+  <div id="sr-play" class="hidden">
+    <div class="statline"><span>残り <b id="sr-left">0</b> 問</span><span class="g">⭕ <span id="sr-ok">0</span></span><span class="w">🤔 <span id="sr-ng">0</span></span></div>
+    <div class="qcard">
+      <div class="tag" id="sr-tag"></div>
+      <div class="qt" id="sr-q"></div>
+      <div class="ctl" id="sr-revealline"><button class="btn btn-sub" id="sr-reveal">答えを見る</button></div>
+      <div class="ansbox hidden" id="sr-ans">
+        <div class="a" id="sr-a"></div>
+        <div class="note" id="sr-note"></div>
+        <a class="goref" id="sr-ref" href="#">→ 解説に戻る</a>
+        <div class="gradebtns">
+          <button class="btn btn-ok" id="sr-gok">⭕ 即答できた</button>
+          <button class="btn btn-ng" id="sr-gng">🤔 あやしい</button>
+        </div>
+      </div>
+    </div>
+    <div class="stopline"><button id="sr-stop">⏹ ここでやめる</button></div>
+  </div>
+
+  <div id="sr-done" class="hidden">
+    <div class="qcard">
+      <div class="tag">結果</div>
+      <div class="qt" id="sr-result"></div>
+      <div id="sr-weakwrap">
+        <p class="mini" style="margin-top:6px">🤔にした項目（タップで解説へ）：</p>
+        <div class="endchips" id="sr-weakchips"></div>
+      </div>
+      <div class="gradebtns">
+        <button class="btn btn-main" id="sr-again">🔁 もう一周</button>
+        <button class="btn btn-ng" id="sr-againweak">🤔だけでもう一周</button>
+        <button class="btn btn-sub" id="sr-back">設定に戻る</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 計算ドリル ============ -->
+<section class="card" id="calcdrill">
+  <h2>🧮 計算ドリル（数値は毎回変わる）</h2>
+  <p class="sub">科目Aの定番計算14パターン。数値がランダムに変わるので、答えの丸暗記ではなく解き方の「型」を確認できます。出題したいパターンをタップで絞り込み。</p>
+  <div class="topics" id="cd-topics"></div>
+  <div class="ctl">
+    <button class="tpall" id="cd-all">すべてON</button>
+    <button class="tpall" id="cd-none">すべてOFF</button>
+  </div>
+  <div class="ctl">
+    <button class="btn btn-main" id="cd-draw">🎲 1問出す</button>
+    <span class="statline"><span class="g">⭕ <span id="cd-ok">0</span></span><span class="w">🤔 <span id="cd-ng">0</span></span></span>
+  </div>
+  <div class="qcard hidden" id="cd-card">
+    <div class="tag" id="cd-tag"></div>
+    <div class="qt" id="cd-q"></div>
+    <div class="ctl" id="cd-revealline"><button class="btn btn-sub" id="cd-reveal">答えと途中式を見る</button></div>
+    <div class="ansbox hidden" id="cd-ans">
+      <div class="a" id="cd-a"></div>
+      <ol id="cd-steps"></ol>
+      <a class="goref" id="cd-ref" href="#">→ 解説に戻る</a>
+      <div class="gradebtns">
+        <button class="btn btn-ok" id="cd-gok">⭕ 解けた → 次へ</button>
+        <button class="btn btn-ng" id="cd-gng">🤔 あやしい → 次へ</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 本番チェックリスト ============ -->
+<section class="card" id="checklist">
+  <h2>📋 本番チェックリスト</h2>
+  <p class="sub">チェックはこの端末に保存されます。細かい会場ルールは申込時の案内・確認票が正なので、最後にそちらも確認を。</p>
+
+  <div class="ckhead">前日まで</div>
+  <label class="ck"><input type="checkbox" data-ck="p1">確認票の<b>受験番号・会場・開始時刻</b>を確認した（スクショか印刷も）</label>
+  <label class="ck"><input type="checkbox" data-ck="p2"><b>顔写真付き本人確認書類</b>を用意した（有効期限も確認）</label>
+  <label class="ck"><input type="checkbox" data-ck="p3">会場までの<b>経路と所要時間</b>を調べた</label>
+  <label class="ck"><input type="checkbox" data-ck="p4">🤔<a href="fe-guide.html" style="color:var(--accent)">あやしいリスト</a>を1周つぶした</label>
+  <label class="ck"><input type="checkbox" data-ck="p5">前日の夜は新しい問題に手を出さず、<b>早めに寝る</b></label>
+
+  <div class="ckhead">当日</div>
+  <label class="ck"><input type="checkbox" data-ck="d1">確認票の案内どおり<b>余裕をもって会場入り</b>（遅刻は受験不可のリスク）</label>
+  <label class="ck"><input type="checkbox" data-ck="d2">私物の筆記用具・電卓・スマホは<b>試験中使えない</b>（メモ用筆記具は会場で貸与）</label>
+  <label class="ck"><input type="checkbox" data-ck="d3">開始前に<b>時間配分</b>を思い出す（下の目安）</label>
+
+  <div class="formula">科目A：90分・60問 → 1問 約90秒／科目B：100分・20問 → 1問5分厳守</div>
+  <ul>
+    <li><b>科目A</b>：迷ったら見直しフラグを付けて次へ。計算問題は後回しでもよい。</li>
+    <li><b>科目B</b>：セキュリティ4問を先に片付けてから擬似言語16問へ。トレースは手を動かす。</li>
+    <li>合格ラインは<b>両科目とも600点／1,000点</b>（IRT換算）。全問正解は要らない、取れる問題を確実に。</li>
+  </ul>
+  <div class="caution"><span class="tt">⚠️ メンタルの保険</span>
+    見たことのない問題が出ても慌てない（IRTなので全員に難しい問題では差がつきません）。3分悩んだらフラグを付けて先へ。最後の5分は未回答チェックに使う。
+  </div>
+  <div class="reset"><button id="ck-reset">チェックリストをリセット</button></div>
+</section>
+
+<!-- ============ 復習リンク ============ -->
+<section class="card" id="links">
+  <h2>🔗 復習リンク</h2>
+  <p class="sub">🤔になった分野はここから解説へ。</p>
+  <div class="seclinks">
+    <a href="fe-basics.html">1 基礎理論</a><a href="fe-computer.html">2 コンピュータ</a><a href="fe-network.html">3 ネットワーク</a><a href="fe-security.html">4 セキュリティ</a><a href="fe-database.html">5 データベース</a><a href="fe-develop.html">6 開発技術</a><a href="fe-manage.html">7 マネジメント</a><a href="fe-strategy.html">8 ストラテジ</a><a href="fe-algo.html">9 科目B</a>
+  </div>
+  <div class="related">
+    <a href="fe-guide.html">🏠 基本情報ノート トップ<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">あやしいリスト・抜き打ちチェック</span></a>
+    <a href="https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/2025r07.html" target="_blank" rel="noopener">📄 IPA 公開問題（2025年度）<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">本試験からの公開問題と解答例</span></a>
+  </div>
+</section>
+
+</main>
+
+<nav class="pager">
+  <a href="fe-guide.html"><span class="dir">‹ もどる</span>基本情報ノート トップ</a>
+  <a href="fe-algo.html" class="next"><span class="dir">つぎへ ›</span>セクション9：科目B アルゴリズム</a>
+</nav>
+
+<footer>基本情報 学習ノート ─ 直前対策ドリル</footer>
+</div>
+
+<script>
+const KEY='feStudy.v1';
+const WKEY='feStudy.weak.v1';
+const CKEY='feCram.check.v1';
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
+function loadCk(){try{return JSON.parse(localStorage.getItem(CKEY))||{}}catch(e){return{}}}
+function saveCk(c){try{localStorage.setItem(CKEY,JSON.stringify(c))}catch(e){}}
+
+const ITEMS=[
+ {id:'fb-1', t:'2進数と基数変換（10進⇔2進⇔16進）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-2', t:'負の数の表し方（2の補数）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-3', t:'シフト演算と桁あふれ', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-4', t:'論理演算（AND・OR・NOT・XOR）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-5', t:'ド・モルガンの法則とベン図', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-6', t:'論理回路（MIL記号）の読み方', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-7', t:'情報量の単位（ビット・バイト・2のn乗）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-8', t:'文字コード（ASCII・Unicode・UTF-8）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-9', t:'確率と場合の数（順列・組合せ・期待値）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-10', t:'統計の基礎（平均・分散・正規分布）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-11', t:'音のデジタル化と標本化定理', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'fb-12', t:'浮動小数点と誤差（けた落ち・情報落ち）', s:'セクション1：基礎理論', p:'fe-basics.html'},
+ {id:'cs-1', t:'コンピュータの5大装置とCPUの動き', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-2', t:'CPUの性能計算（クロック・CPI・MIPS）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-3', t:'パイプライン処理', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-4', t:'メモリの階層（レジスタ〜補助記憶）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-5', t:'キャッシュの実効アクセス時間の計算', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-6', t:'補助記憶とRAID（0・1・5）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-7', t:'OSの役割とタスク管理', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-8', t:'排他制御とデッドロック', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-9', t:'仮想記憶（ページング・LRU）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-10', t:'信頼性のシステム構成（デュアル／デュプレックス）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-11', t:'稼働率の計算（直列・並列・MTBF/MTTR）', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'cs-12', t:'待ち行列（M/M/1）の計算', s:'セクション2：コンピュータシステム', p:'fe-computer.html'},
+ {id:'nw-1', t:'ネットワークの全体像（LAN/WAN・パケット交換）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-2', t:'OSI参照モデルとTCP/IPの対応', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-3', t:'主要プロトコルとポート番号', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-4', t:'IPアドレスの仕組み（IPv4・プライベートIP）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-5', t:'サブネットマスクとCIDRの計算', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-6', t:'DNSとDHCPの働き', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-7', t:'TCPとUDPの違い（3ウェイハンドシェイク）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-8', t:'LANのしくみ（MACアドレス・ARP）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-9', t:'無線LAN（SSID・WPA2/3）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-10', t:'伝送時間の計算', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'nw-11', t:'Webとメールのしくみ（Cookie・SMTP/POP）', s:'セクション3：ネットワーク', p:'fe-network.html'},
+ {id:'sec-1', t:'情報セキュリティの3要素（CIA）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-2', t:'マルウェアの種類（ウイルス・ワーム・ランサム）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-3', t:'技術的な攻撃手法（SQLインジェクション等）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-4', t:'人を狙う攻撃とパスワード攻撃', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-5', t:'共通鍵暗号と公開鍵暗号', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-6', t:'ハイブリッド暗号とTLS（HTTPS）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-7', t:'ハッシュ関数とデジタル署名', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-8', t:'認証の技術（多要素・生体認証）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-9', t:'PKIと電子証明書（認証局）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-10', t:'ネットワークを守る装置（FW・IDS/IPS・DMZ）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-11', t:'リスクマネジメントとISMS', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-12', t:'アクセス管理と組織的対策（クラウド責任共有）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'sec-13', t:'バックアップとBCP（RPO・RTO）', s:'セクション4：セキュリティ', p:'fe-security.html'},
+ {id:'db-1', t:'関係データベースの基本（表・行・列）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-2', t:'主キーと外部キー', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-3', t:'正規化（第1〜第3正規形）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-4', t:'SQL① 基本のSELECT（WHERE・ORDER BY）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-5', t:'SQL② 集計（GROUP BY・HAVING）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-6', t:'SQL③ 結合（内部結合・外部結合）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-7', t:'トランザクションとACID特性', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-8', t:'同時実行制御（共有ロック・専有ロック）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-9', t:'障害回復（ロールバック・ロールフォワード）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'db-10', t:'インデックスとDB応用（DWH・NoSQL）', s:'セクション5：データベース', p:'fe-database.html'},
+ {id:'dv-1', t:'ソフトウェア開発の流れとV字モデル', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-2', t:'ウォーターフォールとアジャイル（スクラム）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-3', t:'オブジェクト指向の基礎とUML', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-4', t:'テスト技法（同値分割・境界値・網羅）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-5', t:'テストの工程（スタブ・ドライバ・回帰）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-6', t:'レビューと品質管理（インスペクション）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-7', t:'見積り（ファンクションポイント法）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-8', t:'プログラム言語とデータ記述（JSON・XML）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'dv-9', t:'保守と構成管理（リファクタリング）', s:'セクション6：開発技術', p:'fe-develop.html'},
+ {id:'mg-1', t:'プロジェクトマネジメントの基本（QCD）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-2', t:'WBSとガントチャート', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-3', t:'アローダイアグラムとクリティカルパス', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-4', t:'工数と進捗の計算（人月・EVM）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-5', t:'ITサービスマネジメント（インシデント／問題管理）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-6', t:'SLAとSLM', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-7', t:'サービスデスクと運用（UPS・SPOC）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-8', t:'システム監査（独立性・指摘事項）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'mg-9', t:'内部統制とITガバナンス（職務の分離）', s:'セクション7：マネジメント', p:'fe-manage.html'},
+ {id:'st-1', t:'経営戦略の分析手法（SWOT・PPM・3C）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-2', t:'マーケティングの基礎（4P・STP）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-3', t:'意思決定と在庫管理（決定木・ABC分析）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-4', t:'会計の基本（固定費と変動費）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-5', t:'損益分岐点の計算', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-6', t:'財務諸表の読み方（BS・PL）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-7', t:'知的財産権（著作権の帰属・特許）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-8', t:'IT関連の法律（不正アクセス禁止法・派遣と請負）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-9', t:'企業活動と組織（ガバナンス・CSR）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'st-10', t:'新しい技術とDX（クラウド・生成AI）', s:'セクション8：ストラテジ', p:'fe-strategy.html'},
+ {id:'al-1', t:'科目Bの戦い方（時間配分・解く順番）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-2', t:'擬似言語の読み方①（宣言・代入・演算子）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-3', t:'擬似言語の読み方②（if・while・for）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-4', t:'トレース表の書き方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-5', t:'配列のトレース（添字1始まりに注意）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-6', t:'関数と引数（戻り値）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-7', t:'再帰の追い方（コールスタック）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-8', t:'スタックとキュー（LIFO・FIFO）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-9', t:'連結リスト（参照のつなぎ替え）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-10', t:'探索アルゴリズム（線形・二分探索）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-11', t:'ソートアルゴリズム（バブル・クイック・マージ）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-12', t:'計算量（オーダー記法）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-13', t:'ハッシュ法（衝突の解決）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-14', t:'データサイエンス系問題の読み方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-15', t:'科目Bセキュリティ4問の解き方', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-16', t:'木構造と二分木の走査（先行順・中間順・後行順）', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-17', t:'グラフと隣接行列', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'},
+ {id:'al-18', t:'文字列処理のトレース', s:'セクション9：科目B アルゴリズム', p:'fe-algo.html'}
+];
+const BYID={};ITEMS.forEach(it=>BYID[it.id]=it);
+
+// ─── 一問一答バンク（生成→3人検証済みの問題が入る） ───
+const QBANK=[
+{"id": "fb-1", "k": "term", "q": "10進数を2進数に変換する際、2で割り続けて余りを下から上に読む方法を何という?", "a": "わりざん法", "n": "位の重み表を使う逆変換(2進→10進)とセットで覚える"},
+{"id": "fb-1", "k": "calc", "q": "10進数45を2進数で表すといくつ?", "a": "101101", "n": "検算:32+8+4+1=45"},
+{"id": "fb-2", "k": "term", "q": "2の補数の作り方を一言で言うと?", "a": "全ビットを反転して1を足す"},
+{"id": "fb-2", "k": "calc", "q": "8ビットで-5を2の補数表現にするといくつ?", "a": "11111011", "n": "5=00000101→反転11111010→+1"},
+{"id": "fb-3", "k": "calc", "q": "8ビットの数を3ビット左シフトすると元の何倍になる?", "a": "8倍", "n": "左シフトn回=2のn乗倍、2の3乗=8"},
+{"id": "fb-3", "k": "term", "q": "論理シフトと算術シフトの違いを一言でいうと?", "a": "論理シフトは0埋め、算術シフトは符号ビットを保持する"},
+{"id": "fb-4", "k": "term", "q": "入力AとBが異なる値のときだけ1を出力する論理演算を何という?", "a": "XOR"},
+{"id": "fb-5", "k": "term", "q": "not(A or B)をド・モルガンの法則で変形するとどうなる?", "a": "(not A) and (not B)"},
+{"id": "fb-6", "k": "calc", "q": "A=1,B=0をANDに入れ、その出力とC=1をORに入れると出力はいくつ?", "a": "1", "n": "1AND0=0、0OR1=1"},
+{"id": "fb-7", "k": "term", "q": "8ビットで表現できる場合の数はいくつ?", "a": "256通り", "n": "2の8乗=256"},
+{"id": "fb-7", "k": "calc", "q": "800×600画素・24ビットカラー画像のデータ量は何バイト?", "a": "1,440,000バイト", "n": "480,000画素×3バイト"},
+{"id": "fb-8", "k": "term", "q": "送信側がUTF-8で符号化した文字データを、受信側がShift-JISの対応表で解釈してしまった。このとき画面上に正しい文字の代わりに意味不明な記号や文字の羅列が表示される現象を何と呼ぶか?", "a": "文字化け"},
+{"id": "fb-9", "k": "term", "q": "順列と組合せの違いを一言でいうと?", "a": "順列は順番を区別し、組合せは順番を区別しない"},
+{"id": "fb-9", "k": "calc", "q": "1等1000円1本、2等300円3本、はずれ0円6本、全10本のくじの期待値はいくら?", "a": "190円", "n": "1000×0.1+300×0.3+0×0.6"},
+{"id": "fb-10", "k": "term", "q": "外れ値の影響を受けにくい代表値はどれ?", "a": "中央値"},
+{"id": "fb-11", "k": "calc", "q": "最高周波数4kHzの音を標本化定理どおりに扱う最低の標本化周波数はいくつ?", "a": "8kHz", "n": "標本化定理は最高周波数の2倍以上"},
+{"id": "fb-11", "k": "calc", "q": "標本化周波数40kHz・量子化16ビット・モノラル・10秒間の音声データ量は何バイト?", "a": "800,000バイト", "n": "40000×16×1×10÷8"},
+{"id": "fb-12", "k": "term", "q": "ほぼ等しい2つの数を引き算したときに有効桁数が大きく減る誤差を何という?", "a": "けた落ち", "n": "足し算で小さい数が消えるのは情報落ち"},
+{"id": "cs-1", "k": "term", "q": "次に実行する命令の場所を指し示すCPU内部の装置は何?", "a": "プログラムカウンタ"},
+{"id": "cs-2", "k": "calc", "q": "クロック周波数1GHz、CPIが5のCPUのMIPS値は?", "a": "200 MIPS", "n": "1GHz=10億Hz、10億÷5=2億命令/秒、2億÷100万=200"},
+{"id": "cs-2", "k": "calc", "q": "命令数2000万、CPIが2、クロック周波数2GHzのときの実行時間は?", "a": "20ミリ秒", "n": "2000万×2=4000万クロック、4000万÷20億秒=0.02秒"},
+{"id": "cs-3", "k": "term", "q": "パイプライン処理で向上するのは1命令の処理時間ではなく何?", "a": "スループット(全体の処理量)"},
+{"id": "cs-4", "k": "term", "q": "メモリ階層の中でCPUに最も近く最速だが容量が最小なのは何?", "a": "レジスタ"},
+{"id": "cs-5", "k": "calc", "q": "ヒット率80%、キャッシュ20ナノ秒、主記憶220ナノ秒の実効アクセス時間は?", "a": "60ナノ秒", "n": "0.8×20+0.2×220=16+44"},
+{"id": "cs-5", "k": "calc", "q": "ヒット率95%、キャッシュ5ナノ秒、主記憶205ナノ秒の実効アクセス時間は?", "a": "15ナノ秒", "n": "0.95×5+0.05×205=4.75+10.25"},
+{"id": "cs-6", "k": "term", "q": "実効容量がn台中n-1台分になり、1台故障までなら復旧できるRAIDレベルは?", "a": "RAID5(分散パリティ)"},
+{"id": "cs-7", "k": "term", "q": "各タスクに一定時間ずつ順番にCPUを割り当てる方式を何と呼ぶ?", "a": "ラウンドロビン方式"},
+{"id": "cs-8", "k": "term", "q": "複数タスクが互いに相手の資源解放を待ち続け、処理が永久に進まなくなる状態は?", "a": "デッドロック"},
+{"id": "cs-9", "k": "term", "q": "主記憶が満杯のとき最も長く使われていないページを追い出す方式は?", "a": "LRU(Least Recently Used)"},
+{"id": "cs-10", "k": "term", "q": "故障時に安全な方向へ制御する設計の考え方を何と呼ぶ?", "a": "フェールセーフ"},
+{"id": "cs-11", "k": "calc", "q": "MTBFが180時間、MTTRが20時間の装置の稼働率は?", "a": "0.9", "n": "180÷(180+20)=180÷200"},
+{"id": "cs-11", "k": "calc", "q": "稼働率0.8の装置2台を直列接続したときのシステム稼働率は?", "a": "0.64", "n": "0.8×0.8"},
+{"id": "cs-11", "k": "calc", "q": "稼働率0.7の装置2台を並列接続したときのシステム稼働率は?", "a": "0.91", "n": "1-(0.3×0.3)=1-0.09"},
+{"id": "cs-12", "k": "calc", "q": "利用率ρ=0.5、平均処理時間2秒のときの平均待ち時間は?", "a": "2秒", "n": "0.5÷0.5×2"},
+{"id": "cs-12", "k": "calc", "q": "利用率ρ=0.75、平均処理時間4秒のときの平均待ち時間は?", "a": "12秒", "n": "0.75÷0.25×4=3×4"},
+{"id": "nw-1", "k": "term", "q": "回線交換に対し、データを細かく分割して送る通信方式を何と呼ぶ?", "a": "パケット交換"},
+{"id": "nw-2", "k": "term", "q": "OSI参照モデルの上位3層(アプリ・プレゼン・セッション)は、TCP/IPでは何という1つの層にまとめられる?", "a": "アプリケーション層"},
+{"id": "nw-2", "k": "term", "q": "OSI参照モデルは何層、TCP/IPは何層で通信の役割を分けるか?", "a": "OSIは7層、TCP/IPは4層"},
+{"id": "nw-3", "k": "term", "q": "メール送信に使うプロトコル名とポート番号は?", "a": "SMTP、ポート25"},
+{"id": "nw-3", "k": "term", "q": "メールをサーバに残したまま閲覧する受信方式のプロトコル名とポート番号は?", "a": "IMAP、ポート143"},
+{"id": "nw-4", "k": "term", "q": "自宅のプライベートアドレスとインターネット側のグローバルアドレスを相互変換する仕組みは?", "a": "NAT(ネットワークアドレス変換)"},
+{"id": "nw-5", "k": "calc", "q": "サブネットマスクが/28のとき、利用できるホストアドレス数はいくつ?", "a": "14個", "n": "ホスト部=32-28=4ビット、2の4乗-2=14"},
+{"id": "nw-5", "k": "calc", "q": "サブネットマスクが/24のとき、利用できるホストアドレス数はいくつ?", "a": "254個", "n": "ホスト部=32-24=8ビット、2の8乗-2=254"},
+{"id": "nw-6", "k": "term", "q": "DHCPの役割を一言でいうと?", "a": "IPアドレスなど設定情報を自動的に貸し出す仕組み"},
+{"id": "nw-7", "k": "term", "q": "TCPが接続確立時に行う3回のやり取りを何と呼ぶ?", "a": "3ウェイハンドシェイク"},
+{"id": "nw-7", "k": "term", "q": "3ウェイハンドシェイクで最初にクライアントがサーバへ送るものは何?", "a": "SYN"},
+{"id": "nw-8", "k": "term", "q": "IPアドレスから対応するMACアドレスを調べる仕組みを何と呼ぶ?", "a": "ARP(Address Resolution Protocol)"},
+{"id": "nw-9", "k": "term", "q": "無線LANの暗号化方式のうち、脆弱で現在使うべきでないものは?", "a": "WEP"},
+{"id": "nw-10", "k": "calc", "q": "回線速度8Mbps、利用率50%の回線で4Mバイトのファイルを送るには何秒かかる?", "a": "8秒", "n": "4MB×8=32Mビット、実効速度8×0.5=4Mbps、32÷4=8秒"},
+{"id": "nw-10", "k": "calc", "q": "回線速度100Mbps、利用率100%の回線で50Mバイトのファイルを送るには何秒かかる?", "a": "4秒", "n": "50MB×8=400Mビット、実効速度100Mbps、400÷100=4秒"},
+{"id": "nw-11", "k": "term", "q": "Webサイトがブラウザに覚えさせる、ログイン状態管理用の小さなデータを何と呼ぶ?", "a": "Cookie"},
+{"id": "sec-1", "k": "term", "q": "Webサイトが何者かに勝手に書き換えられた場合、損なわれたのはCIAの何という要素?", "a": "完全性"},
+{"id": "sec-2", "k": "term", "q": "ウイルスが感染を広げるために必ず必要とするものは何?", "a": "宿主となる他のプログラム", "n": "宿主なしで単独動作・自己複製するのがワーム"},
+{"id": "sec-2", "k": "term", "q": "ファイルを勝手に暗号化し、復号と引き換えに金銭を要求するマルウェアを何と呼ぶ?", "a": "ランサムウェア"},
+{"id": "sec-3", "k": "term", "q": "脆弱なサイトに悪意あるスクリプトを埋め込み、閲覧者のブラウザで実行させる攻撃を何と呼ぶ?", "a": "XSS(クロスサイトスクリプティング)"},
+{"id": "sec-3", "k": "term", "q": "ログイン中の利用者になりすまし、正規サイトに意図しないリクエストを送らせる攻撃は何?", "a": "CSRF(クロスサイトリクエストフォージェリ)", "n": "被害者は利用者、閲覧者を狙うXSSと対比"},
+{"id": "sec-4", "k": "term", "q": "不特定多数に本物そっくりの偽サイトやメールを送りID・パスワードを盗む攻撃を何と呼ぶ?", "a": "フィッシング(詐欺)"},
+{"id": "sec-4", "k": "term", "q": "特定の組織や個人を狙い、業務関連を装った巧妙なメールを送る攻撃を何と呼ぶ?", "a": "標的型攻撃", "n": "不特定多数を狙うフィッシングと対比"},
+{"id": "sec-5", "k": "calc", "q": "共通鍵暗号で10人全員が総当たりで鍵を持つ場合、必要な鍵の総数はいくつ?", "a": "45個", "n": "n(n-1)/2=10×9/2=45"},
+{"id": "sec-5", "k": "term", "q": "公開鍵暗号でAさんがBさんへ送るメッセージの暗号化に使う鍵は誰の何という鍵?", "a": "Bさん(受信者)の公開鍵", "n": "復号はBさんの秘密鍵を使う"},
+{"id": "sec-6", "k": "term", "q": "鍵の受け渡しを公開鍵、データ本体を共通鍵で暗号化するHTTPS採用の方式を何と呼ぶ?", "a": "ハイブリッド暗号"},
+{"id": "sec-7", "k": "term", "q": "入力が1ビットでも変わると出力が別の値になり、改ざん検知に使う関数を何と呼ぶ?", "a": "ハッシュ関数"},
+{"id": "sec-7", "k": "term", "q": "デジタル署名で送信者がハッシュ値を暗号化(署名)する際に使う鍵は誰の何という鍵?", "a": "送信者自身の秘密鍵", "n": "検証は送信者の公開鍵。暗号化と鍵の向きが逆"},
+{"id": "sec-8", "k": "term", "q": "知識・所持・生体のうち異なる種類を2つ以上組み合わせる認証を何と呼ぶ?", "a": "多要素認証"},
+{"id": "sec-9", "k": "term", "q": "「公開鍵と持ち主の結びつき」を第三者機関が保証する仕組み全体を何と呼ぶ?", "a": "PKI(公開鍵基盤)"},
+{"id": "sec-10", "k": "term", "q": "不審な通信の検知だけでなく自動で遮断まで行うネットワーク防御装置を何と呼ぶ?", "a": "IPS(侵入防止システム)", "n": "検知のみのIDSと区別"},
+{"id": "sec-11", "k": "calc", "q": "資産の評価点が5、脅威が4、脆弱性が2のとき、資産×脅威×脆弱性のリスク値はいくつ?", "a": "40", "n": "5×4×2=40"},
+{"id": "sec-12", "k": "term", "q": "利用者やシステムに業務に必要な最小限の権限だけを与える考え方を何と呼ぶ?", "a": "最小権限の原則"},
+{"id": "sec-13", "k": "calc", "q": "火曜24時にフル取得後、水曜10時に障害発生し復旧に4時間要した。RPOは何時間分?", "a": "10時間分", "n": "障害発生(水曜10時)から直前バックアップ(火曜24時)までの時間"},
+{"id": "sec-13", "k": "term", "q": "前回のバックアップ(フルまたは増分)からの変更分だけを保存する方式を何と呼ぶ?", "a": "増分バックアップ"},
+{"id": "db-1", "k": "term", "q": "関係データベースで、表の横1行分と縦1列分をそれぞれ何と呼ぶ?", "a": "行はレコード、列はフィールド", "n": "表全体はテーブルと呼ぶ"},
+{"id": "db-2", "k": "term", "q": "主キーには一意であることに加えて、もう1つどんな条件が必要?", "a": "空欄(NULL)であってはならないこと", "n": "1列で無理なら複数列の複合キーにする"},
+{"id": "db-2", "k": "term", "q": "外部キーが参照先の表にない値を持てない、という性質を何と呼ぶ?", "a": "参照整合性"},
+{"id": "db-3", "k": "term", "q": "正規化を行う目的はただ1つ、何を防ぐこと?", "a": "更新したときのデータの矛盾(不整合)を防ぐこと"},
+{"id": "db-3", "k": "term", "q": "複合キーの一部だけに従属する列があるとき、これは第何正規形の条件に違反する?", "a": "第2正規形", "n": "この従属関係を部分関数従属と呼ぶ"},
+{"id": "db-4", "k": "term", "q": "SELECT文でORDER BYを付けないとき、結果の行の並び順はどうなる?", "a": "並び順は保証されない(順不同)"},
+{"id": "db-5", "k": "term", "q": "SQLのWHEREとHAVINGは、それぞれ何に対する条件を指定するもの?", "a": "WHEREは集計前の行、HAVINGは集計後のグループへの条件"},
+{"id": "db-5", "k": "calc", "q": "営業2人・開発2人・総務1人の社員表をHAVING COUNT(*)>=2で部署ごと集計すると、残る部署は?", "a": "営業と開発(総務は1人のため除外)"},
+{"id": "db-6", "k": "term", "q": "表を結合するとき、内部結合と左外部結合の結果の違いを一言でいうと?", "a": "内部結合は共通行のみ、左外部結合は左表を全部残しNULLで埋める"},
+{"id": "db-6", "k": "calc", "q": "社員4人(うち1人部署未配属)と部署3件(うち1件該当社員なし)を内部結合、左外部結合するとそれぞれ何行?", "a": "内部結合3行、左外部結合4行"},
+{"id": "db-7", "k": "term", "q": "銀行振込で引き落としだけ成功し入金が失敗したとき、処理全体を取り消すのはACIDのどの性質?", "a": "原子性(Atomicity)"},
+{"id": "db-8", "k": "term", "q": "読み取り用で複数人が同時にかけられるロックと、書き込み用で独占するロックをそれぞれ何と呼ぶ?", "a": "共有ロックと専有ロック(排他ロック)"},
+{"id": "db-9", "k": "term", "q": "ディスクが物理的に破損してデータが消えた障害からの回復には、ロールバックとロールフォワードのどちらを使う?", "a": "ロールフォワード", "n": "バックアップに更新後情報を適用して最新状態を再現する"},
+{"id": "db-10", "k": "term", "q": "インデックスを付けると検索は速くなる代わりに、何の処理が遅くなる?", "a": "データの更新(追加・変更・削除)処理"},
+{"id": "dv-1", "k": "term", "q": "ソフトウェア開発で、V字モデルの谷底にあたる工程を何と呼ぶ?", "a": "プログラミング(実装)"},
+{"id": "dv-2", "k": "term", "q": "スクラムで「何を作るか」(価値・優先順位)を決める役割を何と呼ぶ?", "a": "プロダクトオーナー", "n": "チームを支援する役割はスクラムマスター"},
+{"id": "dv-2", "k": "term", "q": "先にテストを書いてから実装するXPの代表的な開発手法を何と呼ぶ?", "a": "テスト駆動開発"},
+{"id": "dv-3", "k": "term", "q": "オブジェクト指向で、内部のしくみを隠し決まった窓口だけ見せる性質を何と呼ぶ?", "a": "カプセル化"},
+{"id": "dv-3", "k": "term", "q": "オブジェクト指向で、同じ呼び出し方でもクラスにより違う動きをする性質を何と呼ぶ?", "a": "ポリモーフィズム", "n": "親の性質をそのまま受け継ぐ性質は継承"},
+{"id": "dv-4", "k": "calc", "q": "入力欄が「1以上100以下の整数」のとき、境界値分析でテストすべき4つの値を全て言うと?", "a": "0、1、100、101", "n": "下限・上限それぞれ内側1・外側1をペアで確認する"},
+{"id": "dv-4", "k": "calc", "q": "合格ラインが「60点以上」のとき、境界値分析で確認すべき2つの点数は何点と何点?", "a": "59点と60点"},
+{"id": "dv-5", "k": "term", "q": "トップダウンで結合テストを行うとき、未完成の下位モジュールの代わりに使うものを何と呼ぶ?", "a": "スタブ", "n": "上位モジュールの代役はドライバ"},
+{"id": "dv-5", "k": "term", "q": "テスト工程を範囲の狭い順に単体テストから並べると?", "a": "単体テスト→結合テスト→システムテスト→受入テスト"},
+{"id": "dv-6", "k": "term", "q": "第三者のモデレータが主導する最も厳格なレビュー手法を何と呼ぶ?", "a": "インスペクション", "n": "作成者本人が主導する比較的やわらかい方式はウォークスルー"},
+{"id": "dv-7", "k": "calc", "q": "入力画面3つ(重み5)、出力帳票2つ(重み7)のシステムのファンクションポイント値は?", "a": "29", "n": "3×5=15、2×7=14、合計15+14=29"},
+{"id": "dv-7", "k": "calc", "q": "入力画面4つ(重み4)、出力帳票1つ(重み7)のシステムのファンクションポイント値は?", "a": "23", "n": "4×4=16、1×7=7、合計16+7=23"},
+{"id": "dv-8", "k": "term", "q": "{ }で囲みキーと値の組をカンマ区切りで並べる軽量なデータ交換形式を何と呼ぶ?", "a": "JSON"},
+{"id": "dv-9", "k": "term", "q": "外から見た機能は変えずプログラムの中身だけ整理整頓することを何と呼ぶ?", "a": "リファクタリング"},
+{"id": "mg-1", "k": "term", "q": "品質・コスト・納期の3要素をまとめて何と呼ぶ?", "a": "QCD(Quality・Cost・Delivery)", "n": "プロジェクトはこの3つのバランスで進める。"},
+{"id": "mg-2", "k": "term", "q": "プロジェクト全体を階層的に細かい作業へ分解する図を何と呼ぶ?", "a": "WBS(作業分解構成図)"},
+{"id": "mg-3", "k": "term", "q": "開始から終了までの全経路のうち、最も日数がかかる経路を何と呼ぶ?", "a": "クリティカルパス", "n": "その日数がそのままプロジェクト全体の所要日数になる。"},
+{"id": "mg-3", "k": "calc", "q": "3つの経路の所要日数が13日・14日・13日のとき、全体の所要日数は何日?", "a": "14日", "n": "最長の経路の日数がそのまま全体の所要日数になる。"},
+{"id": "mg-3", "k": "term", "q": "クリティカルパス上の作業が1日遅れると、プロジェクト全体はどうなる?", "a": "全体も1日遅れる", "n": "余裕時間TFが0のため、遅れがそのまま全体に響く。"},
+{"id": "mg-4", "k": "calc", "q": "30人月の仕事を5人で行うと、所要期間は何か月?", "a": "6か月", "n": "所要期間=工数÷人数=30÷5。"},
+{"id": "mg-4", "k": "term", "q": "EVMで、実際に完了した作業の出来高を表す用語は?", "a": "EV(Earned Value)", "n": "予定の出来高はPV、実際の費用はAC。"},
+{"id": "mg-5", "k": "term", "q": "障害の根本原因を突き止め、再発を防ぐ活動を何と呼ぶ?", "a": "問題管理", "n": "復旧最優先のインシデント管理とは役割が異なる。"},
+{"id": "mg-6", "k": "calc", "q": "稼働率99.9%のとき、年間の停止許容時間はおよそ何時間?", "a": "約8.76時間", "n": "8,760時間×0.001で求める。"},
+{"id": "mg-6", "k": "calc", "q": "稼働率99.999%のとき、年間の停止許容時間はおよそ何分?", "a": "約5.3分", "n": "8,760時間×0.00001=0.0876時間。"},
+{"id": "mg-7", "k": "term", "q": "UPS(無停電電源装置)の本来の役割は何?", "a": "停電時にシステムを安全に停止させるまで電力を橋渡しすること", "n": "停電中ずっと稼働させ続ける装置ではない。"},
+{"id": "mg-7", "k": "term", "q": "利用者からの問い合わせを受け付ける一元窓口を何と呼ぶ?", "a": "サービスデスク(SPOC)", "n": "解決できなければ専門部署へエスカレーションする。"},
+{"id": "mg-8", "k": "term", "q": "システム監査で、監査証拠を集めた次に行うことは何?", "a": "監査調書にまとめること"},
+{"id": "mg-9", "k": "term", "q": "申請者と承認者を別人にするなど、矛盾する役割の兼務を防ぐ仕組みは?", "a": "職務の分離", "n": "内部統制の代表例。ITガバナンスは経営層主導の統制枠組み。"},
+{"id": "st-1", "k": "term", "q": "PPM分析で、市場成長率は低いが自社の市場シェアが高い事業を何と呼ぶ?", "a": "金のなる木", "n": "ここで得た資金を問題児など成長事業へ再投資するのが定石。"},
+{"id": "st-2", "k": "term", "q": "マーケティングの4Pの「Price(価格)」は、4Cのどの要素に対応する?", "a": "Cost(顧客が負担するコスト)"},
+{"id": "st-3", "k": "calc", "q": "投資は成功確率50%で利益300万円、失敗確率50%で損失100万円になる。期待値はいくら?", "a": "100万円", "n": "300×0.5－100×0.5＝100万円。"},
+{"id": "st-3", "k": "term", "q": "売上の大部分を占めるごく一部の品目を重点的に管理する考え方を何と呼ぶ?", "a": "ABC分析"},
+{"id": "st-4", "k": "term", "q": "売れても売れなくても一定額出ていく費用を何と呼ぶ?", "a": "固定費"},
+{"id": "st-4", "k": "calc", "q": "売上高250万円、変動費100万円の事業の変動費率はいくつ?", "a": "0.4(40%)", "n": "変動費率＝変動費÷売上高＝100÷250。"},
+{"id": "st-5", "k": "calc", "q": "固定費240万円、変動費率0.4の事業の損益分岐点売上高はいくら?", "a": "400万円", "n": "240÷(1－0.4)＝240÷0.6。"},
+{"id": "st-5", "k": "calc", "q": "固定費280万円、変動費率0.3の事業で、売上高500万円のときの利益はいくら?", "a": "70万円", "n": "総費用＝280＋500×0.3＝430、利益＝500－430。"},
+{"id": "st-6", "k": "term", "q": "「資産＝負債＋純資産」の式で表される、ある時点の財産状況を示す財務諸表を何と呼ぶ?", "a": "貸借対照表(BS)"},
+{"id": "st-6", "k": "calc", "q": "総資産1200万円、純資産480万円の事業の自己資本比率はいくつ?", "a": "0.4(40%)", "n": "自己資本比率＝純資産÷総資産＝480÷1200。"},
+{"id": "st-7", "k": "term", "q": "請負契約で開発したプログラムの著作権は、契約に定めがなければ原則どちらに帰属する?", "a": "受託者(実際に開発した会社)"},
+{"id": "st-7", "k": "term", "q": "著作権と異なり、出願・審査を経て登録することで発生する、発明を保護する権利を何と呼ぶ?", "a": "特許(特許権)"},
+{"id": "st-8", "k": "term", "q": "請負契約なのに発注者が受託会社の社員に直接指示を出してしまう違法な状態を何と呼ぶ?", "a": "偽装請負"},
+{"id": "st-9", "k": "term", "q": "職能軸と事業軸を掛け合わせ、二重の指揮系統を持つ組織形態を何と呼ぶ?", "a": "マトリックス組織"},
+{"id": "st-10", "k": "term", "q": "AIがもっともらしいが事実とは異なる内容を作り出してしまう現象を何と呼ぶ?", "a": "ハルシネーション"},
+{"id": "al-1", "k": "term", "q": "科目Bはセキュリティ問題とアルゴリズム問題、それぞれ何問ずつ出題される?", "a": "セキュリティ4問、アルゴリズム16問。", "n": "配点はアルゴリズムが8割を占める。"},
+{"id": "al-2", "k": "term", "q": "擬似言語で割り算の余りを求める演算子を何と呼ぶ?", "a": "mod", "n": "例えば7 mod 2の結果は1。"},
+{"id": "al-3", "k": "term", "q": "while文とdo-while文で、条件を確認するタイミングの違いは何?", "a": "whileは実行前に確認する前判定、do-whileは実行後に確認する後判定。"},
+{"id": "al-3", "k": "calc", "q": "iに10を代入し「do i←i+1 while(i<5)」を実行すると、本体は何回実行される?", "a": "1回", "n": "後判定なので条件が最初から偽でも必ず1回は実行される。"},
+{"id": "al-4", "k": "trace", "q": "1からnまでの3の倍数を数える手続きkazoeruで、kazoeru(9)の戻り値はいくつか?", "a": "3", "n": "1〜9のうち3の倍数は3・6・9の3個。"},
+{"id": "al-5", "k": "term", "q": "配列の2つの要素を入れ替える(スワップ)とき、値を一時的に逃がす定番の道具は何?", "a": "一時変数(tmp)"},
+{"id": "al-6", "k": "term", "q": "関数への入力と関数からの出力を、それぞれ何と呼ぶ?", "a": "入力は引数、出力は戻り値(return)。"},
+{"id": "al-7", "k": "term", "q": "再帰で呼び出しが無限に続かないように、最初に必ず確認するものは何?", "a": "終了条件(base case)"},
+{"id": "al-7", "k": "trace", "q": "kaijo(n)=n×kaijo(n-1)、kaijo(0)=1と定義するとき、kaijo(4)の戻り値はいくつか?", "a": "24", "n": "4×3×2×1=24(4の階乗)。"},
+{"id": "al-8", "k": "trace", "q": "空のスタックにpush(1)→push(2)→push(3)→pop()→push(4)→pop()の順で操作すると、最終的に残る要素は何(底から順に)?", "a": "1、2", "n": "3と4がpopで取り除かれる。"},
+{"id": "al-8", "k": "calc", "q": "後置記法(逆ポーランド記法)の式「6 2 − 3 ×」の値はいくつか?", "a": "12", "n": "(6−2)×3=12。"},
+{"id": "al-9", "k": "term", "q": "連結リストの挿入・削除で、配列と違って不要な作業は何?", "a": "他の要素をずらす(移動させる)作業"},
+{"id": "al-10", "k": "term", "q": "二分探索を使うために、配列のデータに必要な絶対条件は何?", "a": "整列済み(ソート済み)であること"},
+{"id": "al-10", "k": "calc", "q": "整列済み配列c={3,7,12,18,25,31,40,52}(1始まり8個)から二分探索で52を探すと、比較は何回か?", "a": "4回", "n": "mid=4→6→7→8の順に絞り込み4回目で一致。"},
+{"id": "al-11", "k": "term", "q": "クイックソートで基準にする値のことを何と呼ぶ?", "a": "基準値(ピボット)"},
+{"id": "al-12", "k": "term", "q": "O(1)、O(log n)、O(n)、O(nの2乗)を処理量が小さい順に並べると?", "a": "O(1) < O(log n) < O(n) < O(nの2乗)"},
+{"id": "al-13", "k": "calc", "q": "ハッシュ表の大きさm=6、h(key)=key mod mとするとき、key=29の格納位置はどこか?", "a": "番地5", "n": "29÷6=4あまり5だから。"},
+{"id": "al-14", "k": "term", "q": "コサイン類似度などデータサイエンス系問題で、計算に必要な式はどこに書かれているか?", "a": "問題文の中に必ず書かれている(暗記不要)。"},
+{"id": "al-15", "k": "term", "q": "科目Bのセキュリティ4問は、毎年どんな形式で出題されるか?", "a": "架空の企業を舞台にしたシナリオ型。"},
+{"id": "al-16", "k": "term", "q": "二分探索木を中間順(左→親→右)で走査すると、値はどんな順に取り出されるか?", "a": "必ず昇順(小さい順)"},
+{"id": "al-16", "k": "trace", "q": "図9-16の二分探索木(根8、左3、右10、葉1・6・14)を後行順(左→右→親)で走査すると、値の順番は?", "a": "1、6、3、14、10、8"},
+{"id": "al-17", "k": "term", "q": "無向グラフを隣接行列で表すと、行列にはどんな特徴が必ず現れる?", "a": "対角線に対して対称になる(m[i,j]=m[j,i])"},
+{"id": "al-18", "k": "calc", "q": "文字列\"1001\"を先頭から1文字ずつ「v←v×2+その桁の数」で処理すると、最終的なvはいくつか?", "a": "9", "n": "2進数1001は10進数で9。"},
+{"id": "al-18", "k": "term", "q": "文字列を1文字ずつ処理する問題の定番3ステップは、結果変数の初期化・先頭からのループと、あと1つは何?", "a": "文字の中身に応じて結果を更新する処理"}
+];
+
+// ─── 共通ヘルパ ───
+const $=id=>document.getElementById(id);
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;}
+const fmtN=n=>n.toLocaleString('ja-JP');
+const fmtR=x=>parseFloat(x.toFixed(4)).toString();
+function updateWeakCount(){const w=loadWeak();$('weak-count').textContent=Object.keys(w).filter(k=>BYID[k]).length;}
+function addWeak(id){
+  if(!BYID[id])return;
+  const w=loadWeak();
+  if(!w[id]){w[id]=true;const s=loadState();if(s[id]){delete s[id];saveState(s);}saveWeak(w);}
+  updateWeakCount();
+}
+
+// ─── 一問一答スピードラン ───
+let deck=[],pos=0,okN=0,ngN=0,weakAdded=[];
+function srFilter(){
+  const range=$('sr-range').value;
+  const mode=document.querySelector('input[name=sr-mode]:checked').value;
+  const s=loadState(),w=loadWeak();
+  let qs=QBANK.filter(x=>BYID[x.id]);
+  if(range!=='all')qs=qs.filter(x=>x.id.split('-')[0]===range);
+  if(mode==='weak')qs=qs.filter(x=>w[x.id]);
+  if(mode==='unchecked')qs=qs.filter(x=>!s[x.id]);
+  return qs;
+}
+function srHint(){
+  const n=srFilter().length;
+  $('sr-start').disabled=n===0;
+  $('sr-start').textContent=`▶ スタート（${n}問）`;
+  $('sr-hint').textContent=n===0?'この条件に合う問題がありません（対象を「全部」にしてみてください）':'';
+}
+function srShow(){
+  const q=deck[pos];
+  const it=BYID[q.id];
+  $('sr-left').textContent=deck.length-pos;
+  $('sr-ok').textContent=okN;$('sr-ng').textContent=ngN;
+  $('sr-tag').innerHTML=`${it.s}｜<b>${it.t}</b>`;
+  $('sr-q').textContent=q.q;
+  $('sr-a').textContent=q.a;
+  $('sr-note').textContent=q.n||'';
+  $('sr-note').classList.toggle('hidden',!q.n);
+  $('sr-ref').href=`${it.p}#${q.id}`;
+  $('sr-ref').textContent=`→ 解説 ${it.t} に戻る`;
+  $('sr-ans').classList.add('hidden');
+  $('sr-revealline').classList.remove('hidden');
+}
+function srNext(){
+  pos++;
+  if(pos>=deck.length){srEnd();return;}
+  srShow();
+}
+function srEnd(){
+  $('sr-play').classList.add('hidden');
+  $('sr-done').classList.remove('hidden');
+  $('sr-result').textContent=`⭕ ${okN} ／ 🤔 ${ngN}（全${deck.length}問）`;
+  const wrap=$('sr-weakchips');wrap.innerHTML='';
+  const uniq=[...new Set(weakAdded)];
+  $('sr-weakwrap').classList.toggle('hidden',uniq.length===0);
+  uniq.forEach(id=>{
+    const it=BYID[id];
+    const a=document.createElement('a');
+    a.href=`${it.p}#${id}`;a.textContent=`🤔 ${it.t}`;
+    wrap.appendChild(a);
+  });
+}
+function srStart(qs){
+  deck=shuffle(qs);pos=0;okN=0;ngN=0;weakAdded=[];
+  $('sr-setup').classList.add('hidden');
+  $('sr-done').classList.add('hidden');
+  $('sr-play').classList.remove('hidden');
+  srShow();
+}
+$('sr-start').addEventListener('click',()=>{const qs=srFilter();if(qs.length)srStart(qs);});
+$('sr-reveal').addEventListener('click',()=>{$('sr-ans').classList.remove('hidden');$('sr-revealline').classList.add('hidden');});
+$('sr-gok').addEventListener('click',()=>{okN++;srNext();});
+$('sr-gng').addEventListener('click',()=>{ngN++;addWeak(deck[pos].id);weakAdded.push(deck[pos].id);srNext();});
+$('sr-stop').addEventListener('click',srEnd);
+$('sr-again').addEventListener('click',()=>{srStart(deck);});
+$('sr-againweak').addEventListener('click',()=>{
+  const ids=new Set(weakAdded);
+  const qs=deck.filter(q=>ids.has(q.id));
+  if(qs.length)srStart(qs);
+});
+$('sr-back').addEventListener('click',()=>{$('sr-done').classList.add('hidden');$('sr-setup').classList.remove('hidden');srHint();});
+$('sr-range').addEventListener('change',srHint);
+document.querySelectorAll('input[name=sr-mode]').forEach(r=>r.addEventListener('change',srHint));
+
+// ─── 計算ドリル ───
+const GEN={
+ bin:{label:'基数変換',ref:'fb-1',make(){
+   const v=ri(1,3);
+   if(v===1){
+     const n=ri(33,126),b=n.toString(2),steps=[];let x=n;
+     while(x>0){steps.push(`${x} ÷ 2 = ${Math.floor(x/2)} 余り ${x%2}`);x=Math.floor(x/2);}
+     steps.push('余りを下から上へ読む');
+     return{q:`10進数 ${n} を2進数に変換すると？`,steps,a:`${b}(2)`};
+   }
+   if(v===2){
+     const n=ri(33,126),b=n.toString(2),parts=[];
+     for(let i=0;i<b.length;i++)if(b[i]==='1')parts.push(String(1<<(b.length-1-i)));
+     return{q:`2進数 ${b} を10進数に変換すると？`,steps:[`1が立つ桁の重みを足す：${parts.join(' + ')} = ${n}`],a:String(n)};
+   }
+   const n=ri(16,255),b=n.toString(2).padStart(8,'0'),h=n.toString(16).toUpperCase();
+   const hi=b.slice(0,4),lo=b.slice(4);
+   return{q:`2進数 ${b} を16進数に変換すると？`,
+     steps:[`4桁ずつ区切る：${hi} ／ ${lo}`,`${hi} → ${parseInt(hi,2).toString(16).toUpperCase()}、${lo} → ${parseInt(lo,2).toString(16).toUpperCase()}`],
+     a:`${h}(16)`};
+ }},
+ comp:{label:'2の補数',ref:'fb-2',make(){
+   const n=ri(1,127),pos8=n.toString(2).padStart(8,'0');
+   const inv=pos8.split('').map(c=>c==='1'?'0':'1').join('');
+   const ans=(256-n).toString(2).padStart(8,'0');
+   return{q:`8ビットの2の補数表現で −${n} を表すと？`,
+     steps:[`+${n} = ${pos8}`,`全ビット反転 → ${inv}`,`+1 → ${ans}`],a:ans};
+ }},
+ shift:{label:'シフト演算',ref:'fb-3',make(){
+   if(Math.random()<0.5){
+     const n=ri(3,15),k=ri(1,3),a=n<<k;
+     return{q:`符号なし8ビットで ${n} を左に ${k} ビットシフトすると、10進でいくつ？`,
+       steps:[`左シフト${k}回 = ×2の${k}乗 = ×${1<<k}`,`${n} × ${1<<k} = ${a}`],a:String(a)};
+   }
+   const k=ri(1,3),m=ri(3,15),n=m<<k;
+   return{q:`符号なし8ビットで ${n} を右に ${k} ビットシフトすると、10進でいくつ？`,
+     steps:[`右シフト${k}回 = ÷2の${k}乗 = ÷${1<<k}`,`${n} ÷ ${1<<k} = ${m}`],a:String(m)};
+ }},
+ logic:{label:'論理演算',ref:'fb-4',make(){
+   const A=ri(1,14),B=ri(1,14),op=pick(['AND','OR','XOR']);
+   const r=op==='AND'?(A&B):op==='OR'?(A|B):(A^B);
+   const b4=x=>x.toString(2).padStart(4,'0');
+   const rule=op==='AND'?'両方1のときだけ1':op==='OR'?'どちらかが1なら1':'2つのビットが異なるときだけ1';
+   return{q:`A = ${b4(A)}、B = ${b4(B)} のとき、A ${op} B は？（4ビットで）`,
+     steps:[`${op} は「${rule}」`,`桁ごとに比べる → ${b4(r)}`],a:b4(r)};
+ }},
+ bits:{label:'情報量(2のn乗)',ref:'fb-7',make(){
+   const k=pick([4,5,6,8,10]);
+   if(Math.random()<0.5)return{q:`${k}ビットで表現できる情報は何通り？`,
+     steps:[`nビットで2のn乗通り`,`2の${k}乗 = ${2**k}`],a:`${2**k}通り`};
+   return{q:`${2**k}通りの状態を区別するには、最低何ビット必要？`,
+     steps:[`2のn乗 ≥ ${2**k} となる最小のnを探す`,`2の${k}乗 = ${2**k} でちょうど足りる`],a:`${k}ビット`};
+ }},
+ expv:{label:'期待値',ref:'fb-9',make(){
+   const[a1,n1,a2,n2]=pick([[1000,2,100,10],[2000,1,200,10],[1000,5,100,20],[500,4,100,30]]);
+   const sum=a1*n1+a2*n2,e=sum/100;
+   return{q:`100本のくじがあり、1等 ${fmtN(a1)}円が${n1}本、2等 ${a2}円が${n2}本、残りは0円。くじ1本あたりの期待値は？`,
+     steps:[`賞金総額 = ${fmtN(a1)}×${n1} + ${a2}×${n2} = ${fmtN(sum)}円`,`期待値 = ${fmtN(sum)} ÷ 100本 = ${e}円`],a:`${e}円`};
+ }},
+ mips:{label:'MIPS',ref:'cs-2',make(){
+   if(Math.random()<0.5){
+     const[f,cpi]=pick([[1,2],[1,4],[2,4],[2,8],[3,5],[3,2],[2,5]]);
+     const mips=f*1000/cpi;
+     return{q:`クロック周波数 ${f}GHz、CPI（1命令あたりのクロック数）${cpi} のCPUの性能は何MIPS？`,
+       steps:[`1秒間のクロック数 = ${f}×10の9乗`,`1秒間の命令数 = ${f}×10の9乗 ÷ ${cpi} = ${mips}×10の6乗`,`10の6乗 命令/秒 = 1MIPS`],a:`${mips}MIPS`};
+   }
+   const t=pick([2,4,5,10,20]),mips=1000/t;
+   return{q:`平均命令実行時間が ${t}ナノ秒のCPUの性能は何MIPS？`,
+     steps:[`1秒 ÷ ${t}ナノ秒 = ${mips}×10の6乗 命令/秒`],a:`${mips}MIPS`};
+ }},
+ eat:{label:'実効アクセス時間',ref:'cs-5',make(){
+   const hp=pick([80,90,95]);
+   const c=hp===95?pick([20,40]):pick([10,20,30,40,50]);
+   const m=hp===95?pick([80,100,120]):pick([60,80,100,120]);
+   const t1=hp*c/100,t2=(100-hp)*m/100,a=t1+t2;
+   return{q:`キャッシュのアクセス時間 ${c}ナノ秒、主記憶 ${m}ナノ秒、ヒット率 ${hp/100} のとき、実効アクセス時間は？`,
+     steps:[`キャッシュ分：${hp/100} × ${c} = ${t1}`,`主記憶分：${(100-hp)/100} × ${m} = ${t2}`,`合計 ${t1} + ${t2} = ${a}`],a:`${a}ナノ秒`};
+ }},
+ avail:{label:'稼働率',ref:'cs-11',make(){
+   const v=ri(1,3);
+   if(v===1){
+     const r1=pick([0.8,0.9,0.95]),r2=pick([0.8,0.9,0.95]);
+     const a=fmtR(r1*r2);
+     return{q:`稼働率 ${r1} の装置と ${r2} の装置を直列につないだシステム全体の稼働率は？`,
+       steps:[`直列 = 両方動いてはじめて動く = 掛け算`,`${r1} × ${r2} = ${a}`],a};
+   }
+   if(v===2){
+     const r1=pick([0.8,0.9]),r2=pick([0.8,0.9]);
+     const a=fmtR(1-(1-r1)*(1-r2));
+     return{q:`稼働率 ${r1} の装置と ${r2} の装置を並列につないだシステム全体の稼働率は？（片方が動けばOK）`,
+       steps:[`並列 = 両方止まったときだけ止まる`,`両方止まる確率 = ${fmtR(1-r1)} × ${fmtR(1-r2)} = ${fmtR((1-r1)*(1-r2))}`,`1 − ${fmtR((1-r1)*(1-r2))} = ${a}`],a};
+   }
+   const[mtbf,mttr]=pick([[90,10],[180,20],[95,5],[480,20],[450,50],[900,100]]);
+   const a=fmtR(mtbf/(mtbf+mttr));
+   return{q:`MTBF ${mtbf}時間、MTTR ${mttr}時間のシステムの稼働率は？`,
+     steps:[`稼働率 = MTBF ÷ (MTBF + MTTR)`,`${mtbf} ÷ ${mtbf+mttr} = ${a}`],a};
+ }},
+ mm1:{label:'待ち行列(M/M/1)',ref:'cs-12',make(){
+   const[lam,mu,ts]=pick([[30,60,1],[45,60,1],[48,60,1],[20,40,1.5],[30,40,1.5]]);
+   const rho=fmtR(lam/mu);
+   if(Math.random()<0.5)return{q:`窓口に平均 ${lam}件/時 の客が到着し、窓口の処理能力は平均 ${mu}件/時。利用率 ρ は？`,
+     steps:[`ρ = 到着率 ÷ サービス率`,`${lam} ÷ ${mu} = ${rho}`],a:String(rho)};
+   const tw=fmtR(lam/mu/(1-lam/mu)*ts);
+   return{q:`M/M/1の待ち行列で、利用率 ρ = ${rho}、平均サービス時間 ${ts}分 のとき、平均待ち時間は？`,
+     steps:[`平均待ち時間 = ρ/(1−ρ) × 平均サービス時間`,`${rho} ÷ ${fmtR(1-lam/mu)} × ${ts} = ${tw}分`],a:`${tw}分`};
+ }},
+ subnet:{label:'サブネット',ref:'nw-5',make(){
+   const v=ri(1,3);
+   if(v===1){
+     const n=pick([24,25,26,27,28]),hosts=2**(32-n)-2;
+     return{q:`プレフィックス長 /${n} のサブネットで使えるホストアドレス数は？`,
+       steps:[`ホスト部は ${32-n}ビット`,`2の${32-n}乗 − 2（ネットワークアドレスとブロードキャストを除く）= ${hosts}`],a:`${hosts}個`};
+   }
+   if(v===2){
+     const map={25:128,26:192,27:224,28:240},n=pick([25,26,27,28]);
+     return{q:`/${n} をサブネットマスク表記（255.x.x.x）にすると？`,
+       steps:[`上位${n}ビットが1`,`第4オクテットは上位${n-24}ビットが1 → ${map[n]}`],a:`255.255.255.${map[n]}`};
+   }
+   const x=ri(1,254),net=Math.floor(x/64)*64;
+   return{q:`IPアドレス 192.168.1.${x}/26 のネットワークアドレスは？`,
+     steps:[`/26 → 第4オクテットは64きざみ（0・64・128・192）`,`${x} は ${net}〜${net+63} の範囲に入る`],a:`192.168.1.${net}`};
+ }},
+ trans:{label:'伝送時間',ref:'nw-10',make(){
+   const[M,e,D,T]=pick([[100,0.8,40,4],[100,0.8,80,8],[100,0.5,25,4],[10,0.5,5,8],[10,0.8,8,8],[100,0.8,60,6],[10,0.5,10,16]]);
+   return{q:`${M}Mビット/秒 の回線（伝送効率${e*100}%）で ${D}Mバイト のデータを送るのにかかる時間は？`,
+     steps:[`データ量：${D}Mバイト × 8 = ${D*8}Mビット`,`実効速度：${M} × ${e} = ${fmtR(M*e)}Mビット/秒`,`${D*8} ÷ ${fmtR(M*e)} = ${T}秒`],a:`${T}秒`};
+ }},
+ bep:{label:'損益分岐点',ref:'st-5',make(){
+   const[p,v,F]=pick([[1000,600,200000],[1000,600,300000],[1000,600,600000],[800,600,120000],[2000,1500,300000]]);
+   const qty=F/(p-v);
+   if(Math.random()<0.5)return{q:`販売単価 ${fmtN(p)}円、1個あたりの変動費 ${fmtN(v)}円、固定費 ${fmtN(F)}円。損益分岐点の販売数量は？`,
+     steps:[`1個あたりの利益（限界利益）= ${fmtN(p)} − ${fmtN(v)} = ${fmtN(p-v)}円`,`固定費 ÷ 限界利益 = ${fmtN(F)} ÷ ${fmtN(p-v)} = ${fmtN(qty)}個`],a:`${fmtN(qty)}個`};
+   const sales=qty*p;
+   return{q:`販売単価 ${fmtN(p)}円、1個あたりの変動費 ${fmtN(v)}円、固定費 ${fmtN(F)}円。損益分岐点の売上高は？`,
+     steps:[`限界利益 = ${fmtN(p)} − ${fmtN(v)} = ${fmtN(p-v)}円/個`,`数量 = ${fmtN(F)} ÷ ${fmtN(p-v)} = ${fmtN(qty)}個`,`売上高 = ${fmtN(qty)}個 × ${fmtN(p)}円 = ${fmtN(sales)}円`],a:`${fmtN(sales)}円`};
+ }},
+ evm:{label:'EVM(SV・CV)',ref:'mg-4',make(){
+   const pv=ri(4,10)*50;
+   const sv=pick([-60,-40,-20,20,40]),ev=pv+sv;
+   const cv=pick([-60,-40,-20,20,40]),ac=ev-cv;
+   if(Math.random()<0.5)return{q:`PV=${pv}万円、EV=${ev}万円、AC=${ac}万円のプロジェクト。スケジュール差異（SV）はいくらで、進捗はどんな状況？`,
+     steps:[`SV = EV − PV = ${ev} − ${pv} = ${sv}万円`],
+     a:`${sv}万円（${sv<0?'マイナス＝予定より遅れている':'プラス＝予定より進んでいる'}）`};
+   return{q:`PV=${pv}万円、EV=${ev}万円、AC=${ac}万円のプロジェクト。コスト差異（CV）はいくらで、コストはどんな状況？`,
+     steps:[`CV = EV − AC = ${ev} − ${ac} = ${cv}万円`],
+     a:`${cv}万円（${cv<0?'マイナス＝予算超過':'プラス＝予算内に収まっている'}）`};
+ }},
+};
+const cdState={on:new Set(Object.keys(GEN)),okN:0,ngN:0,cur:null};
+function cdRenderTopics(){
+  const wrap=$('cd-topics');wrap.innerHTML='';
+  Object.keys(GEN).forEach(k=>{
+    const b=document.createElement('span');
+    b.className='tp'+(cdState.on.has(k)?' on':'');
+    b.textContent=GEN[k].label;
+    b.setAttribute('role','button');b.tabIndex=0;
+    const tog=()=>{cdState.on.has(k)?cdState.on.delete(k):cdState.on.add(k);cdRenderTopics();};
+    b.addEventListener('click',tog);
+    b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog();}});
+    wrap.appendChild(b);
+  });
+}
+function cdDraw(){
+  const keys=[...cdState.on];
+  if(keys.length===0){alert('出題パターンを1つ以上ONにしてください');return;}
+  const k=pick(keys),g=GEN[k],prob=g.make();
+  cdState.cur={key:k,prob};
+  const it=BYID[g.ref];
+  $('cd-tag').innerHTML=`${g.label}｜<b>${it.t}</b>`;
+  $('cd-q').textContent=prob.q;
+  $('cd-a').textContent=`答え：${prob.a}`;
+  const ol=$('cd-steps');ol.innerHTML='';
+  prob.steps.forEach(s=>{const li=document.createElement('li');li.textContent=s;ol.appendChild(li);});
+  $('cd-ref').href=`${it.p}#${g.ref}`;
+  $('cd-ref').textContent=`→ 解説 ${it.t} に戻る`;
+  $('cd-card').classList.remove('hidden');
+  $('cd-ans').classList.add('hidden');
+  $('cd-revealline').classList.remove('hidden');
+}
+$('cd-draw').addEventListener('click',cdDraw);
+$('cd-reveal').addEventListener('click',()=>{$('cd-ans').classList.remove('hidden');$('cd-revealline').classList.add('hidden');});
+$('cd-gok').addEventListener('click',()=>{cdState.okN++;$('cd-ok').textContent=cdState.okN;cdDraw();});
+$('cd-gng').addEventListener('click',()=>{cdState.ngN++;$('cd-ng').textContent=cdState.ngN;addWeak(GEN[cdState.cur.key].ref);cdDraw();});
+$('cd-all').addEventListener('click',()=>{cdState.on=new Set(Object.keys(GEN));cdRenderTopics();});
+$('cd-none').addEventListener('click',()=>{cdState.on=new Set();cdRenderTopics();});
+cdRenderTopics();
+
+// ─── 本番チェックリスト ───
+const cks=[...document.querySelectorAll('input[data-ck]')];
+function ckRefresh(){
+  const c=loadCk();
+  cks.forEach(b=>{const on=!!c[b.dataset.ck];b.checked=on;b.closest('.ck').classList.toggle('done',on);});
+}
+cks.forEach(b=>b.addEventListener('change',()=>{
+  const c=loadCk();
+  if(b.checked)c[b.dataset.ck]=true;else delete c[b.dataset.ck];
+  saveCk(c);ckRefresh();
+}));
+$('ck-reset').addEventListener('click',()=>{saveCk({});ckRefresh();});
+ckRefresh();
+updateWeakCount();
+srHint();
+
+// テスト用フック（本番動作には影響しない）
+window.__cram={GEN,QBANK,ITEMS,srFilter};
+</script>
+</body>
+</html>
