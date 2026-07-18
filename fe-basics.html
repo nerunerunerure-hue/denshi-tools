@@ -434,13 +434,19 @@
   </svg>
   <figcaption>図1-5　¬(A∧B) と ¬A∨¬B が同じ領域になることを示すベン図</figcaption>
   </figure>
+  <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
+    A=1, B=0 のとき、not(A and B) と (not A) or (not B) がそれぞれいくつになるか求め、両辺が一致することを確かめてください。
+    <details class="ans"><summary>答えを見る</summary>
+    左辺：not(A and B)＝not(1 and 0)＝not(0)＝<b>1</b>。右辺：(not A) or (not B)＝(not 1) or (not 0)＝0 or 1＝<b>1</b>。検算：左辺＝右辺＝1 ✓
+    </details>
+  </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
       <li>「NOTを分配するとANDとORが入れ替わる」を呪文のように覚える。</li>
       <li>if文の「〜でない かつ 〜でない」は「〜または〜、ではない」に書き換えられる、が頻出パターン。</li>
     </ul>
   </div>
-  <label class="check"><input type="checkbox" data-item="fb-5">ド・モルガンの法則を使って論理式を変形できるようになった</label>
+  <label class="check"><input type="checkbox" data-item="fb-5">ド・モルガンの法則で論理式を変形でき、ベン図でも確認できるようになった</label>
 </section>
 
 <!-- ============ 1-6 論理回路（MIL記号） ============ -->
@@ -510,7 +516,7 @@
   <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
     A=1, B=0 をANDゲートに入れ、その出力とC=1をORゲートに入れる2段構成の回路の出力を求めてください。
     <details class="ans"><summary>答えを見る</summary>
-    まずANDゲート：A=1, B=0 → 1 AND 0 = 0。次にORゲート：先ほどの出力0とC=1 → 0 OR 1 = <b>1</b>。よって最終出力は1。
+    まずANDゲート：A=1, B=0 → 1 AND 0 = 0。次にORゲート：先ほどの出力0とC=1 → 0 OR 1 = <b>1</b>。よって最終出力は1。検算：Y＝A・B＋C＝(1・0)＋1＝0＋1＝<b>1</b>（同じ結果）✓
     </details>
   </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
@@ -519,7 +525,7 @@
       <li>入力側から1ゲートずつ値を書き込んでいけば、複雑な回路でも迷わない。</li>
     </ul>
   </div>
-  <label class="check"><input type="checkbox" data-item="fb-6">回路図から出力を計算できるようになった</label>
+  <label class="check"><input type="checkbox" data-item="fb-6">MIL記号を見分けて、回路図から出力を計算できるようになった</label>
 </section>
 
 <!-- ============ 1-7 情報量の単位 ============ -->
@@ -563,7 +569,7 @@
   <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
     800×600画素・24ビットカラーの画像のデータ量は何バイトですか（1M=10⁶バイトとします）。
     <details class="ans"><summary>答えを見る</summary>
-    画素数＝800×600＝480,000画素。24ビットカラー＝24÷8＝3バイト/画素。データ量＝480,000×3＝<b>1,440,000バイト（＝1.44MB）</b>。
+    画素数＝800×600＝480,000画素。24ビットカラー＝24÷8＝3バイト/画素。データ量＝480,000×3＝<b>1,440,000バイト（＝1.44MB）</b>。検算：1,440,000÷3＝480,000＝800×600 ✓
     </details>
   </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
@@ -609,7 +615,7 @@
   <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
     くじが10本あり、1等（1000円）が1本、2等（300円）が3本、はずれ（0円）が6本入っています。このくじを1回引くときの期待値はいくらですか。
     <details class="ans"><summary>答えを見る</summary>
-    期待値＝1000円×(1/10)＋300円×(3/10)＋0円×(6/10)＝100＋90＋0＝<b>190円</b>。
+    期待値＝1000円×(1/10)＋300円×(3/10)＋0円×(6/10)＝100＋90＋0＝<b>190円</b>。検算：1/10＋3/10＋6/10＝10/10＝1（確率の合計は1）✓
     </details>
   </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
@@ -737,7 +743,7 @@
   <div class="example"><span class="tt">✏️ 例題（本試験風）</span>
     標本化周波数40kHz・量子化16ビット・モノラル（チャネル数1）・10秒間の音声データの量は何バイトですか。
     <details class="ans"><summary>答えを見る</summary>
-    データ量＝標本化周波数×量子化ビット数×チャネル数×秒数÷8＝40,000×16×1×10÷8＝6,400,000÷8＝<b>800,000バイト（800kバイト）</b>。
+    データ量＝標本化周波数×量子化ビット数×チャネル数×秒数÷8＝40,000×16×1×10÷8＝6,400,000÷8＝<b>800,000バイト（800kバイト）</b>。検算：800,000×8÷10÷16＝40,000（標本化周波数に戻る）✓
     </details>
   </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
@@ -747,7 +753,7 @@
       <li>画像のデータ量は「画素数×1画素のバイト数」（1-7、ビット数は÷8でバイトに直す）、音のデータ量は今回の公式、と対で覚える。</li>
     </ul>
   </div>
-  <label class="check"><input type="checkbox" data-item="fb-11">標本化定理と音声データ量の計算ができるようになった</label>
+  <label class="check"><input type="checkbox" data-item="fb-11">標本化の3ステップを説明でき、標本化定理と音声データ量の計算ができるようになった</label>
 </section>
 
 <!-- ============ 1-12 浮動小数点と誤差 ============ -->
