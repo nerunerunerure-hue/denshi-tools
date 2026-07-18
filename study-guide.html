@@ -15,6 +15,7 @@
     --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
     --ink:#211F1A; --ink-dim:#716C61;
     --blue:#4A6FA5; --green:#4f6b3a; --green-soft:#E7EDDC;
+    --warn:#9a5a22; --warn-soft:#F5E8D4;
     --border:#E2DCCD;
     --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
   }
@@ -81,6 +82,17 @@
   .btn-ng{background:#F7E3DE;color:#b23a2e;border:1px solid #E8C4BA!important}
   .btn-ok:hover,.btn-ng:hover{filter:brightness(.97)}
   .hidden{display:none}
+  .mini{font-size:.78rem;color:var(--ink-dim);font-weight:400}
+  #find-input{width:100%;font-family:var(--sans);font-size:.9rem;padding:10px 14px;margin-top:4px;
+    border:1px solid var(--border);border-radius:11px;background:var(--surface2);color:var(--ink);outline:none}
+  .weaklist{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 2px}
+  .weaklist a{font-size:.8rem;text-decoration:none;color:var(--ink);background:var(--surface2);
+    border:1px solid var(--border);border-radius:99px;padding:4px 12px;transition:.12s}
+  .weaklist a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .weaklist a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
+  .weaklist a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  .prefopt{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--ink-dim);
+    margin:12px 2px 0;cursor:pointer;user-select:none}
   .tips{font-size:.86rem}
   .tips b{color:var(--accent)}
   .related{display:flex;gap:10px;flex-wrap:wrap}
@@ -127,6 +139,14 @@
   </div>
 </section>
 
+<!-- 項目検索 -->
+<section class="card">
+  <h2>🔎 項目をさがす</h2>
+  <input id="find-input" type="search" placeholder="キーワードで39項目から検索（例：オームの法則、フリップフロップ）" autocomplete="off">
+  <div class="weaklist hidden" id="find-list"></div>
+  <p class="mini hidden" id="find-none">見つかりませんでした。別の言い方で試してみて。</p>
+</section>
+
 <!-- セクション -->
 <a class="sec" href="study-basics.html">
   <span class="ico" style="--accent-bg:#F4E7DB">⚡</span>
@@ -159,7 +179,7 @@
 <!-- 抜き打ちチェック -->
 <section class="card rndcheck">
   <h2>🎲 抜き打ちチェック（アクティブ・リコール）</h2>
-  <p style="font-size:.85rem;color:var(--ink-dim)">ランダムに1項目出題。<b>まず何も見ずに30秒、口に出して説明</b>してみてから判定しよう。「思い出そうとする」こと自体が最強の記憶術です。</p>
+  <p style="font-size:.85rem;color:var(--ink-dim)">ランダムに1項目出題。<b>まず何も見ずに30秒、口に出して説明</b>してみてから判定しよう。「思い出そうとする」こと自体が最強の記憶術です。「🤔 まだあやしい」にした項目は、下の<b>あやしいリスト</b>に溜まります。</p>
   <div class="q hidden" id="q-box">
     <div class="sec-tag" id="q-sec">セクション1</div>
     <div class="title" id="q-title">オームの法則</div>
@@ -174,6 +194,15 @@
     <button class="btn-ng" id="btn-ng">🤔 まだあやしい</button>
     <button class="btn-draw" id="btn-next">次の問題</button>
   </div>
+  <label class="prefopt"><input type="checkbox" id="prefer-weak" checked>未チェック・🤔あやしい項目を優先して出題する</label>
+</section>
+
+<!-- あやしいリスト -->
+<section class="card">
+  <h2>🤔 あやしいリスト <span class="mini">（<b id="weak-count">0</b> 件）</span></h2>
+  <p style="font-size:.85rem;color:var(--ink-dim)">抜き打ちチェックで「まだあやしい」と判定した項目と、各ページで「🤔 あやしい」を付けた項目。リンク先で復習して「✔ できるようになった」を付けると、自動でここから消えます。</p>
+  <div class="weaklist hidden" id="weak-list"></div>
+  <p class="mini" id="weak-empty">いまは空っぽ。抜き打ちチェックの「🤔 まだあやしい」か、各ページの「🤔 あやしい」ボタンで、ここに溜まっていきます。</p>
 </section>
 
 <!-- 使い方 -->
@@ -183,7 +212,7 @@
     <li><b>1周目：</b>各セクションを図を眺めながら読む。理解できた項目は「✔ できるようになった」にチェック。</li>
     <li><b>ふだんの振り返り（5分でOK）：</b>上の<b>抜き打ちチェック</b>か、各ページ末の<b>🎲ランダムクイズ</b>を数問。見ずに答える→答え合わせ。</li>
     <li><b>忘れかけた頃にもう一度：</b>翌日→3日後→1週間後、と間隔をあけて繰り返すと長期記憶になる（間隔反復）。</li>
-    <li>あやしかった項目はチェックを外して、「まだ」リストとして管理する。</li>
+    <li>あやしい項目は「🤔」ボタンで<b>あやしいリスト</b>に入れて、復習してつぶしていく（「できるようになった」を付けると自動で外れる）。</li>
   </ol>
   <p class="tips">💡 コツは「<b>読む」より「思い出す」</b>に時間を使うこと。クイズで間違えるのは失敗ではなく、記憶が強くなるチャンスです。</p>
 </section>
@@ -195,7 +224,7 @@
     <a href="resistor-calculator.html">🎨 抵抗カラーコード計算機<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">1-12「理論値と実測値」の公差の練習に</span></a>
     <a href="breadboard-designer.html">🔌 ブレッドボード配置デザイナー<br><span style="font-weight:400;color:var(--ink-dim);font-size:.76rem">1-9「結線場所の判断」の練習に</span></a>
   </div>
-  <div class="reset"><button id="btn-reset">チェック進捗をすべてリセットする</button></div>
+  <div class="reset"><button id="btn-reset">チェック進捗とあやしいリストをすべてリセットする</button></div>
 </section>
 
 </main>
@@ -206,6 +235,9 @@
 const KEY='denshiStudy.v1';
 function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const WKEY='denshiStudy.weak.v1'; // あやしいリスト（各ページのチェックとはキーを分ける）
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
 
 const ITEMS=[
  {id:'s1-1', t:'電流・電圧・抵抗（3つの量と単位）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
@@ -222,16 +254,16 @@ const ITEMS=[
  {id:'s1-12', t:'理論値と実測値の比較（誤差率・公差）', s:'セクション1：電気回路基礎', p:'study-basics.html'},
  {id:'s1-13', t:'安全に測定器を操作する手順', s:'セクション1：電気回路基礎', p:'study-basics.html'},
  {id:'s1-14', t:'作業台の整理整頓', s:'セクション1：電気回路基礎', p:'study-basics.html'},
- {id:'s2-1', t:'半導体とは（N型・P型）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-2', t:'ダイオードの性質（整流性・順方向電圧）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-3', t:'整流回路（半波・全波・平滑）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-4', t:'静特性（V-I特性）の読み方', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-5', t:'増幅度の計算（倍率とdB）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-6', t:'トランジスタの増幅作用とスイッチング作用', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-7', t:'オペアンプの基本動作（バーチャルショート）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-8', t:'基本増幅回路（反転・非反転・エミッタ接地）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-9', t:'増幅回路の製作手順とはんだ付け', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
- {id:'s2-10', t:'オシロで増幅回路を実測（増幅度・位相）', s:'セクション2：半導体・アナログ', p:'study-analog.html'},
+ {id:'s2-1', t:'半導体とは（N型・P型）', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-2', t:'ダイオードの性質（整流性・順方向電圧）', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-3', t:'整流回路（半波・全波・平滑）', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-4', t:'静特性（V-I特性）の読み方', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-5', t:'増幅度の計算（倍率とdB）', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-6', t:'トランジスタの増幅作用とスイッチング作用', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-7', t:'オペアンプの基本動作（バーチャルショート）', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-8', t:'基本増幅回路（反転・非反転・エミッタ接地）', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-9', t:'増幅回路の製作手順とはんだ付け', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
+ {id:'s2-10', t:'オシロで増幅回路を実測（増幅度・位相）', s:'セクション2：半導体・アナログ回路', p:'study-analog.html'},
  {id:'s3-1', t:'論理式（AND・OR・NOT）', s:'セクション3：デジタル回路', p:'study-digital.html'},
  {id:'s3-2', t:'真理値表の書き方', s:'セクション3：デジタル回路', p:'study-digital.html'},
  {id:'s3-3', t:'各種ディジタルIC（74シリーズ）', s:'セクション3：デジタル回路', p:'study-digital.html'},
@@ -270,11 +302,43 @@ function render(){
   if(c.total===39)msg.textContent='🎉 全項目クリア！ここからは間隔をあけて抜き打ちチェックで維持しよう。';
   else if(c.total>=30)msg.textContent='あと少し！残りの項目を集中的に。';
   else if(c.total>0)msg.textContent='いい調子。チェックは各ページの「できるようになった」と連動しています。';
+  renderWeak();
+}
+
+function renderWeak(){
+  const s=loadState();const w=loadWeak();
+  // 「できるようになった」が付いた項目は、あやしいリストから自動で外す
+  let changed=false;
+  for(const id in w){if(s[id]){delete w[id];changed=true;}}
+  if(changed)saveWeak(w);
+  const list=ITEMS.filter(it=>w[it.id]);
+  document.getElementById('weak-count').textContent=list.length;
+  const box=document.getElementById('weak-list');
+  box.innerHTML='';
+  list.forEach(it=>{
+    const a=document.createElement('a');
+    a.href=it.p+'#'+it.id;
+    a.textContent=it.t;
+    box.appendChild(a);
+  });
+  box.classList.toggle('hidden',list.length===0);
+  document.getElementById('weak-empty').classList.toggle('hidden',list.length>0);
 }
 
 let cur=null;
 function draw(){
-  cur=ITEMS[Math.floor(Math.random()*ITEMS.length)];
+  // 優先出題ON: あやしい(重み3)＋未チェック(重み1)から出題。候補が無ければ全体から
+  let pool=ITEMS;
+  if(document.getElementById('prefer-weak').checked){
+    const s=loadState(),w=loadWeak();
+    const weak=ITEMS.filter(it=>w[it.id]&&!s[it.id]);
+    const undone=ITEMS.filter(it=>!s[it.id]&&!w[it.id]);
+    const p=[...weak,...weak,...weak,...undone];
+    if(p.length)pool=p;
+  }
+  let pick=pool[Math.floor(Math.random()*pool.length)];
+  if(cur&&pool.length>1){let guard=0;while(pick.id===cur.id&&guard++<8)pick=pool[Math.floor(Math.random()*pool.length)];}
+  cur=pick;
   document.getElementById('q-sec').textContent=cur.s;
   document.getElementById('q-title').textContent=cur.t;
   document.getElementById('q-link').href=cur.p+'#'+cur.id;
@@ -285,16 +349,41 @@ function draw(){
 document.getElementById('btn-draw').addEventListener('click',draw);
 document.getElementById('btn-next').addEventListener('click',draw);
 document.getElementById('btn-ok').addEventListener('click',()=>{
-  if(!cur)return;const s=loadState();s[cur.id]=true;saveState(s);render();draw();
+  if(!cur)return;
+  const s=loadState();s[cur.id]=true;saveState(s);
+  const w=loadWeak();delete w[cur.id];saveWeak(w);
+  render();draw();
 });
 document.getElementById('btn-ng').addEventListener('click',()=>{
-  if(!cur)return;const s=loadState();delete s[cur.id];saveState(s);render();
-  location.href=cur.p+'#'+cur.id;
+  if(!cur)return;
+  const s=loadState();delete s[cur.id];saveState(s);
+  const w=loadWeak();w[cur.id]=true;saveWeak(w);
+  render();draw();
 });
 document.getElementById('btn-reset').addEventListener('click',()=>{
-  if(confirm('チェック進捗をすべてリセットします。よろしいですか？')){saveState({});render();}
+  if(confirm('チェック進捗とあやしいリストをすべてリセットします。よろしいですか？')){saveState({});saveWeak({});render();}
 });
 render();
+
+/* ===== 項目検索 ===== */
+const kataN=t=>String(t).toLowerCase().replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+96));
+document.getElementById('find-input').addEventListener('input',function(){
+  const q=kataN(this.value.trim());
+  const box=document.getElementById('find-list'),none=document.getElementById('find-none');
+  box.innerHTML='';
+  if(!q){box.classList.add('hidden');none.classList.add('hidden');return}
+  const s=loadState(),w=loadWeak();
+  const hits=ITEMS.filter(it=>kataN(it.t+' '+it.s+' '+it.id).includes(q)).slice(0,15);
+  hits.forEach(it=>{
+    const a=document.createElement('a');
+    a.href=it.p+'#'+it.id;
+    a.textContent=(s[it.id]?'✓ ':w[it.id]?'🤔 ':'')+it.t;
+    if(s[it.id])a.classList.add('done');else if(w[it.id])a.classList.add('weak');
+    box.appendChild(a);
+  });
+  box.classList.toggle('hidden',!hits.length);
+  none.classList.toggle('hidden',!!hits.length);
+});
 </script>
 </body>
 </html>

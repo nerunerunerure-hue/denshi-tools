@@ -41,6 +41,10 @@
   .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
     border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
   .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .toc a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
+  .toc a.done::before{content:'✓ ';font-weight:700}
+  .toc a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  .toc a.weak::before{content:'🤔 '}
   main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
   .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
     padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
@@ -80,6 +84,11 @@
     border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
   .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
   .check.done{color:var(--green)}
+  .weakbtn{margin-left:auto;flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--ink-dim);
+    background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 10px;
+    cursor:pointer;user-select:none;transition:.12s}
+  .weakbtn:hover{border-color:#E8D3B0;color:var(--warn)}
+  .weakbtn.on{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
   .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
   .quiz h2{font-size:1.13rem;margin-bottom:6px}
   .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
@@ -259,6 +268,8 @@
   <p class="goal">🎯 ゴール：入力の全組み合わせを漏れなく書き出し、出力を埋められる</p>
   <p>真理値表は<b>「入力の全組み合わせ」に対する出力を一覧にした表</b>。入力がn個なら行数は<b>2ⁿ行</b>（2入力＝4行、3入力＝8行）。組み合わせは<b>2進数のカウントアップ順（00→01→10→11）</b>で書くと絶対に漏れません。</p>
   <div class="example"><span class="tt">✏️ 例：Y＝A・B＋C（AかつB、またはC）の真理値表（3入力＝8行）</span>
+    まず自分で書いてみよう。行は2進数の順（000〜111）で8行。<b>途中の列（A・B）を先に作ってから</b>最終出力Yを埋めるとミスが減る。
+    <details class="ans"><summary>答えを見る</summary>
     <table class="tbl">
       <tr><th class="c">A</th><th class="c">B</th><th class="c">C</th><th class="c">A・B</th><th class="c">Y＝A・B＋C</th></tr>
       <tr><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td></tr>
@@ -270,7 +281,8 @@
       <tr><td class="c mono">1</td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono"><b>1</b></td><td class="c mono"><b>1</b></td></tr>
       <tr><td class="c mono">1</td><td class="c mono">1</td><td class="c mono">1</td><td class="c mono"><b>1</b></td><td class="c mono"><b>1</b></td></tr>
     </table>
-    途中の列（A・B）を作ってから最終出力を埋めると、複雑な式でもミスが減る。
+    検算：Yが1になるのは「Cが1」の4行＋「AもBも1でCが0」の1行（110）＝計5行 ✓
+    </details>
   </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
@@ -284,7 +296,7 @@
 
 <!-- ============ 3. 各種ディジタルIC ============ -->
 <section class="item" id="s3-3">
-  <h2><span class="no">3-3</span>各種ディジタルIC（74シリーズ）</h2>
+  <h2><span class="no">3-3</span>各種ディジタルIC（74シリーズ） — ゲートを「部品」として買う</h2>
   <p class="goal">🎯 ゴール：代表的な74シリーズICの中身とピンの数え方がわかる</p>
   <p>論理ゲートは「74シリーズ」というICファミリで部品化されています。1つのパッケージにゲートが複数入っているのが普通です。</p>
   <table class="tbl">
@@ -348,7 +360,7 @@
 
 <!-- ============ 4. ディジタルICを使った回路作成 ============ -->
 <section class="item" id="s3-4">
-  <h2><span class="no">3-4</span>ディジタルICを使った回路作成</h2>
+  <h2><span class="no">3-4</span>ディジタルICを使った回路作成 — 電源・入力・出力の「お作法」</h2>
   <p class="goal">🎯 ゴール：スイッチ入力→ゲート→LED出力の回路を組める</p>
   <p>「真理値表 → 論理式 → ゲートのつなぎ」と決めたら、実際の配線ではロジック以外の3点セット——<b>入力の処理・出力の電流制限・電源まわり</b>——が成功のカギになります。</p>
   <figure class="fig">
@@ -598,7 +610,8 @@
 <!-- ============ 9. 進数変換 ============ -->
 <section class="item" id="s3-9">
   <h2><span class="no">3-9</span>進数変換 — 3つの方法で行き来する</h2>
-  <p class="goal">🎯 ゴール:2進⇄10進⇄16進を自力で変換できる</p>
+  <p class="goal">🎯 ゴール：2進⇄10進⇄16進を自力で変換できる</p>
+  <p>2進・16進はデジタル回路の<b>住所表記</b>のようなもので、データシートを読むときもカウンタの動作を確認するときも、3つの進数を行き来しながら読むことになります。覚える変換は「重みを足す」「2で割る」「4ビット区切り」の3パターンだけです。</p>
   <figure class="fig">
   <svg role="img" aria-label="図3-7 変換の3パターン。「重みを足す」「2で割る」「4ビット区切り」でどの方向にも行ける" viewBox="0 0 700 420" width="700">
     <!-- (a) 2進→10進 -->
@@ -664,7 +677,7 @@
 
 <!-- ============ 10. 7segLED ============ -->
 <section class="item" id="s3-10">
-  <h2><span class="no">3-10</span>7セグメントLED</h2>
+  <h2><span class="no">3-10</span>7セグメントLED — 棒7本で数字を描く表示器</h2>
   <p class="goal">🎯 ゴール：セグメント名（a〜g）と点灯パターン、コモンの種類がわかる</p>
   <p>7セグメントLEDは<b>7本の棒状LED（＋小数点dp）の点灯パターンで数字を表す</b>表示器。中身はただのLEDが8個入っているだけ、と考えると怖くありません。</p>
   <figure class="fig">
@@ -747,7 +760,7 @@
 
 <!-- ============ 11. 7segを使った回路作成 ============ -->
 <section class="item" id="s3-11">
-  <h2><span class="no">3-11</span>7segLEDを使った回路作成</h2>
+  <h2><span class="no">3-11</span>7segLEDを使った回路作成 — 点灯パターンはデコーダICに丸投げ</h2>
   <p class="goal">🎯 ゴール：デコーダICを使って数値を表示する構成を説明できる</p>
   <p>7本のセグメントを1本ずつ自力で制御するのは大変。そこで<b>「BCD（2進化10進）の4ビットを入れると、a〜gの7本を自動で作ってくれる」デコーダIC</b>を使います。</p>
   <figure class="fig">
@@ -929,7 +942,7 @@
 
 <!-- ============ 14. カウンタIC ============ -->
 <section class="item" id="s3-14">
-  <h2><span class="no">3-14</span>カウンタIC</h2>
+  <h2><span class="no">3-14</span>カウンタIC — クロックのたびに＋1してくれる部品</h2>
   <p class="goal">🎯 ゴール：カウンタICの役割と代表的な端子がわかる</p>
   <p>FFを自分でつながなくても、1チップでカウンタになっているICがあります。<b>クロックが入るたびに2進数で＋1（または−1）</b>してくれる部品です。</p>
   <figure class="fig">
@@ -1039,6 +1052,8 @@
   <figcaption>図3-13　4ビットシフトレジスタ。1本の線から入れたデータが、4クロックで4ビット並列に揃う</figcaption>
   </figure>
   <div class="example"><span class="tt">✏️ 動きを追ってみる（1→0→1→1 の順に入力）</span>
+    はじめ0000の4ビットシフトレジスタに、1→0→1→1 の順で1クロックずつ入力する。各クロック後の Q0〜Q3 を自分で追ってから答え合わせしよう。ヒント：クロックのたびに全FFが一斉に「左隣の値」を取り込む。
+    <details class="ans"><summary>答えを見る</summary>
     <table class="tbl">
       <tr><th>クロック</th><th class="c">入力</th><th class="c">Q0</th><th class="c">Q1</th><th class="c">Q2</th><th class="c">Q3</th></tr>
       <tr><td>はじめ</td><td class="c mono">—</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td><td class="c mono">0</td></tr>
@@ -1048,6 +1063,7 @@
       <tr><td>4回目</td><td class="c mono">1</td><td class="c mono"><b>1</b></td><td class="c mono">1</td><td class="c mono">0</td><td class="c mono">1</td></tr>
     </table>
     データが1クロックずつ右へスライドしていくのがわかる。
+    </details>
   </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
@@ -1095,13 +1111,36 @@
 const KEY='denshiStudy.v1';
 function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const WKEY='denshiStudy.weak.v1';
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
 const boxes=[...document.querySelectorAll('input[data-item]')];
 function refresh(){
-  const s=loadState();let n=0;
+  const s=loadState(),w=loadWeak();let n=0;
   boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
   document.getElementById('done-count').textContent=n;
+  document.querySelectorAll('.toc a').forEach(a=>{const id=a.getAttribute('href').slice(1);const on=!!s[id];a.classList.toggle('done',on);a.classList.toggle('weak',!on&&!!w[id]);});
+  document.querySelectorAll('.weakbtn').forEach(b=>{const on=!!w[b.dataset.weak];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
 }
-boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked){s[b.dataset.item]=true;const w=loadWeak();if(w[b.dataset.item]){delete w[b.dataset.item];saveWeak(w);}}else delete s[b.dataset.item];saveState(s);refresh();}));
+// 各項目に「あやしい」トグルを付ける（study-guideのあやしいリスト・優先出題と連動）
+boxes.forEach(b=>{
+  const id=b.dataset.item;
+  const btn=document.createElement('span');
+  btn.className='weakbtn';btn.dataset.weak=id;btn.textContent='🤔 あやしい';
+  btn.setAttribute('role','button');btn.tabIndex=0;btn.setAttribute('aria-pressed','false');
+  btn.title='復習リストに入れる（「できるようになった」を付けると自動で外れます）';
+  const toggleWeak=e=>{
+    e.preventDefault();e.stopPropagation();
+    const w=loadWeak();
+    if(w[id])delete w[id];
+    else{w[id]=true;const s=loadState();if(s[id]){delete s[id];saveState(s);}}
+    saveWeak(w);refresh();
+  };
+  btn.addEventListener('click',toggleWeak);
+  btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')toggleWeak(e);});
+  b.closest('.check').appendChild(btn);
+});
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}

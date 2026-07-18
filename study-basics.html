@@ -41,6 +41,10 @@
   .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
     border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
   .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .toc a.done{background:var(--green-soft);border-color:#D5DFC6;color:var(--green)}
+  .toc a.done::before{content:'✓ ';font-weight:700}
+  .toc a.weak{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
+  .toc a.weak::before{content:'🤔 '}
   main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
   .item{background:var(--surface);border:1px solid var(--border);border-radius:16px;
     padding:22px 20px 14px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
@@ -78,6 +82,11 @@
     border-top:1px dashed var(--border);font-size:.88rem;font-weight:600;color:var(--ink-dim);cursor:pointer;user-select:none}
   .check input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
   .check.done{color:var(--green)}
+  .weakbtn{margin-left:auto;flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--ink-dim);
+    background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px 10px;
+    cursor:pointer;user-select:none;transition:.12s}
+  .weakbtn:hover{border-color:#E8D3B0;color:var(--warn)}
+  .weakbtn.on{background:var(--warn-soft);border-color:#E8D3B0;color:var(--warn)}
   .quiz{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
   .quiz h2{font-size:1.13rem;margin-bottom:6px}
   .quiz>p{font-size:.85rem;color:var(--ink-dim);margin-bottom:12px}
@@ -649,7 +658,8 @@
       <line x1="102" y1="124" x2="102" y2="196" stroke="#211F1A" stroke-width="3"/>
       <line x1="132" y1="124" x2="132" y2="178" stroke="#211F1A" stroke-width="3"/>
       <text x="70" y="212" font-size="11.5" fill="#BE5A38" font-weight="600">長い足＝アノード（＋）</text>
-      <text x="160" y="196" font-size="11.5" fill="#716C61">短い足＝カソード（−）</text>
+      <text x="182" y="166" font-size="11.5" fill="#716C61">短い足＝</text>
+      <text x="182" y="181" font-size="11.5" fill="#716C61">カソード（−）</text>
       <text x="117" y="240" font-size="11" fill="#716C61">ふちが平らな側もカソード</text>
       <path d="M152,88 l14,-8" stroke="#716C61" stroke-width="1.5"/>
       <text x="182" y="76" font-size="10.5" fill="#716C61">平らな部分</text>
@@ -685,11 +695,14 @@
   </svg>
   <figcaption>図1-8　極性の見分け方。「長い足が＋」はLEDも電解コンデンサも共通</figcaption>
   </figure>
+  <div class="caution"><span class="tt">⚠️ 電解コンデンサの破裂</span>
+    電解コンデンサは<b>逆接続・定格を超える電圧で破裂する危険</b>があります。通電してから気づいても遅いので、取り付け前に「白帯＝マイナスの向き」と「耐圧（定格電圧）」の2点を必ず確認する。
+  </div>
   <div class="point"><span class="tt">⚡ ポイント</span>
     <ul>
       <li><b>ダイオード：帯＝カソード</b>（記号の縦棒側）。電流はA→Kの一方向のみ。</li>
       <li><b>LED：長い足＝アノード（＋）</b>、平らなふち＝カソード。逆向きだと点灯しない。</li>
-      <li><b>電解コンデンサ：白帯＝マイナス</b>。逆接続・過電圧は破裂の危険があるので取り付け前に必ず確認。</li>
+      <li><b>電解コンデンサ：白帯＝マイナス</b>。取り付け前に向きを必ず確認。</li>
       <li>迷ったらテスタのダイオードチェックで確認できる（順方向で電圧表示、逆方向でOL）。</li>
     </ul>
   </div>
@@ -730,16 +743,19 @@
     <line x1="16" y1="86" x2="80" y2="86" stroke="#b23a2e" stroke-width="3.5"/>
     <line x1="16" y1="112" x2="80" y2="112" stroke="#211F1A" stroke-width="3.5"/>
     <text x="14" y="74" font-size="10.5" fill="#716C61">電池から</text>
-    <line x1="156" y1="90" x2="156" y2="112" stroke="#211F1A" stroke-width="2.5"/>
-    <rect x="148" y="112" width="16" height="36" rx="7" fill="#EFDDBB" stroke="#8a7a55" stroke-width="1.5"/>
-    <line x1="156" y1="148" x2="156" y2="166" stroke="#211F1A" stroke-width="2.5"/>
+    <line x1="156" y1="86" x2="156" y2="118" stroke="#211F1A" stroke-width="2.5"/>
+    <rect x="148" y="118" width="16" height="36" rx="7" fill="#EFDDBB" stroke="#8a7a55" stroke-width="1.5"/>
+    <line x1="156" y1="154" x2="156" y2="166" stroke="#211F1A" stroke-width="2.5"/>
     <text x="140" y="136" font-size="11" fill="#211F1A" text-anchor="end">抵抗</text>
     <line x1="156" y1="196" x2="167" y2="181" stroke="#211F1A" stroke-width="2.5"/>
     <line x1="192" y1="196" x2="181" y2="181" stroke="#211F1A" stroke-width="2.5"/>
     <circle cx="174" cy="172" r="10" fill="#E05252" stroke="#b23a2e" stroke-width="1.5"/>
     <text x="200" y="166" font-size="11" fill="#b23a2e">LED</text>
-    <path d="M192,220 Q230,200 228,116" fill="none" stroke="#211F1A" stroke-width="3"/>
+    <path d="M192,220 Q230,200 228,112" fill="none" stroke="#211F1A" stroke-width="3"/>
     <text x="240" y="150" font-size="10.5" fill="#716C61">ジャンプワイヤで−へ</text>
+    <!-- 挿し込み位置の目印リング -->
+    <circle cx="156" cy="86" r="7.5" fill="none" stroke="#b23a2e" stroke-width="2"/>
+    <circle cx="228" cy="112" r="7.5" fill="none" stroke="#4A6FA5" stroke-width="2"/>
     <!-- 注釈 -->
     <g font-size="11.5">
       <line x1="500" y1="86" x2="528" y2="76" stroke="#BE5A38" stroke-width="1.5"/>
@@ -840,6 +856,7 @@
 <section class="item" id="s1-11">
   <h2><span class="no">1-11</span>オシロスコープの使い方</h2>
   <p class="goal">🎯 ゴール：プローブ接続→スケール調整→トリガ設定の流れで波形を表示できる</p>
+  <p>1-7で「何が測れるか」がわかっても、オシロは<b>手順どおりに触らないと波形が出ない</b>測定器です。実習でつまずくのはスケールとトリガのほぼ2箇所なので、この2つを操作の流れの中に組み込んで覚えてしまいます。</p>
   <figure class="fig">
   <svg role="img" aria-label="図1-11 オシロの基本操作。トリガは「毎回同じ条件で描き始めるための目印」＝波形を止める仕組み" viewBox="0 0 700 320" width="700">
     <!-- 本体 -->
@@ -1053,13 +1070,36 @@
 const KEY='denshiStudy.v1';
 function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function saveState(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+const WKEY='denshiStudy.weak.v1';
+function loadWeak(){try{return JSON.parse(localStorage.getItem(WKEY))||{}}catch(e){return{}}}
+function saveWeak(w){try{localStorage.setItem(WKEY,JSON.stringify(w))}catch(e){}}
 const boxes=[...document.querySelectorAll('input[data-item]')];
 function refresh(){
-  const s=loadState();let n=0;
+  const s=loadState(),w=loadWeak();let n=0;
   boxes.forEach(b=>{const on=!!s[b.dataset.item];b.checked=on;b.closest('.check').classList.toggle('done',on);if(on)n++;});
   document.getElementById('done-count').textContent=n;
+  document.querySelectorAll('.toc a').forEach(a=>{const id=a.getAttribute('href').slice(1);const on=!!s[id];a.classList.toggle('done',on);a.classList.toggle('weak',!on&&!!w[id]);});
+  document.querySelectorAll('.weakbtn').forEach(b=>{const on=!!w[b.dataset.weak];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
 }
-boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked)s[b.dataset.item]=true;else delete s[b.dataset.item];saveState(s);refresh();}));
+boxes.forEach(b=>b.addEventListener('change',()=>{const s=loadState();if(b.checked){s[b.dataset.item]=true;const w=loadWeak();if(w[b.dataset.item]){delete w[b.dataset.item];saveWeak(w);}}else delete s[b.dataset.item];saveState(s);refresh();}));
+// 各項目に「あやしい」トグルを付ける（study-guideのあやしいリスト・優先出題と連動）
+boxes.forEach(b=>{
+  const id=b.dataset.item;
+  const btn=document.createElement('span');
+  btn.className='weakbtn';btn.dataset.weak=id;btn.textContent='🤔 あやしい';
+  btn.setAttribute('role','button');btn.tabIndex=0;btn.setAttribute('aria-pressed','false');
+  btn.title='復習リストに入れる（「できるようになった」を付けると自動で外れます）';
+  const toggleWeak=e=>{
+    e.preventDefault();e.stopPropagation();
+    const w=loadWeak();
+    if(w[id])delete w[id];
+    else{w[id]=true;const s=loadState();if(s[id]){delete s[id];saveState(s);}}
+    saveWeak(w);refresh();
+  };
+  btn.addEventListener('click',toggleWeak);
+  btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')toggleWeak(e);});
+  b.closest('.check').appendChild(btn);
+});
 refresh();
 const rnd=document.getElementById('rnd-quiz');
 if(rnd){rnd.addEventListener('click',()=>{const qs=[...document.querySelectorAll('.quiz details')];qs.forEach(d=>d.open=false);const q=qs[Math.floor(Math.random()*qs.length)];q.open=true;q.scrollIntoView({behavior:'smooth',block:'center'});});}
