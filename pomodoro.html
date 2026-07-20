@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ポモドーロ勉強タイマー</title>
+<link rel="icon" id="favicon" href="data:,">
+<script>
+/* テーマはCSS読込前に確定させてフラッシュを防ぐ */
+(function(){
+  var t = null;
+  try { t = localStorage.getItem('pomo-theme'); } catch(e){}
+  if (t !== 'light' && t !== 'dark') {
+    t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<style>
+:root{
+  --sans:"Segoe UI","Yu Gothic UI","Hiragino Kaku Gothic ProN",system-ui,sans-serif;
+  --bg:#F1EEE5; --card:#FAF8F1; --ink:#211F1A; --muted:#6B6557; --line:#D8D2C2;
+  --accent:#BE5A38; --deep:#A0492A; --btn-fg:#FFFFFF;
+  color-scheme: light;
+}
+:root[data-theme="dark"]{
+  --bg:#211E18; --card:#2A2720; --ink:#EDE7D9; --muted:#A79F8D; --line:#3F3A2F;
+  --accent:#D9825C; --deep:#D9825C; --btn-fg:#211E18;
+  color-scheme: dark;
+}
+body[data-phase="short"]{
+  --bg:#E8EEE4; --card:#F5F8F2; --line:#CBD6C6; --accent:#4E7A5A; --deep:#3E6247;
+}
+body[data-phase="long"]{
+  --bg:#E2EBEA; --card:#F2F7F6; --line:#C2D3D1; --accent:#417876; --deep:#335F5D;
+}
+:root[data-theme="dark"] body[data-phase="short"]{
+  --bg:#1C211B; --card:#252B24; --line:#39412F; --accent:#86AE8E; --deep:#86AE8E;
+}
+:root[data-theme="dark"] body[data-phase="long"]{
+  --bg:#18201F; --card:#212A29; --line:#31403E; --accent:#7FA6A4; --deep:#7FA6A4;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{
+  font-family:var(--sans);
+  background:var(--bg); color:var(--ink);
+  min-height:100vh; min-height:100dvh;
+  display:flex; flex-direction:column;
+  transition: background-color .5s ease, color .5s ease;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* 紙の質感: ダイヤル中心をほんのり明るく + 微細な紙目 */
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background: radial-gradient(circle at 50% 46%, rgba(255,255,255,.5), transparent 54%);
+}
+:root[data-theme="dark"] body::after{
+  background: radial-gradient(circle at 50% 46%, rgba(255,255,255,.05), transparent 54%);
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.8'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='140'%20height='140'%20filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.035;
+}
+.topbar, main, footer{ position:relative; z-index:1; }
+button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+:focus-visible{ outline:2.5px solid var(--deep); outline-offset:3px; border-radius:6px; }
+
+.visually-hidden{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip-path: inset(50%); white-space:nowrap;
+}
+
+/* ---- 上部バー ---- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px 0;
+}
+.stats{ font-size:13px; color:var(--muted); letter-spacing:.02em; }
+.stats b{ color:var(--ink); font-weight:600; font-size:15px; }
+.stats .sep{ margin:0 .5em; opacity:.5; }
+.topbtns{ display:flex; gap:6px; align-items:center; }
+.topbtns button{
+  min-width:44px; min-height:44px; padding:0 14px;
+  border-radius:12px; font-size:14px; color:var(--muted);
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.topbtns button:hover{ color:var(--ink); background:var(--card); }
+#themeBtn{ padding:0; width:44px; }
+#themeBtn svg{ width:18px; height:18px; }
+#themeBtn .icon-sun{ display:none; }
+:root[data-theme="dark"] #themeBtn .icon-sun{ display:block; }
+:root[data-theme="dark"] #themeBtn .icon-moon{ display:none; }
+
+/* ---- 中央 ---- */
+main{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: clamp(14px, 2.8vh, 26px);
+  padding: 8px 16px;
+}
+
+#task{
+  width:min(420px, 88vw);
+  font-size:16px; text-align:center;
+  background:transparent; border:none; border-bottom:1.5px solid var(--line);
+  color:var(--ink); padding:8px 4px;
+  transition: border-color .3s;
+}
+#task::placeholder{ color:var(--muted); opacity:.7; }
+#task:focus{ outline:none; border-bottom-color:var(--deep); }
+#task:placeholder-shown:not(:focus){ border-bottom-color: color-mix(in srgb, var(--line) 55%, transparent); }
+
+.dial{
+  position:relative;
+  width:min(80vw, 44vh, 420px); aspect-ratio:1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  user-select:none;
+}
+.dial svg{ position:absolute; inset:0; width:100%; height:100%; }
+#ticks line{ stroke-linecap:round; transition: stroke .5s ease, opacity .5s ease; }
+
+.phase-label{
+  font-size:14px; font-weight:600; letter-spacing:.24em; padding-left:.24em;
+  color:var(--deep); margin-bottom:2px;
+}
+.time{
+  display:flex; align-items:baseline; justify-content:center;
+  font-family:"Segoe UI Variable Display", var(--sans);
+  font-size: calc(min(80vw, 44vh, 420px) * .27);
+  font-weight:430; line-height:1; color:var(--ink);
+  letter-spacing:-0.015em;
+  font-variant-numeric: tabular-nums;
+}
+:root[data-theme="dark"] .time{ font-weight:410; }
+.time .dg{ display:inline-block; width:.62em; text-align:center; }
+.time .cl{ display:inline-block; width:.34em; text-align:center; opacity:.6; }
+body[data-status="running"] .time .cl{ animation: colonBreath 2s ease-in-out infinite; }
+@keyframes colonBreath{ 0%,100%{ opacity:.6; } 50%{ opacity:.18; } }
+.dial{ transition: opacity .35s ease; }
+body[data-status="paused"] .dial{ opacity:.55; }
+@media (prefers-reduced-motion: reduce){
+  .time .cl{ animation:none !important; }
+  #tip{ animation:none !important; }
+}
+.dots{ display:flex; gap:9px; margin-top:14px; }
+.dots i{
+  width:9px; height:9px; border-radius:50%;
+  border:1.5px solid var(--deep); background:transparent;
+  transition: background-color .4s, border-color .4s;
+}
+.dots i.on{ background:var(--deep); }
+
+/* ---- 操作 ---- */
+.controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center; }
+#mainBtn{
+  min-height:56px; min-width:190px; padding:0 42px;
+  border-radius:999px; background:var(--deep); color:var(--btn-fg);
+  font-size:19px; font-weight:700; letter-spacing:.06em;
+  box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--deep) 60%, transparent),
+              0 2px 6px rgba(33,31,26,.08);
+  transition: background-color .4s, filter .15s, transform .1s;
+}
+#mainBtn:hover{ filter:brightness(1.07); }
+#mainBtn:active{ transform:translateY(1px); }
+.ghost{
+  min-height:48px; padding:0 20px; border-radius:999px;
+  border:1px solid var(--line); color:var(--muted); font-size:14px;
+  transition: border-color .3s, color .3s, background-color .3s;
+}
+.ghost:hover{ background:var(--card); color:var(--ink); }
+
+/* 出たり消えたりする要素は固定高さのスロットに置き、タイマー位置を不動にする */
+.aux{ height:56px; display:flex; align-items:center; justify-content:center; }
+#distractBtn{
+  display:none;
+  min-height:44px; padding:0 18px; border-radius:999px;
+  border:1.5px dashed var(--line); color:var(--muted); font-size:13px;
+}
+#distractBtn:hover{ border-color:var(--deep); color:var(--ink); }
+body[data-status="running"][data-phase="work"] #distractBtn{ display:inline-flex; align-items:center; }
+
+#tip{
+  display:none; max-width:32em; text-align:center;
+  font-size:13.5px; color:var(--muted); line-height:1.7;
+}
+body[data-phase="short"] #tip, body[data-phase="long"] #tip{
+  display:block; animation: tipIn .6s ease both;
+}
+@keyframes tipIn{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+
+/* ---- 設定パネル ---- */
+#panel{
+  position:absolute; top:62px; right:14px; z-index:20;
+  width:min(324px, calc(100vw - 28px));
+  background:var(--card); border:1px solid var(--line); border-radius:16px;
+  padding:20px 22px; box-shadow:0 18px 48px -12px rgba(33,31,26,.28);
+}
+.row + .row{ border-top:1px solid color-mix(in srgb, var(--line) 50%, transparent); }
+#panel[hidden]{ display:none; }
+#panel h2{ font-size:14px; letter-spacing:.1em; color:var(--muted); font-weight:600; margin-bottom:12px; }
+.row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; font-size:14px; }
+.row input[type="number"]{
+  width:4.4em; font-size:16px; text-align:center;
+  background:transparent; color:var(--ink);
+  border:1px solid var(--line); border-radius:8px; padding:6px 4px;
+}
+.row input[type="range"]{ flex:1; accent-color:var(--deep); }
+.row .mini{
+  min-height:36px; padding:0 12px; border-radius:8px;
+  border:1.5px solid var(--line); color:var(--muted); font-size:13px;
+}
+.row .mini:hover{ border-color:var(--deep); color:var(--ink); }
+#notifBtn{ width:100%; justify-content:center; display:inline-flex; align-items:center; }
+.note{ font-size:11.5px; color:var(--muted); line-height:1.6; margin-top:8px; }
+
+/* ---- 下部 ---- */
+footer{
+  text-align:center; padding:10px 16px 16px;
+  font-size:12px; color:var(--muted); letter-spacing:.03em;
+}
+footer kbd{
+  font-family:inherit; border:1px solid var(--line); border-radius:5px;
+  padding:1px 6px; font-size:11px; margin:0 1px; background:var(--card);
+}
+footer .home{
+  display:block; margin-top:8px; color:var(--muted);
+  text-decoration:none; font-size:12px;
+}
+footer .home:hover{ color:var(--ink); text-decoration:underline; }
+
+#toast{
+  position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px));
+  transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:var(--bg);
+  padding:10px 20px; border-radius:999px; font-size:13.5px;
+  opacity:0; pointer-events:none; transition: opacity .3s, transform .3s;
+  max-width:88vw; text-align:center;
+}
+#toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+@media (max-width:480px){
+  .topbar{ padding:10px 12px 0; }
+  .stats{ font-size:12px; }
+  .controls{ width:min(320px, 88vw); gap:10px; }
+  #mainBtn{ order:-1; flex-basis:100%; }
+  .ghost{ flex:1; }
+  footer .kbdhint{ display:none; }
+}
+</style>
+</head>
+<body data-phase="work" data-status="idle">
+
+<p id="srStatus" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+<p id="srAlert" class="visually-hidden" role="alert" aria-atomic="true"></p>
+
+<header class="topbar">
+  <p class="stats">今日 <b id="doneN">0</b> ポモドーロ<span id="disWrap" hidden><span class="sep">·</span>気そらし <span id="disN">0</span></span></p>
+  <div class="topbtns">
+    <button id="themeBtn" aria-label="ライト/ダーク切替" title="ライト/ダーク切替"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+    <button id="gearBtn" aria-expanded="false" aria-controls="panel">設定</button>
+  </div>
+</header>
+
+<div id="panel" hidden>
+  <h2>設定</h2>
+  <div class="row"><label for="inWork">勉強</label><span><input type="number" id="inWork" min="1" max="90" step="1"> 分</span></div>
+  <div class="row"><label for="inShort">短い休憩</label><span><input type="number" id="inShort" min="1" max="60" step="1"> 分</span></div>
+  <div class="row"><label for="inLong">長い休憩</label><span><input type="number" id="inLong" min="1" max="60" step="1"> 分</span></div>
+  <div class="row"><label for="inVol">音量</label><input type="range" id="inVol" min="0" max="100" step="5"><button class="mini" id="testBtn">試す</button></div>
+  <div class="row"><button class="mini" id="notifBtn">終了時にOS通知を出す</button></div>
+  <p class="note">通知は http://localhost 配信か HTTPS のときだけ使えます（file:// 直開きでは不可）。音とタブタイトルは常に動きます。</p>
+</div>
+
+<main>
+  <input id="task" type="text" placeholder="いま何をやる？（任意）" maxlength="60" autocomplete="off">
+
+  <div class="dial">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><g id="ticks"></g></svg>
+    <p class="phase-label" id="phaseLabel">勉強</p>
+    <div class="time" aria-hidden="true">
+      <span class="dg" id="d0">2</span><span class="dg" id="d1">5</span><span class="cl">:</span><span class="dg" id="d2">0</span><span class="dg" id="d3">0</span>
+    </div>
+    <p class="visually-hidden" id="timeText">残り 25分00秒</p>
+    <div class="dots" id="dots" title="このサイクルの完了数（4回で長い休憩）">
+      <i></i><i></i><i></i><i></i>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ghost" id="resetBtn">リセット</button>
+    <button id="mainBtn">開始</button>
+    <button class="ghost" id="skipBtn">スキップ</button>
+  </div>
+
+  <div class="aux">
+    <button id="distractBtn" title="公式ポモドーロの「'」記録。タイマーは止めずに、気がそれたことだけメモする">気がそれた ＋1</button>
+    <p id="tip"></p>
+  </div>
+</main>
+
+<footer>
+  <span class="kbdhint"><kbd>Space</kbd> 開始/一時停止　<kbd>R</kbd> リセット　｜　</span>休憩は自動で始まる · 4回ごとに長い休憩
+  <a class="home" href="index.html">‹ ツール置き場</a>
+</footer>
+
+<div id="toast" role="presentation"></div>
+
+<script>
+'use strict';
+
+/* ===== 定数・状態 ===== */
+const LS_KEY = 'pomo-v1';
+const PHASE_LABEL = { work:'勉強', short:'休憩', long:'長い休憩' };
+const TIPS = [
+  '画面から目を離して、6mより遠くを20秒ぼんやり見よう',
+  '立ち上がって伸びをひとつ。肩と首をゆるめよう',
+  'スマホは見ないほうが頭が休まる（研究でも確認済み）',
+  '水をひと口。深呼吸を3回',
+  '窓の外や遠くの緑を眺めよう',
+];
+const TAB_ID = Math.random().toString(36).slice(2);
+
+const S = {
+  phase:'work', status:'idle', cycle:0,
+  endTime:null, remainMs:null,
+  task:'',
+  settings:{ work:25, short:5, long:15, volume:60 },
+  day:{ key:'', done:0, distract:0 },
+};
+
+/* ===== 要素 ===== */
+const $ = id => document.getElementById(id);
+const els = {
+  d:[$('d0'),$('d1'),$('d2'),$('d3')], timeText:$('timeText'),
+  phaseLabel:$('phaseLabel'), dots:$('dots'),
+  ticks:$('ticks'),
+  mainBtn:$('mainBtn'), resetBtn:$('resetBtn'), skipBtn:$('skipBtn'),
+  distractBtn:$('distractBtn'), tip:$('tip'), task:$('task'),
+  doneN:$('doneN'), disN:$('disN'), disWrap:$('disWrap'),
+  panel:$('panel'), gearBtn:$('gearBtn'), themeBtn:$('themeBtn'),
+  inWork:$('inWork'), inShort:$('inShort'), inLong:$('inLong'),
+  inVol:$('inVol'), testBtn:$('testBtn'), notifBtn:$('notifBtn'),
+  srStatus:$('srStatus'), srAlert:$('srAlert'),
+  toast:$('toast'), favicon:$('favicon'),
+};
+
+/* ===== ストレージ（file://等で失敗しても動作継続） ===== */
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+function dayKey(now){
+  /* 「勉強日」は朝4時区切り。深夜勉強で日付をまたいでもカウントが割れない */
+  const d = new Date(now - 4*3600e3);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function rollDay(now){
+  const k = dayKey(now);
+  if (S.day.key !== k){ S.day = { key:k, done:0, distract:0 }; }
+}
+
+function save(){
+  lsSet(LS_KEY, JSON.stringify({
+    v:1, phase:S.phase, status:S.status, cycle:S.cycle,
+    endTime:S.endTime, remainMs:S.remainMs, task:S.task,
+    settings:S.settings, day:S.day,
+  }));
+}
+function load(){
+  const raw = lsGet(LS_KEY);
+  if (!raw) return;
+  try{
+    const p = JSON.parse(raw);
+    if (p.v !== 1) return;
+    if (['work','short','long'].includes(p.phase)) S.phase = p.phase;
+    if (['idle','running','paused'].includes(p.status)) S.status = p.status;
+    if (Number.isInteger(p.cycle) && p.cycle>=0 && p.cycle<=4) S.cycle = p.cycle;
+    if (typeof p.endTime==='number') S.endTime = p.endTime;
+    if (typeof p.remainMs==='number') S.remainMs = p.remainMs;
+    if (typeof p.task==='string') S.task = p.task;
+    if (p.settings){
+      for (const k of ['work','short','long']){
+        const v = Number(p.settings[k]);
+        if (Number.isFinite(v) && v>=1 && v<=90) S.settings[k]=Math.round(v);
+      }
+      const vol = Number(p.settings.volume);
+      if (Number.isFinite(vol) && vol>=0 && vol<=100) S.settings.volume=vol;
+    }
+    if (p.day && typeof p.day.key==='string'){
+      S.day = { key:p.day.key, done:p.day.done|0, distract:p.day.distract|0 };
+    }
+  }catch(e){}
+}
+
+/* ===== 時間 ===== */
+const minMs = phase => S.settings[phase]*60000;
+function currentRemain(now){
+  if (S.status==='running') return Math.max(0, S.endTime - now);
+  return S.remainMs ?? minMs(S.phase);
+}
+
+/* ===== 音（Web Audio・外部ファイルなし） =====
+   AudioContextはユーザー操作内で生成/resumeしないと自動再生制限で無音になる */
+let audioCtx = null;
+function ensureCtx(){
+  try{
+    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if (audioCtx.state==='suspended') audioCtx.resume().catch(()=>{});
+  }catch(e){}
+}
+function tone(freq, t0, dur, peak){
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = 'sine'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(peak, t0+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(t0); o.stop(t0+dur+0.05);
+}
+function chime(kind){
+  if (!audioCtx || audioCtx.state!=='running') return;
+  const v = S.settings.volume/100;
+  if (v<=0) return;
+  const peak = 0.28*v;
+  const t = audioCtx.currentTime + 0.03;
+  if (kind==='workEnd'){        /* 下降2音: おつかれさま */
+    tone(880, t, 1.0, peak); tone(659, t+0.45, 1.5, peak);
+  } else {                      /* 上昇2音: さあ再開 */
+    tone(659, t, 0.9, peak); tone(880, t+0.4, 1.4, peak);
+  }
+}
+
+/* ===== 通知（オプトイン・secure contextのみ） ===== */
+function notify(title, body){
+  if (!('Notification' in window)) return;
+  if (Notification.permission!=='granted') return;
+  if (!document.hidden) return; /* 見えている時は音とUIで足りる */
+  try{
+    const n = new Notification(title, { body, tag:'pomodoro', silent:true });
+    n.onclick = () => { window.focus(); n.close(); };
+  }catch(e){}
+}
+function vibrate(){ try{ navigator.vibrate && navigator.vibrate([180,90,180]); }catch(e){} }
+
+/* ===== Wake Lock（あれば使う。失敗しても無視） ===== */
+let wakeLock = null;
+async function syncWakeLock(){
+  try{
+    const want = S.status==='running' && document.visibilityState==='visible';
+    if (want && !wakeLock && navigator.wakeLock){
+      const lock = await navigator.wakeLock.request('screen');
+      lock.addEventListener('release', ()=>{ if (wakeLock===lock) wakeLock=null; });
+      wakeLock = lock;
+      /* request解決までに状態が変わっていたら即解放（開始直後の一時停止など） */
+      if (!(S.status==='running' && document.visibilityState==='visible')){
+        await lock.release(); wakeLock=null;
+      }
+    } else if (!want && wakeLock){
+      await wakeLock.release(); wakeLock=null;
+    }
+  }catch(e){ wakeLock=null; }
+}
+
+/* ===== フェーズ遷移 =====
+   終了時刻からの差分で常に再計算するので、バックグラウンドで
+   タイマーが間引かれても復帰した瞬間に正しい状態へ追いつく */
+function advance(now, silent){
+  let lastEvent = null, guard = 0;
+  while (S.status==='running' && now >= S.endTime && guard++ < 8){
+    if (S.phase==='work'){
+      S.day.done++; S.cycle++;
+      const next = S.cycle>=4 ? 'long' : 'short';
+      lastEvent = 'workEnd';
+      S.phase = next;
+      S.endTime = S.endTime + minMs(next); /* 休憩は自動スタート */
+    } else {
+      if (S.phase==='long') S.cycle = 0;
+      lastEvent = 'breakEnd';
+      S.phase = 'work'; S.status = 'idle';
+      S.remainMs = minMs('work'); S.endTime = null;
+    }
+  }
+  if (lastEvent){
+    if (!silent){
+      chime(lastEvent); vibrate();
+      if (lastEvent==='workEnd'){
+        notify('勉強セッション完了！', PHASE_LABEL[S.phase]+'に入ろう（'+S.settings[S.phase]+'分）');
+        els.srAlert.textContent = '勉強セッション完了。'+PHASE_LABEL[S.phase]+'を開始しました。';
+      } else {
+        notify('休憩おわり', '「開始」で次のポモドーロへ');
+        els.srAlert.textContent = '休憩が終わりました。開始ボタンで次のポモドーロを始められます。';
+      }
+    }
+    onPhaseChanged();
+    save();
+  }
+}
+
+function onPhaseChanged(){
+  document.body.dataset.phase = S.phase;
+  document.body.dataset.status = S.status;
+  els.phaseLabel.textContent = PHASE_LABEL[S.phase];
+  buildDial(S.settings[S.phase]);
+  if (S.phase!=='work'){
+    els.tip.textContent = TIPS[(S.day.done + S.day.distract) % TIPS.length];
+  }
+  updateDots(); updateMainBtn(); updateFavicon();
+}
+
+/* ===== 操作 ===== */
+function start(){
+  ensureCtx();
+  const now = Date.now();
+  rollDay(now);
+  S.endTime = now + currentRemain(now);
+  S.remainMs = null;
+  S.status = 'running';
+  document.body.dataset.status = 'running';
+  lsSet('pomo-ping', JSON.stringify({ id:TAB_ID, t:now }));
+  els.srStatus.textContent = PHASE_LABEL[S.phase]+'タイマーを開始しました。';
+  updateMainBtn(); updateFavicon(); syncWakeLock(); save(); tick();
+}
+function pause(){
+  S.remainMs = currentRemain(Date.now());
+  S.endTime = null;
+  S.status = 'paused';
+  document.body.dataset.status = 'paused';
+  els.srStatus.textContent = '一時停止しました。';
+  updateMainBtn(); updateFavicon(); syncWakeLock(); save(); tick();
+}
+function toggle(){ S.status==='running' ? pause() : start(); }
+function reset(){
+  S.status = 'idle'; S.endTime = null; S.remainMs = minMs(S.phase);
+  document.body.dataset.status = 'idle';
+  els.srStatus.textContent = 'リセットしました。';
+  updateMainBtn(); updateFavicon(); syncWakeLock(); save(); tick();
+}
+function skip(){
+  /* 完了扱いにはしない（ポモドーロは分割不可能の思想） */
+  if (S.phase==='work'){
+    S.phase = S.cycle>=4 ? 'long' : 'short';
+  } else {
+    if (S.phase==='long') S.cycle = 0;
+    S.phase = 'work';
+  }
+  S.status = 'idle'; S.endTime = null; S.remainMs = minMs(S.phase);
+  els.srStatus.textContent = PHASE_LABEL[S.phase]+'に切り替えました。';
+  onPhaseChanged(); syncWakeLock(); save(); tick();
+}
+
+/* ===== 表示 ===== */
+/* 等間隔・同寸の60目盛りリング。経過分が時計回りに沈み、残りが灯る */
+const TICK_N = 60;
+function buildDial(){
+  const NS = 'http://www.w3.org/2000/svg';
+  els.ticks.innerHTML = '';
+  for (let i=0;i<TICK_N;i++){
+    const a = (i/TICK_N)*Math.PI*2 - Math.PI/2;
+    const l = document.createElementNS(NS,'line');
+    l.setAttribute('x1', (100+Math.cos(a)*86).toFixed(2));
+    l.setAttribute('y1', (100+Math.sin(a)*86).toFixed(2));
+    l.setAttribute('x2', (100+Math.cos(a)*93.5).toFixed(2));
+    l.setAttribute('y2', (100+Math.sin(a)*93.5).toFixed(2));
+    l.setAttribute('stroke-width', '2');
+    els.ticks.appendChild(l);
+  }
+}
+function updateDial(remMs){
+  const total = minMs(S.phase);
+  const frac = Math.max(0, Math.min(1, remMs/total));
+  const gone = Math.min(TICK_N, Math.floor((1-frac)*TICK_N + 1e-9));
+  for (let i=0;i<TICK_N;i++){
+    const l = els.ticks.children[i];
+    if (i < gone){ l.style.stroke='var(--ink)'; l.style.opacity='.12'; }
+    else { l.style.stroke='var(--accent)'; l.style.opacity='.78'; }
+  }
+}
+function updateDots(){
+  const filled = S.phase==='long' ? 4 : Math.min(4, S.cycle);
+  [...els.dots.children].forEach((d,i)=> d.classList.toggle('on', i<filled));
+}
+function updateMainBtn(){
+  els.mainBtn.textContent = S.status==='running' ? '一時停止' : (S.status==='paused' ? '再開' : '開始');
+}
+function updateStats(){
+  els.doneN.textContent = S.day.done;
+  els.disN.textContent = S.day.distract;
+  els.disWrap.hidden = S.day.distract===0;
+}
+
+let lastTitle = '';
+function setTitle(t){ if (t!==lastTitle){ document.title = t; lastTitle = t; } }
+
+const FAV = { work:'#BE5A38', short:'#4E7A5A', long:'#417876', idle:'#9A937F' };
+let lastFav = '';
+function updateFavicon(){
+  const color = S.status==='running' ? FAV[S.phase] : FAV.idle;
+  if (color===lastFav) return; lastFav = color;
+  const c = document.createElement('canvas'); c.width=c.height=32;
+  const x = c.getContext('2d');
+  x.beginPath(); x.arc(16,16,13,0,Math.PI*2); x.fillStyle=color; x.fill();
+  els.favicon.href = c.toDataURL('image/png');
+}
+
+function fmt2(n){ return String(n).padStart(2,'0'); }
+function render(now){
+  const rem = currentRemain(now);
+  const s = Math.max(0, Math.ceil(rem/1000));
+  const mm = fmt2(Math.floor(s/60)), ss = fmt2(s%60);
+  els.d[0].textContent=mm[0]; els.d[1].textContent=mm[1];
+  els.d[2].textContent=ss[0]; els.d[3].textContent=ss[1];
+  els.timeText.textContent = '残り '+mm+'分'+ss+'秒（'+PHASE_LABEL[S.phase]+'）';
+  updateDial(rem);
+  updateStats();
+  if (S.status==='running'){
+    setTitle(mm+':'+ss+' '+PHASE_LABEL[S.phase]+' – ポモドーロ');
+  } else if (S.status==='paused'){
+    setTitle('⏸ '+mm+':'+ss+' – ポモドーロ');
+  } else {
+    setTitle('ポモドーロ勉強タイマー');
+  }
+}
+
+function tick(){
+  const now = Date.now();
+  rollDay(now);
+  if (S.status==='running' && now >= S.endTime) advance(now, false);
+  render(now);
+}
+
+/* ===== イベント ===== */
+els.mainBtn.addEventListener('click', toggle);
+els.resetBtn.addEventListener('click', reset);
+els.skipBtn.addEventListener('click', skip);
+els.distractBtn.addEventListener('click', ()=>{
+  rollDay(Date.now());
+  S.day.distract++; updateStats(); save();
+});
+els.task.addEventListener('input', ()=>{ S.task = els.task.value; save(); });
+
+/* マウスクリック後にボタンへフォーカスが残ると、次のSpaceがそのボタンを再発火してしまう。
+   マウス由来のクリック(detail>0)のときだけフォーカスを外す。キーボード操作(detail=0)は残す */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('button');
+  if (b && e.detail>0) b.blur();
+});
+
+document.addEventListener('keydown', e=>{
+  if (e.key==='Escape'){ els.panel.hidden = true; els.gearBtn.setAttribute('aria-expanded','false'); return; }
+  if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+  const tag = e.target.tagName;
+  if (tag==='INPUT' || tag==='TEXTAREA' || tag==='BUTTON') return;
+  if (e.code==='Space' || e.key===' '){ e.preventDefault(); toggle(); }
+  else if (e.key==='r' || e.key==='R'){ reset(); }
+});
+
+/* 設定パネル */
+els.gearBtn.addEventListener('click', ()=>{
+  const open = els.panel.hidden;
+  els.panel.hidden = !open;
+  els.gearBtn.setAttribute('aria-expanded', String(open));
+});
+document.addEventListener('click', e=>{
+  if (!els.panel.hidden && !els.panel.contains(e.target) && e.target!==els.gearBtn){
+    els.panel.hidden = true; els.gearBtn.setAttribute('aria-expanded','false');
+  }
+});
+
+function bindDuration(input, key){
+  input.addEventListener('change', ()=>{
+    let v = Math.round(Number(input.value));
+    const max = key==='work' ? 90 : 60;
+    if (!Number.isFinite(v)) v = S.settings[key];
+    v = Math.min(max, Math.max(1, v));
+    input.value = v;
+    S.settings[key] = v;
+    if (S.phase===key){
+      if (S.status==='idle') S.remainMs = minMs(key);
+      else if (S.status==='paused') S.remainMs = Math.min(S.remainMs ?? minMs(key), minMs(key));
+      if (S.status!=='running') buildDial(v); /* 実行中は次のフェーズから適用 */
+    }
+    save(); tick();
+  });
+}
+bindDuration(els.inWork,'work');
+bindDuration(els.inShort,'short');
+bindDuration(els.inLong,'long');
+
+els.inVol.addEventListener('change', ()=>{
+  S.settings.volume = Number(els.inVol.value); save();
+});
+els.testBtn.addEventListener('click', ()=>{
+  ensureCtx();
+  if (!audioCtx) return;
+  audioCtx.state==='running' ? chime('workEnd') : audioCtx.resume().then(()=>chime('workEnd')).catch(()=>{});
+});
+
+function updateNotifBtn(){
+  if (!('Notification' in window)){
+    els.notifBtn.textContent = 'この環境では通知は使えません'; els.notifBtn.disabled = true; return;
+  }
+  const p = Notification.permission;
+  els.notifBtn.textContent = p==='granted' ? '通知 ON（終了時にOS通知）'
+    : p==='denied' ? '通知はブラウザ設定でブロック中'
+    : '終了時にOS通知を出す（クリックで許可）';
+  els.notifBtn.disabled = p==='denied';
+}
+els.notifBtn.addEventListener('click', ()=>{
+  if (!('Notification' in window)) return;
+  Notification.requestPermission().then(updateNotifBtn).catch(()=>{});
+});
+
+/* テーマ */
+els.themeBtn.addEventListener('click', ()=>{
+  const next = document.documentElement.dataset.theme==='dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  lsSet('pomo-theme', next);
+  updateFavicon();
+});
+
+/* タブ復帰時は即座に補正描画 + Wake Lock再取得 */
+document.addEventListener('visibilitychange', ()=>{ tick(); syncWakeLock(); });
+
+/* 他タブとの二重起動を警告（storageイベントは他タブでのみ発火する） */
+let toastTimer = null;
+function showToast(msg){
+  els.toast.textContent = msg;
+  els.toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> els.toast.classList.remove('show'), 5500);
+}
+window.addEventListener('storage', e=>{
+  if (e.key==='pomo-ping' && S.status==='running'){
+    showToast('別のタブでもタイマーが開始されました（二重起動に注意）');
+  }
+});
+
+/* リロード後、最初の操作でAudioContextを起こし直す */
+const reunlock = ()=>{ ensureCtx(); };
+document.addEventListener('pointerdown', reunlock, { once:true });
+document.addEventListener('keydown', reunlock, { once:true });
+
+window.addEventListener('beforeunload', save);
+
+/* ===== 起動 ===== */
+load();
+rollDay(Date.now());
+els.task.value = S.task;
+els.inWork.value = S.settings.work;
+els.inShort.value = S.settings.short;
+els.inLong.value = S.settings.long;
+els.inVol.value = S.settings.volume;
+updateNotifBtn();
+if (S.status==='running' && typeof S.endTime!=='number'){
+  S.status='idle'; S.endTime=null; S.remainMs=null; /* 壊れた保存データの受け皿 */
+}
+if (S.status==='running'){
+  advance(Date.now(), true); /* 不在中に終わっていたら音なしで状態だけ追いつく */
+} else if (typeof S.remainMs!=='number'){
+  S.remainMs = minMs(S.phase);
+}
+onPhaseChanged();
+document.body.dataset.status = S.status;
+render(Date.now());
+syncWakeLock();
+setInterval(tick, 250);
+</script>
+</body>
+</html>
