@@ -101,6 +101,8 @@
     flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:1px;
     border:1px solid var(--border); border-radius:10px; background:var(--surface2);
     padding:4px 7px 3px; min-width:56px;
+    touch-action:pan-x; /* 横スワイプはパレットのスクロール、縦ドラッグは部品の取り出し */
+    cursor:grab;
   }
   .pal svg{display:block;}
   .pal span{font-size:.62rem; font-weight:600; color:var(--ink-dim);}
@@ -108,6 +110,23 @@
   .pal:disabled{opacity:.38;}
   .pal.locked{position:relative;}
   .pal.locked::after{content:'🔒'; position:absolute; top:2px; right:4px; font-size:.6rem;}
+  #palghost{
+    position:fixed; z-index:70; pointer-events:none;
+    transform:translate(-50%,-50%) scale(1.25); opacity:.9;
+    filter:drop-shadow(0 4px 10px rgba(50,38,24,.3));
+  }
+
+  /* ---- trash drop zone ---- */
+  #trash{
+    position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+    background:var(--surface); border:1.5px dashed var(--accent-dim); color:var(--ink-dim);
+    border-radius:999px; padding:10px 18px; font-size:.78rem; font-weight:600;
+    display:none; align-items:center; gap:6px; white-space:nowrap;
+    box-shadow:0 2px 10px rgba(50,38,24,.15); pointer-events:none;
+    transition:background .12s, color .12s;
+  }
+  #trash.show{display:flex;}
+  #trash.hot{background:var(--accent); border-color:var(--accent); border-style:solid; color:#fff;}
 
   /* ---- action bar ---- */
   #actionbar{
@@ -268,6 +287,7 @@
     <button class="icobtn" id="zout" aria-label="縮小">−</button>
     <button class="icobtn" id="zfit" aria-label="全体表示">⛶</button>
   </div>
+  <div id="trash">🗑 ここで離すと削除</div>
 </div>
 
 <div id="palette"></div>
@@ -303,10 +323,12 @@
 <script>
 'use strict';
 /* =========================================================
-   論理回路ラボ v1
+   論理回路ラボ v1.1
    - 組合せ回路のみ。配線追加時にサイクルを機械的に拒否し、
      evaluate 側にも未処理ノード検出の二重ガードを持つ。
    - 真理値表・チャレンジ判定は UI 状態に触れないクローン評価。
+   - v1.1: 部品追加はパレットからのD&D、部品削除は🗑ゾーンへのD&D、
+     2本指ピンチズーム、入力ポート側からの逆方向ドラッグ配線。
    ========================================================= */
 
 /* ---------- 定数 ---------- */
@@ -755,12 +777,65 @@ function buildPalette(){
     const locked = allowed && !allowed.includes(t) && !(t==='SW'||t==='LED');
     if(locked) b.classList.add('locked');
     b.innerHTML = palIcon(t) + `<span>${t==='SW'?'スイッチ':t==='LED'?'LED':t}</span>`;
-    b.addEventListener('click', ()=>{
-      if(locked){ toast(`この問題では ${curCh.palette.join('・')} だけ使えるよ`); return; }
-      addComponent(t);
-    });
+    setupPalButton(b, t, locked);
     pal.appendChild(b);
   }
+}
+
+/* ---------- パレット→キャンバスのドラッグ&ドロップ追加 ---------- */
+let palDrag = null;   // {type, pid, sx, sy, active, locked, ghost}
+function lockedToast(){ toast(`この問題では ${curCh.palette.join('・')} だけ使えるよ`); }
+function overCanvas(cx, cy){
+  const r = $('canvaswrap').getBoundingClientRect();
+  return cx>=r.left && cx<=r.right && cy>=r.top && cy<=r.bottom;
+}
+function setupPalButton(b, t, locked){
+  b.addEventListener('pointerdown', e=>{
+    if(palDrag || gesture || pinch) return;
+    palDrag = {type:t, pid:e.pointerId, sx:e.clientX, sy:e.clientY, active:false, locked};
+    try{ b.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  b.addEventListener('pointermove', e=>{
+    if(!palDrag || e.pointerId!==palDrag.pid) return;
+    if(!palDrag.active){
+      if(Math.hypot(e.clientX-palDrag.sx, e.clientY-palDrag.sy) < DRAG_TH) return;
+      if(palDrag.locked){ lockedToast(); palDrag = null; return; }
+      if(!canAddMore(t)){ palDrag = null; return; }
+      palDrag.active = true;
+      const g = document.createElement('div');
+      g.id = 'palghost';
+      g.innerHTML = palIcon(t);
+      document.body.appendChild(g);
+      palDrag.ghost = g;
+    }
+    palDrag.ghost.style.left = e.clientX + 'px';
+    palDrag.ghost.style.top = e.clientY + 'px';
+    palDrag.ghost.style.opacity = overCanvas(e.clientX, e.clientY) ? '1' : '.4';
+  });
+  const endPal = e=>{
+    if(!palDrag || e.pointerId!==palDrag.pid) return;
+    const d = palDrag; palDrag = null;
+    if(d.ghost) d.ghost.remove();
+    if(e.type==='pointercancel') return; // パレットの横スクロールに移行した等
+    if(!d.active){
+      // タップのみ: 追加せず操作方法を案内（追加はD&D方式）
+      if(d.locked) lockedToast();
+      else toast('部品はキャンバスへドラッグして置いてね');
+      return;
+    }
+    if(overCanvas(e.clientX, e.clientY)){
+      const w = toWorld(e.clientX, e.clientY);
+      addComponent(d.type, w.x, w.y);
+    }
+  };
+  b.addEventListener('pointerup', endPal);
+  b.addEventListener('pointercancel', endPal);
+  // キーボード操作（Enter/Space）だけは従来どおり中央に追加（アクセシビリティ確保）
+  b.addEventListener('click', e=>{
+    if(e.detail!==0) return;
+    if(locked){ lockedToast(); return; }
+    addComponent(t);
+  });
 }
 function palIcon(t){
   if(t==='SW') return `<svg width="44" height="30" viewBox="0 0 56 48"><rect x="4" y="4" width="44" height="40" rx="9" fill="var(--surface)" stroke="var(--ink-dim)" stroke-width="2"/><text x="26" y="31" text-anchor="middle" font-size="18" font-weight="700" fill="var(--ink)">0</text></svg>`;
@@ -908,20 +983,31 @@ function toWorld(clientX, clientY){
 }
 
 /* ---------- 部品追加 ---------- */
-function addComponent(t){
+function canAddMore(t){
   if(t==='SW' && state.nodes.filter(n=>n.type==='SW').length >= MAX_SW){
-    toast(`スイッチは最大${MAX_SW}個まで（真理値表が16行を超えちゃう）`); return;
+    toast(`スイッチは最大${MAX_SW}個まで（真理値表が16行を超えちゃう）`); return false;
   }
   if(t==='LED' && state.nodes.filter(n=>n.type==='LED').length >= MAX_LED){
-    toast(`LEDは最大${MAX_LED}個まで`); return;
+    toast(`LEDは最大${MAX_LED}個まで`); return false;
   }
+  return true;
+}
+// wx/wy 指定ありならその位置（ドロップ地点）に、無ければ画面中央付近に置く
+function addComponent(t, wx, wy){
+  if(!canAddMore(t)) return;
   snapshot();
-  const r = board.getBoundingClientRect();
-  const cx = view.x + r.width/view.z/2, cy = view.y + r.height/view.z/2;
   const sz = t==='SW' ? {w:SW_W,h:SW_H} : t==='LED' ? {w:LED_W,h:LED_H} : {w:GW,h:GH};
-  // 中央付近で少しずつずらして重なりを避ける
-  const count = state.nodes.length % 5;
-  const node = {id:uid(), type:t, x:Math.round(cx - sz.w/2 + count*14 - 28), y:Math.round(cy - sz.h/2 + count*14 - 28)};
+  let x, y;
+  if(wx!==undefined){
+    x = Math.round(wx - sz.w/2); y = Math.round(wy - sz.h/2);
+  }else{
+    const r = board.getBoundingClientRect();
+    const cx = view.x + r.width/view.z/2, cy = view.y + r.height/view.z/2;
+    // 中央付近で少しずつずらして重なりを避ける
+    const count = state.nodes.length % 5;
+    x = Math.round(cx - sz.w/2 + count*14 - 28); y = Math.round(cy - sz.h/2 + count*14 - 28);
+  }
+  const node = {id:uid(), type:t, x, y};
   if(t==='SW'){
     const used = new Set(state.nodes.filter(n=>n.type==='SW').map(n=>n.label));
     node.label = ['A','B','C','D'].find(c=>!used.has(c)) || 'A';
@@ -934,7 +1020,7 @@ function addComponent(t){
   selection = {kind:'node', id:node.id};
   picked = null;
   commit();
-  setHint('ドラッグで位置を調整。◯ポートからドラッグ（またはタップ→タップ）で配線しよう');
+  setHint('ドラッグで位置を調整。ポート同士をドラッグでつないで配線しよう');
 }
 
 /* ---------- 配線の接続（ドラッグ完了/タップ完了の両経路がここを通る） ---------- */
@@ -987,16 +1073,29 @@ function removeNode(id){
   pointerdown の対象で分岐:
     port(out)         → wire-drag 候補（動けばドラッグ配線、動かなければ picked トグル）
     port(in, 接続済み) → 既存配線をつまみ直し（rewire）
-    port(in, 空き)     → picked(in) トグル or picked(out)からの接続確定
-    node body         → move 候補（動けばノード移動、動かなければ タップ動作=SWトグル/選択）
+    port(in, 空き)     → 逆方向ドラッグ配線 or picked(in)トグル or picked(out)からの接続確定
+    node body         → move 候補（動けばノード移動→🗑で削除可、動かなければ タップ動作=SWトグル/選択）
     wire              → 選択
     背景              → pan 候補（動かなければ 選択解除/pickedキャンセル）
   すべて board 上の単一リスナで処理し、setPointerCapture で外へ出ても追跡する。
+  背景パン中に2本目の指が触れたらピンチズームへ移行する。
 */
 let gesture = null;
+let pinch = null;   // {id1,x1,y1, id2,x2,y2, d,mx,my}
 
 board.addEventListener('pointerdown', e=>{
-  if(gesture) return; // 2本目の指は無視（v1はシングルタッチ）
+  if(pinch) return;
+  if(gesture){
+    if(gesture.kind==='pan'){
+      // 背景パン → ピンチズームへ移行
+      e.preventDefault();
+      try{ board.setPointerCapture(e.pointerId); }catch(err){}
+      pinch = {id1:gesture.pid, x1:gesture.lx ?? gesture.px, y1:gesture.ly ?? gesture.py,
+               id2:e.pointerId, x2:e.clientX, y2:e.clientY};
+      gesture = null;
+    }
+    return; // 部品/配線操作中の2本目は無視
+  }
   e.preventDefault();
   const t = e.target;
   const w0 = toWorld(e.clientX, e.clientY);
@@ -1045,8 +1144,27 @@ board.addEventListener('pointerdown', e=>{
   try{ board.setPointerCapture(e.pointerId); }catch(err){ /* 合成イベント等でpointerIdが無効でも操作は継続できる */ }
 });
 
+function pinchMove(e){
+  if(e.pointerId===pinch.id1){ pinch.x1=e.clientX; pinch.y1=e.clientY; }
+  else if(e.pointerId===pinch.id2){ pinch.x2=e.clientX; pinch.y2=e.clientY; }
+  else return;
+  const d = Math.hypot(pinch.x2-pinch.x1, pinch.y2-pinch.y1);
+  const mx = (pinch.x1+pinch.x2)/2, my = (pinch.y1+pinch.y2)/2;
+  if(pinch.d){
+    view.x -= (mx - pinch.mx)/view.z;
+    view.y -= (my - pinch.my)/view.z;
+    zoomAt(Math.min(3, Math.max(1/3, d/pinch.d)), mx, my);
+  }
+  pinch.d = d; pinch.mx = mx; pinch.my = my;
+}
+
+const trashEl = $('trash');
+function hideTrash(){ trashEl.classList.remove('show','hot'); }
+
 board.addEventListener('pointermove', e=>{
+  if(pinch){ pinchMove(e); return; }
   if(!gesture || e.pointerId!==gesture.pid) return;
+  gesture.lx = e.clientX; gesture.ly = e.clientY; // ピンチ移行用に最新位置を保持
   const dx = e.clientX - gesture.px, dy = e.clientY - gesture.py;
   if(!gesture.moved && Math.hypot(dx,dy) < DRAG_TH) return;
   gesture.moved = true;
@@ -1058,19 +1176,29 @@ board.addEventListener('pointermove', e=>{
     applyView();
   }
   else if(gesture.kind==='node'){
-    if(!gesture.snapTaken){ snapshot(); gesture.snapTaken = true; }
+    if(!gesture.snapTaken){
+      snapshot(); gesture.snapTaken = true;
+      const n0 = nodeById(gesture.nid);
+      if(n0 && !n0.preset){ trashEl.classList.add('show'); gesture.canTrash = true; }
+    }
     const n = nodeById(gesture.nid);
     n.x = Math.round(gesture.ox + (w.x - gesture.wx));
     n.y = Math.round(gesture.oy + (w.y - gesture.wy));
     liveUpdateNode(n);
+    if(gesture.canTrash){
+      const r = trashEl.getBoundingClientRect();
+      const hot = e.clientX>=r.left-14 && e.clientX<=r.right+14 && e.clientY>=r.top-14 && e.clientY<=r.bottom+14;
+      gesture.overTrash = hot;
+      trashEl.classList.toggle('hot', hot);
+    }
   }
   else if(gesture.kind==='wire-from-out' || gesture.kind==='rewire'){
     const srcNid = gesture.kind==='rewire' ? gesture.fromNid : gesture.nid;
     drawRubberFrom(nodeById(srcNid), w, true);
   }
   else if(gesture.kind==='tap-in-port'){
-    // 空き入力ポートからの逆方向ドラッグ: 近くの出力ポートへ届いたら接続、という操作は
-    // v1では持たない（タップ2回で代替）。ドラッグはキャンセル扱いにしない＝何もしない。
+    // 空き入力ポートからの逆方向ドラッグ: 出力ポートへ届いたら接続
+    drawRubberToIn(nodeById(gesture.nid), gesture.port, w);
   }
 });
 
@@ -1081,6 +1209,19 @@ function nearestInPort(wx, wy, excludeNid){
     if(n.id===excludeNid) continue;
     const ps = portsOf(n);
     ps.ins.forEach((p,i)=>{
+      const d = Math.hypot(n.x+p.x-wx, n.y+p.y-wy);
+      if(d < bd){ bd = d; best = {nid:n.id, port:i}; }
+    });
+  }
+  return best;
+}
+
+function nearestOutPort(wx, wy, excludeNid){
+  let best = null, bd = SNAP / Math.min(1, view.z);
+  for(const n of state.nodes){
+    if(n.id===excludeNid) continue;
+    const ps = portsOf(n);
+    ps.outs.forEach((p,i)=>{
       const d = Math.hypot(n.x+p.x-wx, n.y+p.y-wy);
       if(d < bd){ bd = d; best = {nid:n.id, port:i}; }
     });
@@ -1116,6 +1257,17 @@ function drawRubberFrom(srcNode, w, withSnap){
   rub.setAttribute('d', wirePath(p1.x, p1.y, tx, ty));
 }
 
+// 入力ポート側からの逆方向ドラッグ用ゴム線（出力ポートに吸い付く）
+function drawRubberToIn(dstNode, port, w){
+  const rub = board.querySelector('#rubber');
+  if(!rub || !dstNode) return;
+  const p2 = portWorld(dstNode,'in',port);
+  let sx = w.x, sy = w.y;
+  const cand = nearestOutPort(w.x, w.y, dstNode.id);
+  if(cand){ const n = nodeById(cand.nid); const pp = portWorld(n,'out',cand.port); sx=pp.x; sy=pp.y; }
+  rub.setAttribute('d', wirePath(sx, sy, p2.x, p2.y));
+}
+
 function liveUpdateNode(n){
   const g = board.querySelector(`[data-ng="${n.id}"]`);
   if(g) g.setAttribute('transform', `translate(${n.x},${n.y})`);
@@ -1133,6 +1285,10 @@ function liveUpdateNode(n){
 }
 
 board.addEventListener('pointerup', e=>{
+  if(pinch){
+    if(e.pointerId===pinch.id1 || e.pointerId===pinch.id2) pinch = null;
+    return;
+  }
   if(!gesture || e.pointerId!==gesture.pid) return;
   const g = gesture; gesture = null;
   const w = toWorld(e.clientX, e.clientY);
@@ -1157,8 +1313,16 @@ board.addEventListener('pointerup', e=>{
         render(); updateStatus();
       }
     }else{
+      hideTrash();
       picked = null; // 移動で終わったジェスチャはタップ配線の途中状態を引き継がない
-      commit(); // 移動確定（snapshotはmove開始時に済み）
+      if(g.canTrash && g.overTrash && n && !n.preset){
+        // ゴミ箱へドロップ → 削除（undo用snapshotはドラッグ開始時に取得済み）
+        state.nodes = state.nodes.filter(x=>x.id!==g.nid);
+        state.wires = state.wires.filter(w2=>w2.from!==g.nid && w2.to.node!==g.nid);
+        if(selection && selection.kind==='node' && selection.id===g.nid) selection = null;
+        toast('部品を削除したよ');
+      }
+      commit(); // 移動/削除の確定（snapshotはmove開始時に済み）
     }
     return;
   }
@@ -1192,6 +1356,13 @@ board.addEventListener('pointerup', e=>{
     return;
   }
   if(g.kind==='tap-in-port'){
+    if(g.moved){
+      // 逆方向ドラッグ: 出力ポートに届いていたら接続
+      const cand = nearestOutPort(w.x, w.y, g.nid);
+      if(cand) tryConnect(cand.nid, g.nid, g.port);
+      else render(); // キャンセル: ゴム線を消すだけ
+      return;
+    }
     if(!g.moved){
       if(picked && picked.dir==='out'){
         tryConnect(picked.nodeId, g.nid, g.port);
@@ -1243,9 +1414,14 @@ board.addEventListener('pointerup', e=>{
 });
 
 board.addEventListener('pointercancel', e=>{
+  if(pinch){
+    if(e.pointerId===pinch.id1 || e.pointerId===pinch.id2) pinch = null;
+    return;
+  }
   if(!gesture || e.pointerId!==gesture.pid) return;
   const g = gesture; gesture = null;
   picked = null;
+  hideTrash();
   const rub = board.querySelector('#rubber');
   if(rub) rub.setAttribute('d','');
   if(g.kind==='rewire'){ state = g.snap; commit(false); return; }
@@ -1286,8 +1462,8 @@ function updateStatus(){
     $('statusmsg').textContent = `Q${curCh.no} ${curCh.title} ${'★'.repeat(curCh.stars)}`;
   }else{
     const sw = state.nodes.filter(n=>n.type==='SW').length;
-    if(!state.nodes.length) $('statusmsg').textContent = 'パレットから部品を追加してスタート';
-    else if(!state.wires.length) $('statusmsg').textContent = '●出力ポートから◯入力ポートへドラッグで配線（タップ→タップでもOK）';
+    if(!state.nodes.length) $('statusmsg').textContent = 'パレットから部品をドラッグして置いてスタート';
+    else if(!state.wires.length) $('statusmsg').textContent = '●出力ポートと◯入力ポートをドラッグでつなごう（タップ→タップでもOK）';
     else $('statusmsg').textContent = `スイッチをタップでON/OFF切替（入力${sw}個）`;
   }
 }
@@ -1382,16 +1558,18 @@ $('listbtn').addEventListener('click', openChallengeList);
 
 $('helpbtn').addEventListener('click', ()=>{
   openSheet('使い方', `<div class="helpbody">
-    <h3>部品を置く</h3>
-    <ul><li>下のパレットをタップすると画面中央に部品が出るよ</li>
-    <li>部品はドラッグで移動、タップで選択</li></ul>
+    <h3>部品を置く・消す</h3>
+    <ul><li>下のパレットから部品を<b>キャンバスへドラッグ</b>して置くよ</li>
+    <li>部品はドラッグで移動、タップで選択</li>
+    <li>部品をつかんで<b>🗑ゾーンで離すと削除</b>（つながる配線も一緒に消える）</li></ul>
     <h3>配線する</h3>
-    <ul><li>●出力ポートから◯入力ポートへ<b>ドラッグ</b>（近づくと自動で吸い付く）</li>
+    <ul><li>●出力ポートと◯入力ポートを<b>ドラッグ</b>でつなぐ（どちら側から始めてもOK・近づくと自動で吸い付く）</li>
     <li><b>タップ→タップ</b>でもOK（ポートを押して、つなぎ先を押す）</li>
     <li>接続済みの◯を押してドラッグすると配線をつまみ直せる。空中で離すと削除</li>
     <li>1つの入力には1本だけ。出力からは何本でも分岐できるよ</li></ul>
     <h3>動かす</h3>
     <ul><li>スイッチをタップすると0/1が切り替わって、信号が流れた配線は色が変わる</li>
+    <li>背景ドラッグで画面移動、<b>2本指ピンチで拡大縮小</b>（PCはホイール）</li>
     <li>「真理値表」で全パターンの結果を自動生成</li></ul>
     <h3>チャレンジ</h3>
     <ul><li>目標の真理値表と完全一致すればクリア！「目標」でどの行が違うか確認できる</li>
