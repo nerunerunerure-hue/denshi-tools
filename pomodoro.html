@@ -52,12 +52,18 @@ body{
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 /* 紙の質感: ダイヤル中心をほんのり明るく + 微細な紙目 */
+/* 古代文様の透かし: 渦巻き(絡み合う線)+点と二重線の星図。シーカー意匠の二系統を
+   元に完全オリジナルで作画(ロゴ・実テクスチャの模写はしない) */
 body::after{
   content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-  background: radial-gradient(circle at 50% 46%, rgba(255,255,255,.5), transparent 54%);
+  background:
+    radial-gradient(circle at 50% 46%, rgba(255,255,255,.5), transparent 54%),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='320'%3E%3Cg%20fill='none'%20stroke='%23211F1A'%20stroke-opacity='.04'%20stroke-width='1.1'%20stroke-linecap='round'%3E%3Cpath%20d='M60%2070a4%204%200%200%201%208%200a8%208%200%200%201%20-16%200a12%2012%200%200%201%2024%200'/%3E%3Cpath%20d='M240%20215a3%203%200%200%201%20-6%200a6%206%200%200%201%2012%200a9%209%200%200%201%20-18%200'/%3E%3Cline%20x1='199.5'%20y1='60.9'%20x2='231.5'%20y2='80.9'/%3E%3Cline%20x1='200.5'%20y1='59.1'%20x2='232.5'%20y2='79.1'/%3E%3Cline%20x1='232.8'%20y1='80.5'%20x2='214.8'%20y2='108.5'/%3E%3Cline%20x1='231.2'%20y1='79.5'%20x2='213.2'%20y2='107.5'/%3E%3Ccircle%20cx='95'%20cy='230'%20r='8'/%3E%3Ccircle%20cx='95'%20cy='230'%20r='3.5'/%3E%3C/g%3E%3Cg%20fill='%23211F1A'%20fill-opacity='.04'%3E%3Ccircle%20cx='200'%20cy='60'%20r='2'/%3E%3Ccircle%20cx='232'%20cy='80'%20r='2'/%3E%3Ccircle%20cx='214'%20cy='108'%20r='2'/%3E%3Ccircle%20cx='150'%20cy='160'%20r='1.5'/%3E%3Ccircle%20cx='48'%20cy='285'%20r='1.4'/%3E%3Ccircle%20cx='290'%20cy='140'%20r='1.4'/%3E%3C/g%3E%3C/svg%3E");
 }
 :root[data-theme="dark"] body::after{
-  background: radial-gradient(circle at 50% 46%, rgba(255,255,255,.05), transparent 54%);
+  background:
+    radial-gradient(circle at 50% 46%, rgba(255,255,255,.05), transparent 54%),
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='320'%3E%3Cg%20fill='none'%20stroke='%23EDE7D9'%20stroke-opacity='.045'%20stroke-width='1.1'%20stroke-linecap='round'%3E%3Cpath%20d='M60%2070a4%204%200%200%201%208%200a8%208%200%200%201%20-16%200a12%2012%200%200%201%2024%200'/%3E%3Cpath%20d='M240%20215a3%203%200%200%201%20-6%200a6%206%200%200%201%2012%200a9%209%200%200%201%20-18%200'/%3E%3Cline%20x1='199.5'%20y1='60.9'%20x2='231.5'%20y2='80.9'/%3E%3Cline%20x1='200.5'%20y1='59.1'%20x2='232.5'%20y2='79.1'/%3E%3Cline%20x1='232.8'%20y1='80.5'%20x2='214.8'%20y2='108.5'/%3E%3Cline%20x1='231.2'%20y1='79.5'%20x2='213.2'%20y2='107.5'/%3E%3Ccircle%20cx='95'%20cy='230'%20r='8'/%3E%3Ccircle%20cx='95'%20cy='230'%20r='3.5'/%3E%3C/g%3E%3Cg%20fill='%23EDE7D9'%20fill-opacity='.045'%3E%3Ccircle%20cx='200'%20cy='60'%20r='2'/%3E%3Ccircle%20cx='232'%20cy='80'%20r='2'/%3E%3Ccircle%20cx='214'%20cy='108'%20r='2'/%3E%3Ccircle%20cx='150'%20cy='160'%20r='1.5'/%3E%3Ccircle%20cx='48'%20cy='285'%20r='1.4'/%3E%3Ccircle%20cx='290'%20cy='140'%20r='1.4'/%3E%3C/g%3E%3C/svg%3E");
 }
 body::before{
   content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -120,6 +126,22 @@ main{
 }
 .dial svg{ position:absolute; inset:0; width:100%; height:100%; }
 #ticks line{ stroke-linecap:round; transition: stroke .5s ease, opacity .5s ease; }
+/* 休憩=回復のグロー(がんばりゲージ回復の意訳)。短休憩=緑、長休憩=淡い青の光。勉強画面には発光を置かない */
+body[data-phase="short"]{ --glow: rgba(78,122,90,.55); }
+body[data-phase="long"]{ --glow: rgba(80,150,170,.6); }
+:root[data-theme="dark"] body[data-phase="short"]{ --glow: rgba(134,174,142,.5); }
+:root[data-theme="dark"] body[data-phase="long"]{ --glow: rgba(120,185,200,.55); }
+body[data-phase="short"] #ticks, body[data-phase="long"] #ticks{
+  filter: drop-shadow(0 0 5px var(--glow));
+}
+body[data-status="running"][data-phase="short"] #ticks,
+body[data-status="running"][data-phase="long"] #ticks{
+  animation: glowBreath 3s ease-in-out infinite;
+}
+@keyframes glowBreath{
+  0%,100%{ filter: drop-shadow(0 0 3px var(--glow)); }
+  50%{ filter: drop-shadow(0 0 9px var(--glow)); }
+}
 
 .phase-label{
   font-size:14px; font-weight:600; letter-spacing:.24em; padding-left:.24em;
@@ -143,6 +165,7 @@ body[data-status="paused"] .dial{ opacity:.55; }
 @media (prefers-reduced-motion: reduce){
   .time .cl{ animation:none !important; }
   #tip{ animation:none !important; }
+  #ticks{ animation:none !important; } /* グローは静的表示のまま明滅だけ止める */
 }
 .dots{ display:flex; gap:9px; margin-top:14px; }
 .dots i{
@@ -311,7 +334,13 @@ footer .home:hover{ color:var(--ink); text-decoration:underline; }
 'use strict';
 
 /* ===== 定数・状態 ===== */
+/* ── 保存データの互換契約（今後の改修時は必ず守る）──
+   - localStorage キーは 'pomo-v1' から変えない（変えると利用者の記録が消える）
+   - 形式を変えるときは v を上げ、load() に旧→新の移行を足す（データは捨てない）
+   - 未知のトップレベルキーは S.extra 経由で保存時にそのまま持ち越す（新旧ビルド共存対策）
+   - 日次記録は history['YYYY-MM-DD']（朝4時区切り・最大366日）に自動蓄積される */
 const LS_KEY = 'pomo-v1';
+const SCHEMA_V = 2;
 const PHASE_LABEL = { work:'勉強', short:'休憩', long:'長い休憩' };
 const TIPS = [
   '画面から目を離して、6mより遠くを20秒ぼんやり見よう',
@@ -328,6 +357,7 @@ const S = {
   task:'',
   settings:{ work:25, short:5, long:15, volume:60 },
   day:{ key:'', done:0, distract:0 },
+  history:{}, extra:{},
 };
 
 /* ===== 要素 ===== */
@@ -361,18 +391,26 @@ function rollDay(now){
 }
 
 function save(){
+  if (S.day.key && (S.day.done>0 || S.day.distract>0)){
+    S.history[S.day.key] = { done:S.day.done, distract:S.day.distract };
+  }
+  const hk = Object.keys(S.history).sort();
+  while (hk.length > 366) delete S.history[hk.shift()];
   lsSet(LS_KEY, JSON.stringify({
-    v:1, phase:S.phase, status:S.status, cycle:S.cycle,
+    ...S.extra,
+    v:SCHEMA_V, phase:S.phase, status:S.status, cycle:S.cycle,
     endTime:S.endTime, remainMs:S.remainMs, task:S.task,
-    settings:S.settings, day:S.day,
+    settings:S.settings, day:S.day, history:S.history,
   }));
 }
+const KNOWN_KEYS = ['v','phase','status','cycle','endTime','remainMs','task','settings','day','history'];
 function load(){
   const raw = lsGet(LS_KEY);
   if (!raw) return;
   try{
     const p = JSON.parse(raw);
-    if (p.v !== 1) return;
+    if (typeof p !== 'object' || p === null || typeof p.v !== 'number') return;
+    if (p.v === 1){ p.v = 2; p.history = {}; } /* v1→v2: 記録は捨てず履歴領域を追加 */
     if (['work','short','long'].includes(p.phase)) S.phase = p.phase;
     if (['idle','running','paused'].includes(p.status)) S.status = p.status;
     if (Number.isInteger(p.cycle) && p.cycle>=0 && p.cycle<=4) S.cycle = p.cycle;
@@ -389,6 +427,17 @@ function load(){
     }
     if (p.day && typeof p.day.key==='string'){
       S.day = { key:p.day.key, done:p.day.done|0, distract:p.day.distract|0 };
+    }
+    if (p.history && typeof p.history==='object'){
+      for (const k of Object.keys(p.history)){
+        const h = p.history[k];
+        if (/^\d{4}-\d{2}-\d{2}$/.test(k) && h && typeof h==='object'){
+          S.history[k] = { done:h.done|0, distract:h.distract|0 };
+        }
+      }
+    }
+    for (const k of Object.keys(p)){
+      if (!KNOWN_KEYS.includes(k)) S.extra[k] = p[k];
     }
   }catch(e){}
 }
