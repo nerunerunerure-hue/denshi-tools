@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>論理回路ラボ</title>
+<meta name="description" content="論理ゲートをつないで動かすシミュレーター＋パズル。真理値表の自動生成つき。">
+<meta name="theme-color" content="#F1EEE5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --ink:#211F1A; --ink-dim:#716C61; --border:#E2DCCD;
+    --ok:#5C7A4E; --ok-soft:#E4ECDE;
+    --wire-off:#B4AC9C;
+    --sans:'Hanken Grotesk','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  html{background:var(--bg);}
+  body{
+    font-family:var(--sans); -webkit-font-smoothing:antialiased;
+    color:var(--ink); background:var(--bg);
+    display:flex; flex-direction:column; overflow:hidden;
+    overscroll-behavior:none;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  button{font-family:var(--sans); touch-action:manipulation; cursor:pointer;}
+
+  /* ---- header ---- */
+  header{
+    flex:0 0 auto; display:flex; align-items:center; gap:8px;
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:8px 12px;
+  }
+  header h1{font-size:1rem; font-weight:700; letter-spacing:.01em; white-space:nowrap;}
+  header h1 .dot{color:var(--accent);}
+  .tabs{display:flex; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:2px; margin-left:4px;}
+  .tabs button{
+    border:none; background:transparent; color:var(--ink-dim);
+    font-size:.78rem; font-weight:600; padding:5px 10px; border-radius:8px;
+    white-space:nowrap;
+  }
+  @media(max-width:430px){
+    header{padding:8px 8px; gap:5px;}
+    header h1{font-size:.88rem;}
+    .tabs button{padding:5px 7px; font-size:.73rem;}
+    .icobtn{width:30px; height:30px; font-size:.9rem;}
+    .hbtns{gap:4px;}
+  }
+  .tabs button.active{background:var(--surface); color:var(--ink); box-shadow:0 1px 3px rgba(50,38,24,.12);}
+  .hbtns{margin-left:auto; display:flex; gap:6px;}
+  .icobtn{
+    width:34px; height:34px; border-radius:9px; border:1px solid var(--border);
+    background:var(--surface); color:var(--ink); font-size:1rem; line-height:1;
+    display:grid; place-items:center; position:relative;
+  }
+  .icobtn::after{content:''; position:absolute; inset:-5px;} /* 見た目を変えずタッチ領域を44px相当へ */
+  .icobtn:disabled{opacity:.35; cursor:default;}
+  .icobtn:not(:disabled):active{background:var(--surface2);}
+
+  /* ---- status bar ---- */
+  #statusbar{
+    flex:0 0 auto; display:flex; align-items:center; gap:8px;
+    background:var(--accent-soft); border-bottom:1px solid var(--accent-line);
+    padding:6px 12px; min-height:34px; font-size:.78rem; color:var(--ink);
+  }
+  #statusmsg{flex:1; min-width:0; line-height:1.4;}
+  #matchchip{
+    flex:0 0 auto; font-weight:700; font-size:.75rem; padding:3px 9px; border-radius:999px;
+    background:var(--surface); border:1px solid var(--accent-line); color:var(--ink-dim); display:none;
+  }
+  #matchchip.full{background:var(--ok-soft); border-color:var(--ok); color:var(--ok);}
+  #listbtn{
+    flex:0 0 auto; border:1px solid var(--accent-line); background:var(--surface);
+    font-size:.72rem; font-weight:600; color:var(--ink); border-radius:999px; padding:4px 10px; display:none;
+  }
+
+  /* ---- canvas ---- */
+  #canvaswrap{flex:1 1 auto; position:relative; min-height:0; background:var(--bg);}
+  #board{
+    position:absolute; inset:0; width:100%; height:100%;
+    touch-action:none; display:block;
+  }
+  #zoomctl{
+    position:absolute; right:10px; bottom:10px; display:flex; flex-direction:column; gap:6px;
+  }
+  #zoomctl .icobtn{box-shadow:0 2px 8px rgba(50,38,24,.15);}
+
+  /* ---- palette ---- */
+  #palette{
+    flex:0 0 auto; display:flex; gap:6px; overflow-x:auto; padding:8px 10px 4px;
+    background:var(--surface); border-top:1px solid var(--border);
+    scrollbar-width:none;
+  }
+  #palette::-webkit-scrollbar{display:none;}
+  .pal{
+    flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:1px;
+    border:1px solid var(--border); border-radius:10px; background:var(--surface2);
+    padding:4px 7px 3px; min-width:56px;
+  }
+  .pal svg{display:block;}
+  .pal span{font-size:.62rem; font-weight:600; color:var(--ink-dim);}
+  .pal:not(:disabled):active{border-color:var(--accent-dim); background:var(--accent-soft);}
+  .pal:disabled{opacity:.38;}
+  .pal.locked{position:relative;}
+  .pal.locked::after{content:'🔒'; position:absolute; top:2px; right:4px; font-size:.6rem;}
+
+  /* ---- action bar ---- */
+  #actionbar{
+    flex:0 0 auto; display:flex; gap:6px; padding:6px 10px 10px;
+    background:var(--surface);
+  }
+  .act{
+    flex:1; border:1px solid var(--border); border-radius:10px; background:var(--surface);
+    font-size:.72rem; font-weight:600; color:var(--ink); padding:8px 2px;
+  }
+  .act:not(:disabled):active{background:var(--surface2);}
+  .act:disabled{opacity:.35;}
+  .act.warn{color:var(--accent);}
+
+  /* ---- bottom sheet ---- */
+  #scrim{
+    position:fixed; inset:0; background:rgba(33,31,26,.35); z-index:40;
+    opacity:0; pointer-events:none; transition:opacity .18s;
+  }
+  #scrim.show{opacity:1; pointer-events:auto;}
+  #sheet{
+    position:fixed; left:0; right:0; bottom:0; z-index:41;
+    background:var(--surface); border-radius:18px 18px 0 0;
+    border:1px solid var(--border); border-bottom:none;
+    max-height:72dvh; display:flex; flex-direction:column;
+    transform:translateY(105%); transition:transform .22s ease;
+    padding-bottom:env(safe-area-inset-bottom);
+    box-shadow:0 -10px 34px rgba(50,38,24,.22);
+  }
+  #sheet.show{transform:translateY(0);}
+  #sheethead{
+    flex:0 0 auto; display:flex; align-items:center; padding:12px 16px 8px;
+    border-bottom:1px solid var(--border);
+  }
+  #sheethead h2{font-size:.95rem; font-weight:700;}
+  #sheethead button{
+    margin-left:auto; border:none; background:var(--surface2); border-radius:8px;
+    width:30px; height:30px; font-size:.9rem; color:var(--ink-dim);
+  }
+  #sheetbody{flex:1 1 auto; overflow-y:auto; padding:12px 16px 18px; -webkit-overflow-scrolling:touch;}
+
+  /* truth table */
+  table.tt{border-collapse:collapse; font-size:.8rem; margin:0 auto;}
+  table.tt th, table.tt td{
+    border:1px solid var(--border); padding:4px 10px; text-align:center; min-width:34px;
+  }
+  table.tt th{background:var(--surface2); font-weight:700;}
+  table.tt th.outcol, table.tt td.outcol{border-left:2px solid var(--accent-dim);}
+  table.tt tr.cur td{background:var(--accent-soft);}
+  table.tt td.ng{background:#F6DDD4; color:var(--accent); font-weight:700;}
+  table.tt td.okv{color:var(--ok);}
+  .ttnote{font-size:.72rem; color:var(--ink-dim); margin-top:10px; line-height:1.6; text-align:center;}
+
+  /* challenge list */
+  .chcard{
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+    border:1px solid var(--border); border-radius:12px; background:var(--surface);
+    padding:10px 12px; margin-bottom:8px;
+  }
+  .chcard:active{background:var(--surface2);}
+  .chcard.cur{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent);}
+  .chcard .no{
+    flex:0 0 auto; width:30px; height:30px; border-radius:9px; display:grid; place-items:center;
+    background:var(--surface2); font-weight:700; font-size:.8rem; color:var(--ink-dim);
+  }
+  .chcard.done .no{background:var(--ok-soft); color:var(--ok);}
+  .chcard .m{flex:1; min-width:0;}
+  .chcard .t{display:block; font-size:.85rem; font-weight:700;}
+  .chcard .s{display:block; font-size:.7rem; color:var(--ink-dim); margin-top:1px;}
+  .chcard .st{flex:0 0 auto; font-size:.7rem; color:var(--accent-dim); letter-spacing:.05em;}
+  .chcard.done .chk{color:var(--ok); font-weight:700; font-size:.9rem;}
+
+  /* help / hint */
+  .helpbody{font-size:.82rem; line-height:1.8; color:var(--ink);}
+  .helpbody h3{font-size:.85rem; margin:12px 0 4px; color:var(--accent);}
+  .helpbody ul{padding-left:1.2em;}
+  .helpbody li{margin-bottom:2px;}
+
+  /* ---- toast ---- */
+  #toast{
+    position:fixed; left:50%; bottom:calc(120px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px);
+    background:var(--ink); color:var(--surface); font-size:.78rem; font-weight:600;
+    padding:8px 16px; border-radius:999px; opacity:0; pointer-events:none;
+    transition:opacity .18s, transform .18s; z-index:60; max-width:88vw; text-align:center;
+  }
+  #toast.show{opacity:.95; transform:translateX(-50%) translateY(0);}
+
+  /* ---- clear overlay ---- */
+  #clearov{
+    position:fixed; inset:0; z-index:50; display:none;
+    align-items:center; justify-content:center;
+    background:rgba(33,31,26,.45);
+  }
+  #clearov.show{display:flex;}
+  #clearcard{
+    background:var(--surface); border-radius:20px; padding:30px 26px 22px;
+    text-align:center; width:min(320px, 86vw); position:relative; overflow:hidden;
+    animation:pop .3s ease;
+  }
+  @keyframes pop{from{transform:scale(.85); opacity:0;} to{transform:scale(1); opacity:1;}}
+  #clearcard h2{font-size:1.7rem; color:var(--accent); letter-spacing:.04em;}
+  #clearcard .sub{font-size:.8rem; color:var(--ink-dim); margin:8px 0 18px; line-height:1.6;}
+  #clearcard .btns{display:flex; flex-direction:column; gap:8px;}
+  #clearcard .btns button{
+    border-radius:11px; padding:11px; font-size:.85rem; font-weight:700;
+  }
+  #clearcard .primary{background:var(--accent); color:#fff; border:none;}
+  #clearcard .ghost{background:var(--surface); color:var(--ink); border:1px solid var(--border);}
+  .confetti{position:absolute; top:-8px; width:9px; height:9px; border-radius:50%; opacity:0; pointer-events:none;}
+  @keyframes fall{
+    0%{transform:translateY(0) rotate(0); opacity:1;}
+    100%{transform:translateY(300px) rotate(300deg); opacity:0;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .confetti{display:none;}
+    #clearcard{animation:none;}
+    #sheet{transition:none;}
+  }
+
+  /* ---- SVG parts ---- */
+  #board text{user-select:none; -webkit-user-select:none; font-family:var(--sans);}
+  .node-body{cursor:grab;}
+  .wire-hit{stroke:transparent; stroke-width:16; fill:none; cursor:pointer;}
+  .port-hit{fill:transparent; cursor:crosshair;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  .picked{animation:pulse .8s infinite;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);} 25%{transform:translateX(-3px);} 75%{transform:translateX(3px);}
+  }
+  .shake{animation:shake .22s 2;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>論理回路ラボ<span class="dot">.</span></h1>
+  <div class="tabs">
+    <button id="tab-free">自由制作</button>
+    <button id="tab-ch">チャレンジ</button>
+  </div>
+  <div class="hbtns">
+    <button class="icobtn" id="undobtn" aria-label="元に戻す" disabled>↩</button>
+    <button class="icobtn" id="redobtn" aria-label="やり直す" disabled>↪</button>
+    <button class="icobtn" id="helpbtn" aria-label="使い方">？</button>
+  </div>
+</header>
+
+<div id="statusbar">
+  <span id="statusmsg"></span>
+  <span id="matchchip"></span>
+  <button id="listbtn">問題一覧</button>
+</div>
+
+<div id="canvaswrap">
+  <svg id="board" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="zoomctl">
+    <button class="icobtn" id="zin" aria-label="拡大">＋</button>
+    <button class="icobtn" id="zout" aria-label="縮小">−</button>
+    <button class="icobtn" id="zfit" aria-label="全体表示">⛶</button>
+  </div>
+</div>
+
+<div id="palette"></div>
+
+<div id="actionbar">
+  <button class="act warn" id="delbtn" disabled>削除</button>
+  <button class="act" id="ttbtn">真理値表</button>
+  <button class="act" id="goalbtn" style="display:none">目標</button>
+  <button class="act" id="hintbtn" style="display:none">ヒント</button>
+  <button class="act" id="clearallbtn">全消去</button>
+</div>
+
+<div id="scrim"></div>
+<div id="sheet" role="dialog" aria-modal="true">
+  <div id="sheethead"><h2 id="sheettitle"></h2><button id="sheetclose" aria-label="閉じる">✕</button></div>
+  <div id="sheetbody"></div>
+</div>
+
+<div id="toast"></div>
+
+<div id="clearov">
+  <div id="clearcard">
+    <h2>クリア！</h2>
+    <div class="sub" id="clearsub"></div>
+    <div class="btns">
+      <button class="primary" id="nextbtn">次の問題へ</button>
+      <button class="ghost" id="tolistbtn">問題一覧</button>
+      <button class="ghost" id="staybtn">このまま続ける</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================
+   論理回路ラボ v1
+   - 組合せ回路のみ。配線追加時にサイクルを機械的に拒否し、
+     evaluate 側にも未処理ノード検出の二重ガードを持つ。
+   - 真理値表・チャレンジ判定は UI 状態に触れないクローン評価。
+   ========================================================= */
+
+/* ---------- 定数 ---------- */
+const GATES = {
+  AND :{ins:2, fn:(a,b)=>a&b},
+  OR  :{ins:2, fn:(a,b)=>a|b},
+  NOT :{ins:1, fn:a=>a^1},
+  NAND:{ins:2, fn:(a,b)=>(a&b)^1},
+  NOR :{ins:2, fn:(a,b)=>(a|b)^1},
+  XOR :{ins:2, fn:(a,b)=>a^b},
+  XNOR:{ins:2, fn:(a,b)=>(a^b)^1},
+};
+const GATE_ORDER = ['AND','OR','NOT','NAND','NOR','XOR','XNOR'];
+const GW=84, GH=56;           // ゲート外形
+const SW_W=56, SW_H=48;       // スイッチ外形
+const LED_W=60, LED_H=60;     // LED外形
+const SNAP=42;                // 磁石スナップ半径（world単位）
+const DRAG_TH=8;              // タップ/ドラッグ分岐しきい値（screen px）
+const MAX_SW=4, MAX_LED=4;
+const UNDO_MAX=50;
+const STORE_KEY='logiclab.v1';
+
+/* ---------- チャレンジ定義（目標はJS関数から自動生成：転記ミス防止） ---------- */
+const CHALLENGES = [
+  {id:'and',   no:1,  stars:1, title:'ANDを作ろう',
+   desc:'入力A・Bが両方1のときだけYが1になる回路を作ろう。',
+   hint:'ANDゲートを1個置いて、A・Bを入力に、出力をYへつなぐだけ。まずは配線に慣れよう。',
+   inputs:['A','B'], outputs:['Y'], fn:v=>[v.A & v.B], palette:GATE_ORDER},
+  {id:'or',    no:2,  stars:1, title:'ORを作ろう',
+   desc:'入力A・Bのどちらか一方でも1ならYが1になる回路を作ろう。',
+   hint:'ORゲート1個でOK。ANDとの違いを真理値表で見比べてみよう。',
+   inputs:['A','B'], outputs:['Y'], fn:v=>[v.A | v.B], palette:GATE_ORDER},
+  {id:'not',   no:3,  stars:1, title:'NOTで反転させよう',
+   desc:'入力Aが0のときだけYが1になる（Aが1なら0になる）回路を作ろう。',
+   hint:'NOTゲートは入力を反転するだけの1入力ゲート。',
+   inputs:['A'], outputs:['Y'], fn:v=>[v.A ^ 1], palette:GATE_ORDER},
+  {id:'nandnot', no:4, stars:2, title:'NANDだけでNOTを作る',
+   desc:'使えるのはNANDだけ。NOTと同じ働き（Aの反転）を作ろう。',
+   hint:'NANDの2つの入力に同じ信号をつなぐと…？ 1本の出力を2か所につなげるよ。',
+   inputs:['A'], outputs:['Y'], fn:v=>[v.A ^ 1], palette:['NAND']},
+  {id:'nandand', no:5, stars:2, title:'NANDだけでANDを作る',
+   desc:'使えるのはNANDだけ。ANDと同じ働きを作ろう。',
+   hint:'NANDの出力を、前問で作った「NANDのNOT」で反転すればAND。NAND2個。',
+   inputs:['A','B'], outputs:['Y'], fn:v=>[v.A & v.B], palette:['NAND']},
+  {id:'nandor', no:6, stars:3, title:'NANDだけでORを作る',
+   desc:'使えるのはNANDだけ。ORと同じ働きを作ろう。NANDが万能ゲートと呼ばれる理由を体感！',
+   hint:'ド・モルガンの法則 A+B = NOT(NOT A・NOT B)。AとBをそれぞれNOT化してNANDへ。NAND3個。',
+   inputs:['A','B'], outputs:['Y'], fn:v=>[v.A | v.B], palette:['NAND']},
+  {id:'demorgan', no:7, stars:3, title:'ド・モルガンを確かめる',
+   desc:'Y1 = NOT(A AND B)、Y2 = (NOT A) OR (NOT B) を両方作って、真理値表が完全に一致するのを確かめよう。',
+   hint:'Y1側はAND→NOT。Y2側はNOT2個→OR。完成したら真理値表でY1とY2の列を見比べて。',
+   inputs:['A','B'], outputs:['Y1','Y2'], fn:v=>[(v.A & v.B)^1, (v.A^1)|(v.B^1)], palette:['AND','OR','NOT']},
+  {id:'xor',   no:8,  stars:3, title:'XORを自作せよ',
+   desc:'XORゲートは使用禁止。AND・OR・NOTだけで「AとBが異なるときだけ1」を作ろう。',
+   hint:'(A AND NOT B) OR (NOT A AND B)。NOT2個・AND2個・OR1個で組める。',
+   inputs:['A','B'], outputs:['Y'], fn:v=>[v.A ^ v.B], palette:['AND','OR','NOT']},
+  {id:'xnor',  no:9,  stars:3, title:'一致回路を作ろう',
+   desc:'AとBが同じ値のときだけYが1になる回路を、XORとNOTで作ろう。',
+   hint:'「不一致を検出して反転する」と考える。XOR→NOTの2段。',
+   inputs:['A','B'], outputs:['Y'], fn:v=>[(v.A ^ v.B)^1], palette:['XOR','NOT']},
+  {id:'major', no:10, stars:4, title:'3人多数決回路',
+   desc:'A・B・Cのうち2人以上が1ならYが1になる多数決回路を作ろう。FE試験の定番！',
+   hint:'(A AND B) OR (B AND C) OR (A AND C)。AND3個をORでまとめる（ORは2個必要）。',
+   inputs:['A','B','C'], outputs:['Y'], fn:v=>[(v.A+v.B+v.C>=2)?1:0], palette:GATE_ORDER},
+  {id:'half',  no:11, stars:4, title:'半加算器を作ろう',
+   desc:'A+Bの1桁の足し算。和S（1の位）と桁上げC（2の位）の2出力を同時に満たそう。',
+   hint:'S = A XOR B、C = A AND B。同じ入力を2つのゲートに分岐させるのがポイント。',
+   inputs:['A','B'], outputs:['S','C'], fn:v=>[v.A ^ v.B, v.A & v.B], palette:GATE_ORDER},
+  {id:'full',  no:12, stars:5, title:'全加算器に挑戦',
+   desc:'A+B+C（Cは下位からの桁上げ）の足し算。和Sと桁上げCoの2出力。最終問題！',
+   hint:'S = A XOR B XOR C。Coは「2つ以上が1」つまり多数決回路と同じ。半加算器2個+ORでも作れる。',
+   inputs:['A','B','C'], outputs:['S','Co'], fn:v=>[(v.A ^ v.B) ^ v.C, (v.A+v.B+v.C>=2)?1:0], palette:GATE_ORDER},
+];
+
+/* ---------- localStorage ラッパ（無効環境でもメモリで動く） ---------- */
+const store = (()=>{
+  let mem = null, warned = false;
+  function load(){
+    if(mem) return mem;
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      mem = raw ? JSON.parse(raw) : {};
+      if(typeof mem !== 'object' || mem === null || Array.isArray(mem)) mem = {};
+    }catch(e){ mem = {}; }
+    return mem;
+  }
+  function save(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(mem)); }
+    catch(e){
+      if(!warned){ warned = true; toast('保存できない環境です（この画面を閉じるとデータが消えます）'); }
+    }
+  }
+  return {
+    get(k, def){ const m = load(); return (k in m) ? m[k] : def; },
+    set(k, v){ load(); mem[k] = v; save(); },
+  };
+})();
+
+/* ---------- 状態 ---------- */
+let state = { nodes:[], wires:[] };   // nodes: {id,type,x,y,label,value?,preset?} / wires: {id,from,to:{node,port}}
+let mode = 'free';                    // 'free' | 'ch'
+let curCh = null;                     // 現在のチャレンジ定義
+let idSeq = 1;
+let selection = null;                 // {kind:'node'|'wire', id}
+let picked = null;                    // {nodeId, dir:'out'|'in', port} タップ配線の始点
+let undoStack = [], redoStack = [];
+let view = { x:0, y:0, z:1 };         // pan/zoom
+let lastValues = null;                // 直近の評価結果
+let justCleared = false;              // クリア演出の再発火防止
+let clearedNow = false;
+
+const $ = id => document.getElementById(id);
+const board = $('board');
+
+/* ---------- 汎用 ---------- */
+function uid(){ return 'n' + (idSeq++); }
+function cloneState(s){ return JSON.parse(JSON.stringify(s)); }
+function nodeById(id){ return state.nodes.find(n=>n.id===id); }
+
+function toast(msg, ms=2200){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tm);
+  t._tm = setTimeout(()=>t.classList.remove('show'), ms);
+}
+
+/* ---------- ジオメトリ ---------- */
+function nodeSize(n){
+  if(n.type==='SW') return {w:SW_W, h:SW_H};
+  if(n.type==='LED') return {w:LED_W, h:LED_H};
+  return {w:GW, h:GH};
+}
+// ポート位置（ノードローカル座標）
+function portsOf(n){
+  if(n.type==='SW')  return {ins:[], outs:[{x:SW_W, y:SW_H/2}]};
+  if(n.type==='LED') return {ins:[{x:0, y:26}], outs:[]};
+  const g = GATES[n.type];
+  if(!g) return {ins:[], outs:[]}; // 未知typeの防御（壊れた保存データ対策）
+  const ins = g.ins===1 ? [{x:0, y:GH/2}] : [{x:0, y:16}, {x:0, y:40}];
+  return {ins, outs:[{x:GW, y:GH/2}]};
+}
+function portWorld(n, dir, idx){
+  const p = portsOf(n)[dir==='out'?'outs':'ins'][idx];
+  return {x:n.x + p.x, y:n.y + p.y};
+}
+function wirePath(x1,y1,x2,y2){
+  const dx = Math.max(40, Math.abs(x2-x1)/2);
+  return `M${x1},${y1} C${x1+dx},${y1} ${x2-dx},${y2} ${x2},${y2}`;
+}
+
+/* ---------- 評価エンジン ---------- */
+// swOverride: {nodeId: 0|1} を渡すと UI のスイッチ値の代わりに使う（真理値表・判定用）
+function evaluate(nodes, wires, swOverride){
+  const values = {};        // nodeId -> 出力値（LEDは入力値を格納）
+  const indeg = {};
+  const outWires = {};      // nodeId -> [wire]
+  const inWires = {};       // nodeId -> {portIdx: wire}
+  nodes.forEach(n=>{ indeg[n.id]=0; outWires[n.id]=[]; inWires[n.id]={}; });
+  for(const w of wires){
+    if(!(w.from in indeg) || !(w.to.node in indeg)) continue; // 防御: 孤立配線は無視
+    indeg[w.to.node]++;
+    outWires[w.from].push(w);
+    inWires[w.to.node][w.to.port] = w;
+  }
+  const queue = nodes.filter(n=>indeg[n.id]===0).map(n=>n.id);
+  let processed = 0;
+  while(queue.length){
+    const id = queue.shift();
+    const n = nodes.find(x=>x.id===id);
+    processed++;
+    const iw = inWires[id];
+    const inputVal = p => { const w = iw[p]; return w ? (values[w.from] ?? 0) : 0; };
+    if(n.type==='SW'){
+      values[id] = swOverride ? (swOverride[id] ?? 0) : (n.value ?? 0);
+    }else if(n.type==='LED'){
+      values[id] = inputVal(0);
+    }else{
+      const g = GATES[n.type];
+      values[id] = !g ? 0 : (g.ins===1 ? g.fn(inputVal(0)) : g.fn(inputVal(0), inputVal(1)));
+    }
+    for(const w of outWires[id]){
+      if(--indeg[w.to.node]===0) queue.push(w.to.node);
+    }
+  }
+  // 二重ガード: サイクルが紛れ込んでいたら残りを0扱いにして警告フラグ
+  const cyclic = processed < nodes.length;
+  if(cyclic) nodes.forEach(n=>{ if(!(n.id in values)) values[n.id]=0; });
+  const wireOn = {};
+  for(const w of wires) wireOn[w.id] = values[w.from] ?? 0;
+  return {values, wireOn, cyclic};
+}
+
+// 配線 from→to を足すとサイクルになるか（to のノードから辿って from に届くか）
+function wouldCycle(fromNode, toNode){
+  if(fromNode===toNode) return true;
+  const seen = new Set([toNode]);
+  const stack = [toNode];
+  while(stack.length){
+    const id = stack.pop();
+    for(const w of state.wires){
+      if(w.from===id && !seen.has(w.to.node)){
+        if(w.to.node===fromNode) return true;
+        seen.add(w.to.node); stack.push(w.to.node);
+      }
+    }
+  }
+  return false;
+}
+
+/* ---------- 真理値表 ---------- */
+function swNodes(){ return state.nodes.filter(n=>n.type==='SW').sort((a,b)=>a.label<b.label?-1:1); }
+function ledNodes(){
+  const l = state.nodes.filter(n=>n.type==='LED');
+  if(mode==='ch' && curCh){
+    // チャレンジは定義順（S,Cの順序を保つ）
+    return curCh.outputs.map(lb=>l.find(n=>n.label===lb)).filter(Boolean);
+  }
+  return l.sort((a,b)=>a.label<b.label?-1:1);
+}
+function buildTruthTable(){
+  const sws = swNodes(), leds = ledNodes();
+  const rows = [];
+  const n = sws.length;
+  for(let i=0;i<(1<<n);i++){
+    const ov = {}, iv = {};
+    sws.forEach((s,j)=>{ const bit = (i >> (n-1-j)) & 1; ov[s.id]=bit; iv[s.label]=bit; });
+    const r = evaluate(state.nodes, state.wires, ov);
+    rows.push({inputs:sws.map(s=>ov[s.id]), outputs:leds.map(l=>r.values[l.id] ?? 0), iv});
+  }
+  return {sws, leds, rows};
+}
+function challengeMatch(){
+  if(mode!=='ch' || !curCh) return null;
+  const tt = buildTruthTable();
+  let match = 0;
+  const rowOk = [];
+  for(const row of tt.rows){
+    const want = curCh.fn(row.iv);
+    const ok = want.every((v,k)=>v===row.outputs[k]);
+    rowOk.push(ok);
+    if(ok) match++;
+  }
+  return {tt, match, total:tt.rows.length, rowOk};
+}
+
+/* ---------- Undo / Redo ---------- */
+function snapshot(){
+  undoStack.push(cloneState(state));
+  if(undoStack.length>UNDO_MAX) undoStack.shift();
+  redoStack = [];
+  updateUndoBtns();
+}
+function undo(){
+  if(!undoStack.length) return;
+  redoStack.push(cloneState(state));
+  state = undoStack.pop();
+  selection = null; picked = null;
+  commit(); // 保存もする（undo結果がリロードで復活しないように）
+}
+function redo(){
+  if(!redoStack.length) return;
+  undoStack.push(cloneState(state));
+  state = redoStack.pop();
+  selection = null; picked = null;
+  commit();
+}
+function updateUndoBtns(){
+  $('undobtn').disabled = !undoStack.length;
+  $('redobtn').disabled = !redoStack.length;
+}
+
+/* ---------- 永続化 ---------- */
+function persist(){
+  if(mode==='free'){
+    store.set('free', {circuit:state, idSeq});
+  }else if(curCh){
+    const prog = store.get('progress', {});
+    prog[curCh.id] = prog[curCh.id] || {};
+    prog[curCh.id].circuit = state;
+    prog[curCh.id].idSeq = idSeq;
+    store.set('progress', prog);
+  }
+  store.set('lastMode', mode);
+  if(curCh) store.set('lastCh', curCh.id);
+}
+function markCleared(){
+  const prog = store.get('progress', {});
+  prog[curCh.id] = prog[curCh.id] || {};
+  prog[curCh.id].cleared = true;
+  store.set('progress', prog);
+}
+function isCleared(chId){
+  const prog = store.get('progress', {});
+  return !!(prog[chId] && prog[chId].cleared);
+}
+
+/* ---------- 状態変更のコミット ---------- */
+function commit(save=true){
+  lastValues = evaluate(state.nodes, state.wires);
+  if(lastValues.cyclic) toast('回路にループがあります（想定外です）');
+  render();
+  updateStatus();
+  updateUndoBtns(); // undo/redo経由でも必ずボタン状態を同期する
+  if(save) persist();
+  checkClear();
+}
+
+function checkClear(){
+  clearedNow = false;
+  if(mode!=='ch' || !curCh) return;
+  const m = challengeMatch();
+  const chip = $('matchchip');
+  chip.style.display = 'inline-block';
+  chip.textContent = `一致 ${m.match}/${m.total}`;
+  chip.classList.toggle('full', m.match===m.total);
+  if(m.match===m.total && !justCleared){
+    justCleared = true;
+    clearedNow = true;
+    markCleared();
+    showClearOverlay();
+  }else if(m.match!==m.total){
+    justCleared = false;
+  }
+}
+
+function showClearOverlay(){
+  const gates = state.nodes.filter(n=>!(n.type==='SW'||n.type==='LED')).length;
+  $('clearsub').textContent = `「${curCh.title}」を攻略！ 使用ゲート数: ${gates}個`;
+  const idx = CHALLENGES.findIndex(c=>c.id===curCh.id);
+  $('nextbtn').style.display = idx < CHALLENGES.length-1 ? '' : 'none';
+  const ov = $('clearov');
+  ov.classList.add('show');
+  // CSSコンフェッティ
+  const card = $('clearcard');
+  card.querySelectorAll('.confetti').forEach(e=>e.remove());
+  const colors = ['#BE5A38','#D69B81','#5C7A4E','#E6C3B0','#211F1A'];
+  for(let i=0;i<14;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = (6 + Math.random()*88) + '%';
+    c.style.background = colors[i % colors.length];
+    c.style.animation = `fall ${1.1 + Math.random()*0.9}s ${Math.random()*0.4}s ease-in forwards`;
+    card.appendChild(c);
+  }
+}
+
+/* ---------- モード / チャレンジのロード ---------- */
+function setMode(m, chId){
+  mode = m;
+  selection = null; picked = null;
+  undoStack = []; redoStack = []; updateUndoBtns();
+  justCleared = false;
+  $('tab-free').classList.toggle('active', m==='free');
+  $('tab-ch').classList.toggle('active', m==='ch');
+  $('goalbtn').style.display = m==='ch' ? '' : 'none';
+  $('hintbtn').style.display = m==='ch' ? '' : 'none';
+  $('listbtn').style.display = m==='ch' ? 'inline-block' : 'none'; // CSS既定がnoneなので''では出ない
+  $('matchchip').style.display = 'none';
+  $('clearallbtn').textContent = m==='ch' ? 'リセット' : '全消去';
+
+  if(m==='free'){
+    curCh = null;
+    const saved = store.get('free', null);
+    if(saved && validCircuit(saved.circuit)){
+      state = saved.circuit;
+      idSeq = saved.idSeq || guessIdSeq();
+    }else{
+      state = defaultFreeCircuit();
+    }
+  }else{
+    curCh = CHALLENGES.find(c=>c.id===chId) || CHALLENGES[0];
+    const prog = store.get('progress', {});
+    const saved = prog[curCh.id];
+    if(saved && validCircuit(saved.circuit)){
+      state = saved.circuit;
+      idSeq = saved.idSeq || guessIdSeq();
+      // クリア済み回路を開き直したとき、開いた瞬間の再クリア演出は抑止
+      const m2 = (()=>{ try{ return challengeMatch(); }catch(e){ return null; } })();
+      justCleared = !!(m2 && m2.match===m2.total);
+    }else{
+      state = presetCircuit(curCh);
+    }
+  }
+  buildPalette();
+  commit(false);
+  persist();
+  fitView();
+}
+
+// 保存データの健全性チェック（壊れたlocalStorageで起動不能にならないように）
+function validCircuit(c){
+  if(!c || !Array.isArray(c.nodes) || !Array.isArray(c.wires)) return false;
+  const ids = new Set();
+  for(const n of c.nodes){
+    if(!n || typeof n.id!=='string' || ids.has(n.id)) return false;
+    if(!(n.type==='SW' || n.type==='LED' || GATES[n.type])) return false;
+    if(typeof n.x!=='number' || typeof n.y!=='number') return false;
+    ids.add(n.id);
+  }
+  for(const w of c.wires){
+    if(!w || !ids.has(w.from) || !w.to || !ids.has(w.to.node)) return false;
+    if(typeof w.to.port!=='number') return false;
+  }
+  return true;
+}
+
+function guessIdSeq(){
+  let mx = 0;
+  state.nodes.forEach(n=>{ const m = /^n(\d+)$/.exec(n.id); if(m) mx = Math.max(mx, +m[1]); });
+  state.wires.forEach(w=>{ const m = /^w?n?(\d+)$/.exec(w.id.replace(/^w/,'n')); if(m) mx = Math.max(mx, +m[1]); });
+  return mx + 1;
+}
+
+function defaultFreeCircuit(){
+  return { nodes:[
+    {id:uid(), type:'SW', x:40,  y:90,  label:'A', value:0},
+    {id:uid(), type:'SW', x:40,  y:210, label:'B', value:0},
+    {id:uid(), type:'LED',x:450, y:130, label:'Y'},
+  ], wires:[] };
+}
+
+function presetCircuit(ch){
+  const nodes = [];
+  const inYs = ch.inputs.length===1 ? [150] : ch.inputs.length===2 ? [90,220] : [60,165,270];
+  ch.inputs.forEach((lb,i)=>nodes.push({id:uid(), type:'SW', x:40, y:inYs[i], label:lb, value:0, preset:true}));
+  const outYs = ch.outputs.length===1 ? [150] : [95,215];
+  ch.outputs.forEach((lb,i)=>nodes.push({id:uid(), type:'LED', x:450, y:outYs[i], label:lb, preset:true}));
+  return {nodes, wires:[]};
+}
+
+/* ---------- パレット ---------- */
+function paletteItems(){
+  if(mode==='free'){
+    return ['SW','LED', ...GATE_ORDER];
+  }
+  return GATE_ORDER; // チャレンジでは入出力固定
+}
+function buildPalette(){
+  const pal = $('palette');
+  pal.innerHTML = '';
+  const allowed = (mode==='ch' && curCh) ? curCh.palette : null;
+  for(const t of paletteItems()){
+    const b = document.createElement('button');
+    b.className = 'pal';
+    const locked = allowed && !allowed.includes(t) && !(t==='SW'||t==='LED');
+    if(locked) b.classList.add('locked');
+    b.innerHTML = palIcon(t) + `<span>${t==='SW'?'スイッチ':t==='LED'?'LED':t}</span>`;
+    b.addEventListener('click', ()=>{
+      if(locked){ toast(`この問題では ${curCh.palette.join('・')} だけ使えるよ`); return; }
+      addComponent(t);
+    });
+    pal.appendChild(b);
+  }
+}
+function palIcon(t){
+  if(t==='SW') return `<svg width="44" height="30" viewBox="0 0 56 48"><rect x="4" y="4" width="44" height="40" rx="9" fill="var(--surface)" stroke="var(--ink-dim)" stroke-width="2"/><text x="26" y="31" text-anchor="middle" font-size="18" font-weight="700" fill="var(--ink)">0</text></svg>`;
+  if(t==='LED') return `<svg width="44" height="30" viewBox="0 0 60 56"><circle cx="30" cy="28" r="17" fill="var(--surface)" stroke="var(--ink-dim)" stroke-width="2"/><text x="30" y="34" text-anchor="middle" font-size="15" font-weight="700" fill="var(--ink-dim)">0</text></svg>`;
+  return `<svg width="44" height="30" viewBox="0 0 84 56">${gateShape(t, true)}</svg>`;
+}
+
+/* ---------- SVG部品の描画 ---------- */
+function gateShape(type, forIcon){
+  const sw = forIcon ? 3 : 2;
+  const stroke = `fill="var(--surface)" stroke="var(--ink)" stroke-width="${sw}" stroke-linejoin="round"`;
+  const lineS = `stroke="var(--ink)" stroke-width="${sw}"`;
+  const bub = cx => `<circle cx="${cx}" cy="28" r="5" ${stroke}/>`;
+  const lbl = (x, s) => forIcon ? '' : `<text x="${x}" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${s}</text>`;
+  let body='', outStub='', label='';
+  const in2 = `<line x1="0" y1="16" x2="13" y2="16" ${lineS}/><line x1="0" y1="40" x2="13" y2="40" ${lineS}/>`;
+  const in1 = `<line x1="0" y1="28" x2="15" y2="28" ${lineS}/>`;
+  switch(type){
+    case 'AND':
+      body = in2 + `<path d="M12,8 H38 A20,20 0 0 1 38,48 H12 Z" ${stroke}/>`;
+      outStub = `<line x1="58" y1="28" x2="84" y2="28" ${lineS}/>`; label = lbl(31,'AND'); break;
+    case 'NAND':
+      body = in2 + `<path d="M12,8 H38 A20,20 0 0 1 38,48 H12 Z" ${stroke}/>` + bub(63);
+      outStub = `<line x1="68" y1="28" x2="84" y2="28" ${lineS}/>`; label = lbl(31,'NAND'); break;
+    case 'OR':
+      body = in2 + `<path d="M10,8 Q22,28 10,48 Q36,48 58,28 Q36,8 10,8 Z" ${stroke}/>`;
+      outStub = `<line x1="58" y1="28" x2="84" y2="28" ${lineS}/>`; label = lbl(29,'OR'); break;
+    case 'NOR':
+      body = in2 + `<path d="M10,8 Q22,28 10,48 Q36,48 58,28 Q36,8 10,8 Z" ${stroke}/>` + bub(63);
+      outStub = `<line x1="68" y1="28" x2="84" y2="28" ${lineS}/>`; label = lbl(29,'NOR'); break;
+    case 'XOR':
+      body = in2 + `<path d="M8,8 Q20,28 8,48" fill="none" stroke="var(--ink)" stroke-width="${sw}"/>` +
+             `<path d="M15,8 Q27,28 15,48 Q41,48 61,28 Q41,8 15,8 Z" ${stroke}/>`;
+      outStub = `<line x1="61" y1="28" x2="84" y2="28" ${lineS}/>`; label = lbl(34,'XOR'); break;
+    case 'XNOR':
+      body = in2 + `<path d="M8,8 Q20,28 8,48" fill="none" stroke="var(--ink)" stroke-width="${sw}"/>` +
+             `<path d="M15,8 Q27,28 15,48 Q41,48 61,28 Q41,8 15,8 Z" ${stroke}/>` + bub(66);
+      outStub = `<line x1="71" y1="28" x2="84" y2="28" ${lineS}/>`; label = lbl(34,'XNOR'); break;
+    case 'NOT':
+      body = in1 + `<path d="M14,10 L46,28 L14,46 Z" ${stroke}/>` + bub(51);
+      outStub = `<line x1="56" y1="28" x2="84" y2="28" ${lineS}/>`; label = lbl(27,'NOT'); break;
+  }
+  return body + outStub + label;
+}
+
+function nodeMarkup(n){
+  const v = lastValues ? (lastValues.values[n.id] ?? 0) : 0;
+  const sel = selection && selection.kind==='node' && selection.id===n.id;
+  const sz = nodeSize(n);
+  let inner = '';
+  if(n.type==='SW'){
+    const on = (n.value ?? 0) === 1;
+    inner =
+      `<line x1="${SW_W-8}" y1="${SW_H/2}" x2="${SW_W}" y2="${SW_H/2}" stroke="var(--ink)" stroke-width="2"/>` +
+      `<rect class="node-body" data-node="${n.id}" x="2" y="2" width="${SW_W-10}" height="${SW_H-4}" rx="10" ` +
+        `fill="${on?'var(--accent-soft)':'var(--surface)'}" stroke="${on?'var(--accent)':'var(--ink-dim)'}" stroke-width="2"/>` +
+      `<text x="${(SW_W-8)/2}" y="15" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink-dim)" pointer-events="none">${n.label}</text>` +
+      `<text x="${(SW_W-8)/2}" y="38" text-anchor="middle" font-size="20" font-weight="700" fill="${on?'var(--accent)':'var(--ink)'}" pointer-events="none">${on?1:0}</text>`;
+  }else if(n.type==='LED'){
+    const on = v===1;
+    inner =
+      `<line x1="0" y1="26" x2="14" y2="26" stroke="var(--ink)" stroke-width="2"/>` +
+      (on ? `<circle cx="32" cy="26" r="23" fill="var(--accent)" opacity=".25" pointer-events="none"/>` : '') +
+      `<circle class="node-body" data-node="${n.id}" cx="32" cy="26" r="18" ` +
+        `fill="${on?'var(--accent)':'var(--surface)'}" stroke="${on?'var(--accent)':'var(--ink-dim)'}" stroke-width="2"/>` +
+      `<text x="32" y="31" text-anchor="middle" font-size="14" font-weight="700" fill="${on?'#fff':'var(--ink-dim)'}" pointer-events="none">${on?1:0}</text>` +
+      `<text x="32" y="57" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink-dim)" pointer-events="none">${n.label}</text>`;
+  }else{
+    inner = `<g class="node-body" data-node="${n.id}">${gateShape(n.type, false)}</g>`;
+  }
+  // ポート（見た目 + 当たり判定）
+  const ps = portsOf(n);
+  let ports = '';
+  ps.ins.forEach((p,i)=>{
+    const w = state.wires.find(w=>w.to.node===n.id && w.to.port===i);
+    const isPicked = picked && picked.nodeId===n.id && picked.dir==='in' && picked.port===i;
+    ports += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="${w?'var(--surface2)':'var(--surface)'}" stroke="${w?'var(--ink)':'var(--accent-dim)'}" stroke-width="1.8" ${w?'':'stroke-dasharray="2.5 2"'} class="${isPicked?'picked':''}" pointer-events="none"/>` +
+             `<circle class="port-hit" data-node="${n.id}" data-dir="in" data-port="${i}" cx="${p.x}" cy="${p.y}" r="14"/>`;
+  });
+  ps.outs.forEach((p,i)=>{
+    const isPicked = picked && picked.nodeId===n.id && picked.dir==='out' && picked.port===i;
+    ports += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="var(--ink)" class="${isPicked?'picked':''}" pointer-events="none"/>` +
+             `<circle class="port-hit" data-node="${n.id}" data-dir="out" data-port="${i}" cx="${p.x}" cy="${p.y}" r="16"/>`;
+  });
+  const selRect = sel ? `<rect x="-7" y="-7" width="${sz.w+14}" height="${sz.h+14}" rx="10" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" pointer-events="none"/>` : '';
+  // shake用の内側g: CSSアニメのtransformが外側のtransform属性を上書きしないよう分離
+  return `<g data-ng="${n.id}" transform="translate(${n.x},${n.y})"><g class="ninner">${inner}${ports}${selRect}</g></g>`;
+}
+
+function wireMarkup(w){
+  const a = nodeById(w.from), b = nodeById(w.to.node);
+  if(!a || !b) return '';
+  const p1 = portWorld(a,'out',0), p2 = portWorld(b,'in',w.to.port);
+  const on = lastValues ? !!lastValues.wireOn[w.id] : false;
+  const sel = selection && selection.kind==='wire' && selection.id===w.id;
+  const d = wirePath(p1.x,p1.y,p2.x,p2.y);
+  const col = sel ? 'var(--accent)' : on ? 'var(--accent)' : 'var(--wire-off)';
+  const wd = on ? 3.5 : 2.5;
+  return `<path class="wire-hit" data-wire="${w.id}" d="${d}"/>` +
+         `<path d="${d}" fill="none" stroke="${col}" stroke-width="${sel?wd+1.5:wd}" ${sel?'stroke-dasharray="7 5"':''} stroke-linecap="round" pointer-events="none"/>`;
+}
+
+function render(){
+  const gridExtent = 4000;
+  let html = `<defs><pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1.2" cy="1.2" r="1.2" fill="var(--ground)"/></pattern></defs>` +
+    `<rect x="${-gridExtent}" y="${-gridExtent}" width="${gridExtent*2}" height="${gridExtent*2}" fill="url(#dots)" data-bg="1"/>`;
+  for(const w of state.wires) html += wireMarkup(w);
+  for(const n of state.nodes) html += nodeMarkup(n);
+  html += `<path id="rubber" d="" fill="none" stroke="var(--accent-dim)" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round" pointer-events="none"/>`;
+  board.innerHTML = html;
+  applyView();
+  $('delbtn').disabled = !selection;
+}
+
+function applyView(){
+  const r = board.getBoundingClientRect();
+  if(r.width===0) return;
+  board.setAttribute('viewBox', `${view.x} ${view.y} ${r.width/view.z} ${r.height/view.z}`);
+}
+
+function fitView(){
+  const r = board.getBoundingClientRect();
+  if(!state.nodes.length || r.width===0){ view={x:0,y:0,z:1}; applyView(); return; }
+  let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
+  for(const n of state.nodes){
+    const s = nodeSize(n);
+    x1=Math.min(x1,n.x); y1=Math.min(y1,n.y);
+    x2=Math.max(x2,n.x+s.w); y2=Math.max(y2,n.y+s.h);
+  }
+  const pad = 46;
+  x1-=pad; y1-=pad; x2+=pad; y2+=pad;
+  const z = Math.min(r.width/(x2-x1), r.height/(y2-y1), 1.5);
+  view.z = Math.max(0.62, z); // スマホでゲート記号が潰れない下限（あふれた分はパンで見る）
+  view.x = (x1+x2)/2 - r.width/view.z/2;
+  view.y = (y1+y2)/2 - r.height/view.z/2;
+  applyView();
+}
+
+/* ---------- 座標変換 ---------- */
+function toWorld(clientX, clientY){
+  const ctm = board.getScreenCTM();
+  if(!ctm) return {x:0,y:0};
+  const p = new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
+  return {x:p.x, y:p.y};
+}
+
+/* ---------- 部品追加 ---------- */
+function addComponent(t){
+  if(t==='SW' && state.nodes.filter(n=>n.type==='SW').length >= MAX_SW){
+    toast(`スイッチは最大${MAX_SW}個まで（真理値表が16行を超えちゃう）`); return;
+  }
+  if(t==='LED' && state.nodes.filter(n=>n.type==='LED').length >= MAX_LED){
+    toast(`LEDは最大${MAX_LED}個まで`); return;
+  }
+  snapshot();
+  const r = board.getBoundingClientRect();
+  const cx = view.x + r.width/view.z/2, cy = view.y + r.height/view.z/2;
+  const sz = t==='SW' ? {w:SW_W,h:SW_H} : t==='LED' ? {w:LED_W,h:LED_H} : {w:GW,h:GH};
+  // 中央付近で少しずつずらして重なりを避ける
+  const count = state.nodes.length % 5;
+  const node = {id:uid(), type:t, x:Math.round(cx - sz.w/2 + count*14 - 28), y:Math.round(cy - sz.h/2 + count*14 - 28)};
+  if(t==='SW'){
+    const used = new Set(state.nodes.filter(n=>n.type==='SW').map(n=>n.label));
+    node.label = ['A','B','C','D'].find(c=>!used.has(c)) || 'A';
+    node.value = 0;
+  }else if(t==='LED'){
+    const used = new Set(state.nodes.filter(n=>n.type==='LED').map(n=>n.label));
+    node.label = ['Y','Z','U','V'].find(c=>!used.has(c)) || 'Y';
+  }
+  state.nodes.push(node);
+  selection = {kind:'node', id:node.id};
+  picked = null;
+  commit();
+  setHint('ドラッグで位置を調整。◯ポートからドラッグ（またはタップ→タップ）で配線しよう');
+}
+
+/* ---------- 配線の接続（ドラッグ完了/タップ完了の両経路がここを通る） ---------- */
+function tryConnect(fromNodeId, toNodeId, toPort, opts={}){
+  const from = nodeById(fromNodeId), to = nodeById(toNodeId);
+  if(!from || !to) return false;
+  const existing = state.wires.find(w=>w.to.node===toNodeId && w.to.port===toPort);
+  if(existing){
+    shakeNode(toNodeId);
+    toast('その入力は接続済み。ポートを押して配線をつまみ直せるよ');
+    return false;
+  }
+  if(wouldCycle(fromNodeId, toNodeId)){
+    shakeNode(toNodeId);
+    toast('ループになる配線は作れません（出力が自分に戻ってきちゃう）');
+    return false;
+  }
+  if(!opts.noSnapshot) snapshot();
+  state.wires.push({id:uid(), from:fromNodeId, to:{node:toNodeId, port:toPort}});
+  picked = null;
+  commit();
+  return true;
+}
+
+function shakeNode(id){
+  const g = board.querySelector(`[data-ng="${id}"] .ninner`);
+  if(g){ g.classList.remove('shake'); void g.getBoundingClientRect(); g.classList.add('shake'); }
+}
+
+function removeWire(id, opts={}){
+  if(!opts.noSnapshot) snapshot();
+  state.wires = state.wires.filter(w=>w.id!==id);
+  if(selection && selection.kind==='wire' && selection.id===id) selection=null;
+  commit();
+}
+
+function removeNode(id){
+  const n = nodeById(id);
+  if(!n) return;
+  if(n.preset){ toast('この部品は問題の一部なので消せないよ'); return; }
+  snapshot();
+  state.nodes = state.nodes.filter(x=>x.id!==id);
+  state.wires = state.wires.filter(w=>w.from!==id && w.to.node!==id); // カスケード削除
+  if(selection && selection.kind==='node' && selection.id===id) selection=null;
+  commit();
+}
+
+/* ---------- ポインタ操作の状態機械 ---------- */
+/*
+  pointerdown の対象で分岐:
+    port(out)         → wire-drag 候補（動けばドラッグ配線、動かなければ picked トグル）
+    port(in, 接続済み) → 既存配線をつまみ直し（rewire）
+    port(in, 空き)     → picked(in) トグル or picked(out)からの接続確定
+    node body         → move 候補（動けばノード移動、動かなければ タップ動作=SWトグル/選択）
+    wire              → 選択
+    背景              → pan 候補（動かなければ 選択解除/pickedキャンセル）
+  すべて board 上の単一リスナで処理し、setPointerCapture で外へ出ても追跡する。
+*/
+let gesture = null;
+
+board.addEventListener('pointerdown', e=>{
+  if(gesture) return; // 2本目の指は無視（v1はシングルタッチ）
+  e.preventDefault();
+  const t = e.target;
+  const w0 = toWorld(e.clientX, e.clientY);
+  const base = {px:e.clientX, py:e.clientY, wx:w0.x, wy:w0.y, moved:false, pid:e.pointerId};
+
+  const portEl = t.closest ? t.closest('.port-hit') : null;
+  const bodyEl = t.closest ? t.closest('.node-body') : null;
+  const wireEl = t.closest ? t.closest('.wire-hit') : null;
+
+  // 縮小表示時のポート掴み補助: 直接ヒットしなくても画面上26px以内の最寄りポートを掴む
+  let pd = null;
+  if(portEl){
+    pd = {nid:portEl.dataset.node, dir:portEl.dataset.dir, port:+portEl.dataset.port};
+  }else if(!bodyEl && !wireEl){
+    const near = nearestAnyPort(w0.x, w0.y, Math.min(30, 26/Math.min(1, view.z)));
+    if(near) pd = near;
+  }
+
+  if(pd){
+    const nid = pd.nid, dir = pd.dir, port = pd.port;
+    if(dir==='out'){
+      gesture = {...base, kind:'wire-from-out', nid, port};
+    }else{
+      const exist = state.wires.find(w=>w.to.node===nid && w.to.port===port);
+      if(exist){
+        // つまみ直し: 配線を外して、元の出力からのゴム線を持つ
+        gesture = {...base, kind:'rewire', wireId:exist.id, fromNid:exist.from,
+                   prevTo:{node:nid, port}, snap:cloneState(state)};
+        state.wires = state.wires.filter(w=>w.id!==exist.id);
+        lastValues = evaluate(state.nodes, state.wires);
+        render();
+        drawRubberFrom(nodeById(exist.from), w0);
+      }else{
+        gesture = {...base, kind:'tap-in-port', nid, port};
+      }
+    }
+  }else if(bodyEl){
+    const nid = bodyEl.dataset.node ?? bodyEl.getAttribute('data-node');
+    const n = nodeById(nid);
+    gesture = {...base, kind:'node', nid, ox:n.x, oy:n.y, snapTaken:false};
+  }else if(wireEl){
+    gesture = {...base, kind:'wire-sel', wid:wireEl.dataset.wire};
+  }else{
+    gesture = {...base, kind:'pan', vx:view.x, vy:view.y};
+  }
+  try{ board.setPointerCapture(e.pointerId); }catch(err){ /* 合成イベント等でpointerIdが無効でも操作は継続できる */ }
+});
+
+board.addEventListener('pointermove', e=>{
+  if(!gesture || e.pointerId!==gesture.pid) return;
+  const dx = e.clientX - gesture.px, dy = e.clientY - gesture.py;
+  if(!gesture.moved && Math.hypot(dx,dy) < DRAG_TH) return;
+  gesture.moved = true;
+  const w = toWorld(e.clientX, e.clientY);
+
+  if(gesture.kind==='pan'){
+    view.x = gesture.vx - dx/view.z;
+    view.y = gesture.vy - dy/view.z;
+    applyView();
+  }
+  else if(gesture.kind==='node'){
+    if(!gesture.snapTaken){ snapshot(); gesture.snapTaken = true; }
+    const n = nodeById(gesture.nid);
+    n.x = Math.round(gesture.ox + (w.x - gesture.wx));
+    n.y = Math.round(gesture.oy + (w.y - gesture.wy));
+    liveUpdateNode(n);
+  }
+  else if(gesture.kind==='wire-from-out' || gesture.kind==='rewire'){
+    const srcNid = gesture.kind==='rewire' ? gesture.fromNid : gesture.nid;
+    drawRubberFrom(nodeById(srcNid), w, true);
+  }
+  else if(gesture.kind==='tap-in-port'){
+    // 空き入力ポートからの逆方向ドラッグ: 近くの出力ポートへ届いたら接続、という操作は
+    // v1では持たない（タップ2回で代替）。ドラッグはキャンセル扱いにしない＝何もしない。
+  }
+});
+
+function nearestInPort(wx, wy, excludeNid){
+  // ズームアウト時もスナップ半径が画面上でほぼ一定になるよう補正
+  let best = null, bd = SNAP / Math.min(1, view.z);
+  for(const n of state.nodes){
+    if(n.id===excludeNid) continue;
+    const ps = portsOf(n);
+    ps.ins.forEach((p,i)=>{
+      const d = Math.hypot(n.x+p.x-wx, n.y+p.y-wy);
+      if(d < bd){ bd = d; best = {nid:n.id, port:i}; }
+    });
+  }
+  return best;
+}
+
+function nearestAnyPort(wx, wy, maxD){
+  let best = null, bd = maxD;
+  for(const n of state.nodes){
+    const ps = portsOf(n);
+    ps.ins.forEach((p,i)=>{
+      const d = Math.hypot(n.x+p.x-wx, n.y+p.y-wy);
+      if(d < bd){ bd = d; best = {nid:n.id, dir:'in', port:i}; }
+    });
+    ps.outs.forEach((p,i)=>{
+      const d = Math.hypot(n.x+p.x-wx, n.y+p.y-wy);
+      if(d < bd){ bd = d; best = {nid:n.id, dir:'out', port:i}; }
+    });
+  }
+  return best;
+}
+
+function drawRubberFrom(srcNode, w, withSnap){
+  const rub = board.querySelector('#rubber');
+  if(!rub || !srcNode) return;
+  const p1 = portWorld(srcNode,'out',0);
+  let tx = w.x, ty = w.y;
+  if(withSnap){
+    const cand = nearestInPort(w.x, w.y, srcNode.id);
+    if(cand){ const n = nodeById(cand.nid); const pp = portWorld(n,'in',cand.port); tx=pp.x; ty=pp.y; }
+  }
+  rub.setAttribute('d', wirePath(p1.x, p1.y, tx, ty));
+}
+
+function liveUpdateNode(n){
+  const g = board.querySelector(`[data-ng="${n.id}"]`);
+  if(g) g.setAttribute('transform', `translate(${n.x},${n.y})`);
+  // 接続配線を追従
+  for(const wr of state.wires){
+    if(wr.from!==n.id && wr.to.node!==n.id) continue;
+    const a = nodeById(wr.from), b = nodeById(wr.to.node);
+    if(!a || !b) continue;
+    const p1 = portWorld(a,'out',0), p2 = portWorld(b,'in',wr.to.port);
+    const d = wirePath(p1.x,p1.y,p2.x,p2.y);
+    board.querySelectorAll(`[data-wire="${wr.id}"]`).forEach(el=>el.setAttribute('d', d));
+    const vis = board.querySelector(`[data-wire="${wr.id}"]`);
+    if(vis && vis.nextElementSibling && vis.nextElementSibling.tagName==='path') vis.nextElementSibling.setAttribute('d', d);
+  }
+}
+
+board.addEventListener('pointerup', e=>{
+  if(!gesture || e.pointerId!==gesture.pid) return;
+  const g = gesture; gesture = null;
+  const w = toWorld(e.clientX, e.clientY);
+  const rub = board.querySelector('#rubber');
+  if(rub) rub.setAttribute('d','');
+
+  if(g.kind==='pan'){
+    if(!g.moved){ selection = null; picked = null; render(); updateStatus(); }
+    return;
+  }
+  if(g.kind==='node'){
+    const n = nodeById(g.nid);
+    if(!g.moved){
+      // タップ: SWはトグル、その他は選択
+      if(n && n.type==='SW'){
+        if(picked){ picked=null; }
+        n.value = (n.value ?? 0) ^ 1;
+        commit();
+      }else if(n){
+        selection = (selection && selection.kind==='node' && selection.id===n.id) ? null : {kind:'node', id:n.id};
+        picked = null;
+        render(); updateStatus();
+      }
+    }else{
+      picked = null; // 移動で終わったジェスチャはタップ配線の途中状態を引き継がない
+      commit(); // 移動確定（snapshotはmove開始時に済み）
+    }
+    return;
+  }
+  if(g.kind==='wire-sel'){
+    if(!g.moved){
+      selection = (selection && selection.kind==='wire' && selection.id===g.wid) ? null : {kind:'wire', id:g.wid};
+      picked = null;
+      render(); updateStatus();
+      if(selection) setHint('「削除」ボタンでこの配線を消せるよ');
+    }
+    return;
+  }
+  if(g.kind==='wire-from-out'){
+    if(g.moved){
+      const cand = nearestInPort(w.x, w.y, g.nid);
+      if(cand) tryConnect(g.nid, cand.nid, cand.port);
+      else { render(); } // キャンセル: ゴム線を消すだけ
+    }else{
+      // タップ: picked トグル / picked(in) があれば接続
+      if(picked && picked.dir==='in'){
+        tryConnect(g.nid, picked.nodeId, picked.port);
+      }else if(picked && picked.dir==='out' && picked.nodeId===g.nid){
+        picked = null; render(); updateStatus();
+      }else{
+        picked = {nodeId:g.nid, dir:'out', port:g.port};
+        selection = null;
+        render();
+        setHint('つなぎ先の入力ポート◯をタップ（もう一度押すと解除）');
+      }
+    }
+    return;
+  }
+  if(g.kind==='tap-in-port'){
+    if(!g.moved){
+      if(picked && picked.dir==='out'){
+        tryConnect(picked.nodeId, g.nid, g.port);
+      }else if(picked && picked.dir==='in' && picked.nodeId===g.nid && picked.port===g.port){
+        picked = null; render(); updateStatus();
+      }else{
+        picked = {nodeId:g.nid, dir:'in', port:g.port};
+        selection = null;
+        render();
+        setHint('つなぎ元の出力ポート●をタップ（もう一度押すと解除）');
+      }
+    }
+    return;
+  }
+  if(g.kind==='rewire'){
+    // state は既に配線を外した状態。undo用スナップショットは g.snap
+    picked = null;
+    const cand = g.moved ? nearestInPort(w.x, w.y, g.fromNid) : null;
+    if(cand){
+      const existing = state.wires.find(x=>x.to.node===cand.nid && x.to.port===cand.port);
+      const cyc = wouldCycle(g.fromNid, cand.nid);
+      if(!existing && !cyc){
+        undoStack.push(g.snap); if(undoStack.length>UNDO_MAX) undoStack.shift();
+        redoStack=[]; updateUndoBtns();
+        state.wires.push({id:uid(), from:g.fromNid, to:{node:cand.nid, port:cand.port}});
+        commit();
+        return;
+      }
+      // 無効な接続先 → 元の配線を復元して終了（下の削除パスへ落とさない）
+      if(existing) toast('その入力は接続済みだよ');
+      else toast('ループになる配線は作れません');
+      state = g.snap;
+      commit(false);
+      return;
+    }
+    if(!g.moved){
+      // 動かさず離した → 何もせず元に戻す（誤タップ保護）
+      state = g.snap;
+      commit(false);
+      return;
+    }
+    // 空中で離した → 配線を削除扱い
+    undoStack.push(g.snap); if(undoStack.length>UNDO_MAX) undoStack.shift();
+    redoStack=[]; updateUndoBtns();
+    toast('配線を外したよ');
+    commit();
+    return;
+  }
+});
+
+board.addEventListener('pointercancel', e=>{
+  if(!gesture || e.pointerId!==gesture.pid) return;
+  const g = gesture; gesture = null;
+  picked = null;
+  const rub = board.querySelector('#rubber');
+  if(rub) rub.setAttribute('d','');
+  if(g.kind==='rewire'){ state = g.snap; commit(false); return; }
+  if(g.kind==='node' && g.snapTaken){ commit(); return; }
+  render();
+});
+
+/* ---------- ズーム ---------- */
+function zoomAt(factor, cx, cy){
+  const r = board.getBoundingClientRect();
+  const px = cx===undefined ? r.width/2 : cx - r.left;
+  const py = cy===undefined ? r.height/2 : cy - r.top;
+  const wx = view.x + px/view.z, wy = view.y + py/view.z;
+  view.z = Math.min(2.2, Math.max(0.35, view.z*factor));
+  view.x = wx - px/view.z;
+  view.y = wy - py/view.z;
+  applyView();
+}
+$('zin').addEventListener('click', ()=>zoomAt(1.25));
+$('zout').addEventListener('click', ()=>zoomAt(1/1.25));
+$('zfit').addEventListener('click', fitView);
+board.addEventListener('wheel', e=>{
+  e.preventDefault();
+  zoomAt(e.deltaY<0 ? 1.15 : 1/1.15, e.clientX, e.clientY);
+}, {passive:false});
+window.addEventListener('resize', applyView);
+
+/* ---------- ステータスバー ---------- */
+let hintTimer = null;
+function setHint(msg){
+  $('statusmsg').textContent = msg;
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(updateStatus, 4000);
+}
+function updateStatus(){
+  clearTimeout(hintTimer);
+  if(mode==='ch' && curCh){
+    $('statusmsg').textContent = `Q${curCh.no} ${curCh.title} ${'★'.repeat(curCh.stars)}`;
+  }else{
+    const sw = state.nodes.filter(n=>n.type==='SW').length;
+    if(!state.nodes.length) $('statusmsg').textContent = 'パレットから部品を追加してスタート';
+    else if(!state.wires.length) $('statusmsg').textContent = '●出力ポートから◯入力ポートへドラッグで配線（タップ→タップでもOK）';
+    else $('statusmsg').textContent = `スイッチをタップでON/OFF切替（入力${sw}個）`;
+  }
+}
+
+/* ---------- シート ---------- */
+function openSheet(title, bodyHtml){
+  $('sheettitle').textContent = title;
+  $('sheetbody').innerHTML = bodyHtml;
+  $('sheet').classList.add('show');
+  $('scrim').classList.add('show');
+}
+function closeSheet(){
+  $('sheet').classList.remove('show');
+  $('scrim').classList.remove('show');
+}
+$('sheetclose').addEventListener('click', closeSheet);
+$('scrim').addEventListener('click', closeSheet);
+
+function ttHtml(withTarget){
+  const sws = swNodes();
+  if(!sws.length) return '<p class="ttnote">入力スイッチがまだ無いよ。パレットから追加してね。</p>';
+  const m = withTarget ? challengeMatch() : null;
+  const tt = m ? m.tt : buildTruthTable();
+  const leds = tt.leds;
+  const curBits = sws.map(s=>s.value ?? 0);
+  let h = '<table class="tt"><tr>';
+  for(const s of tt.sws) h += `<th>${s.label}</th>`;
+  leds.forEach((l,i)=>{ h += `<th class="${i===0?'outcol':''}">${l.label}</th>`; });
+  if(m) leds.forEach((l,i)=>{ h += `<th class="${i===0?'outcol':''}" style="color:var(--accent)">目標${l.label}</th>`; });
+  h += '</tr>';
+  tt.rows.forEach((row,ri)=>{
+    const isCur = row.inputs.every((b,i)=>b===curBits[i]);
+    h += `<tr class="${isCur?'cur':''}">`;
+    row.inputs.forEach(b=>{ h += `<td>${b}</td>`; });
+    const want = m ? curCh.fn(row.iv) : null;
+    row.outputs.forEach((b,i)=>{
+      const bad = m && want[i]!==b;
+      h += `<td class="${i===0?'outcol ':''}${bad?'ng':''}">${b}</td>`;
+    });
+    if(m) want.forEach((b,i)=>{ h += `<td class="${i===0?'outcol ':''}okv">${b}</td>`; });
+    h += '</tr>';
+  });
+  h += '</table>';
+  const unconn = countUnconnectedInputs();
+  let note = '色付き行 = いまのスイッチの状態。';
+  if(m) note += ' 赤いマス = 目標と不一致。';
+  if(unconn>0) note += `<br>未接続の入力ポートが${unconn}か所あるよ（0として計算中）。`;
+  h += `<p class="ttnote">${note}</p>`;
+  return h;
+}
+function countUnconnectedInputs(){
+  let c = 0;
+  for(const n of state.nodes){
+    const ins = portsOf(n).ins;
+    ins.forEach((p,i)=>{ if(!state.wires.find(w=>w.to.node===n.id && w.to.port===i)) c++; });
+  }
+  return c;
+}
+
+$('ttbtn').addEventListener('click', ()=>openSheet('真理値表', ttHtml(false)));
+$('goalbtn').addEventListener('click', ()=>openSheet('目標と比較', ttHtml(true)));
+$('hintbtn').addEventListener('click', ()=>{
+  if(!curCh) return;
+  openSheet(`Q${curCh.no} ${curCh.title}`,
+    `<div class="helpbody"><h3>問題</h3><p>${curCh.desc}</p><h3>ヒント</h3><p>${curCh.hint}</p></div>`);
+});
+
+function challengeListHtml(){
+  let h = '';
+  for(const c of CHALLENGES){
+    const done = isCleared(c.id);
+    const cur = curCh && curCh.id===c.id;
+    h += `<button class="chcard ${done?'done':''} ${cur?'cur':''}" data-ch="${c.id}">` +
+         `<span class="no">${done?'✓':c.no}</span>` +
+         `<span class="m"><span class="t">${c.title}</span><span class="s">${c.desc}</span></span>` +
+         `<span class="st">${'★'.repeat(c.stars)}</span>` +
+         `</button>`;
+  }
+  const doneCount = CHALLENGES.filter(c=>isCleared(c.id)).length;
+  return `<p class="ttnote" style="margin:0 0 10px">${CHALLENGES.length}問中 ${doneCount}問クリア</p>` + h;
+}
+function openChallengeList(){
+  openSheet('チャレンジ一覧', challengeListHtml());
+  $('sheetbody').querySelectorAll('[data-ch]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      closeSheet();
+      setMode('ch', b.dataset.ch);
+    });
+  });
+}
+$('listbtn').addEventListener('click', openChallengeList);
+
+$('helpbtn').addEventListener('click', ()=>{
+  openSheet('使い方', `<div class="helpbody">
+    <h3>部品を置く</h3>
+    <ul><li>下のパレットをタップすると画面中央に部品が出るよ</li>
+    <li>部品はドラッグで移動、タップで選択</li></ul>
+    <h3>配線する</h3>
+    <ul><li>●出力ポートから◯入力ポートへ<b>ドラッグ</b>（近づくと自動で吸い付く）</li>
+    <li><b>タップ→タップ</b>でもOK（ポートを押して、つなぎ先を押す）</li>
+    <li>接続済みの◯を押してドラッグすると配線をつまみ直せる。空中で離すと削除</li>
+    <li>1つの入力には1本だけ。出力からは何本でも分岐できるよ</li></ul>
+    <h3>動かす</h3>
+    <ul><li>スイッチをタップすると0/1が切り替わって、信号が流れた配線は色が変わる</li>
+    <li>「真理値表」で全パターンの結果を自動生成</li></ul>
+    <h3>チャレンジ</h3>
+    <ul><li>目標の真理値表と完全一致すればクリア！「目標」でどの行が違うか確認できる</li>
+    <li>回路はこの端末に自動保存されるよ</li></ul>
+  </div>`);
+});
+
+/* ---------- アクションボタン ---------- */
+$('delbtn').addEventListener('click', ()=>{
+  if(!selection) return;
+  if(selection.kind==='wire') removeWire(selection.id);
+  else removeNode(selection.id);
+});
+$('clearallbtn').addEventListener('click', ()=>{
+  const msg = mode==='ch' ? 'この問題の回路を最初の状態に戻す？' : '全部消して白紙に戻す？';
+  if(!confirm(msg)) return;
+  snapshot();
+  if(mode==='ch' && curCh){
+    state = presetCircuit(curCh);
+  }else{
+    state = {nodes:[], wires:[]};
+  }
+  selection = null; picked = null;
+  justCleared = false;
+  commit();
+  fitView();
+});
+$('undobtn').addEventListener('click', undo);
+$('redobtn').addEventListener('click', redo);
+$('tab-free').addEventListener('click', ()=>{ if(mode!=='free') setMode('free'); });
+$('tab-ch').addEventListener('click', ()=>{
+  if(mode!=='ch') setMode('ch', store.get('lastCh', CHALLENGES[0].id));
+  else openChallengeList();
+});
+
+/* クリア演出のボタン */
+$('nextbtn').addEventListener('click', ()=>{
+  $('clearov').classList.remove('show');
+  const idx = CHALLENGES.findIndex(c=>c.id===curCh.id);
+  if(idx < CHALLENGES.length-1) setMode('ch', CHALLENGES[idx+1].id);
+});
+$('tolistbtn').addEventListener('click', ()=>{
+  $('clearov').classList.remove('show');
+  openChallengeList();
+});
+$('staybtn').addEventListener('click', ()=>$('clearov').classList.remove('show'));
+
+/* キーボード（PC） */
+window.addEventListener('keydown', e=>{
+  if(e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if((e.key==='Delete' || e.key==='Backspace') && selection){
+    e.preventDefault();
+    if(selection.kind==='wire') removeWire(selection.id);
+    else removeNode(selection.id);
+  }else if((e.ctrlKey||e.metaKey) && e.key==='z' && !e.shiftKey){ e.preventDefault(); undo(); }
+  else if((e.ctrlKey||e.metaKey) && (e.key==='y' || (e.key==='z'&&e.shiftKey))){ e.preventDefault(); redo(); }
+  else if(e.key==='Escape'){ picked=null; selection=null; render(); updateStatus(); closeSheet(); }
+});
+
+/* ---------- 自己テスト（コンソールから window.__selfTest() で実行） ---------- */
+window.__selfTest = function(){
+  const out = [];
+  const ok = (name, cond)=>out.push({name, pass:!!cond});
+  // ゲート単体
+  ok('AND', GATES.AND.fn(1,1)===1 && GATES.AND.fn(1,0)===0 && GATES.AND.fn(0,0)===0);
+  ok('OR',  GATES.OR.fn(0,0)===0 && GATES.OR.fn(1,0)===1);
+  ok('NOT', GATES.NOT.fn(0)===1 && GATES.NOT.fn(1)===0);
+  ok('NAND',GATES.NAND.fn(1,1)===0 && GATES.NAND.fn(0,1)===1);
+  ok('NOR', GATES.NOR.fn(0,0)===1 && GATES.NOR.fn(1,0)===0);
+  ok('XOR', GATES.XOR.fn(1,0)===1 && GATES.XOR.fn(1,1)===0);
+  ok('XNOR',GATES.XNOR.fn(1,1)===1 && GATES.XNOR.fn(1,0)===0);
+  // 評価エンジン: 半加算器
+  const N = (id,type,label,value)=>({id,type,x:0,y:0,label,value});
+  const nodes = [N('a','SW','A',0),N('b','SW','B',0),N('x','XOR'),N('d','AND'),N('s','LED','S'),N('c','LED','C')];
+  const wires = [
+    {id:'w1',from:'a',to:{node:'x',port:0}},{id:'w2',from:'b',to:{node:'x',port:1}},
+    {id:'w3',from:'a',to:{node:'d',port:0}},{id:'w4',from:'b',to:{node:'d',port:1}},
+    {id:'w5',from:'x',to:{node:'s',port:0}},{id:'w6',from:'d',to:{node:'c',port:0}},
+  ];
+  let pass = true;
+  for(let i=0;i<4;i++){
+    const A=(i>>1)&1, B=i&1;
+    const r = evaluate(nodes, wires, {a:A,b:B});
+    if(r.values.s!==(A^B) || r.values.c!==(A&B)) pass=false;
+  }
+  ok('半加算器の評価', pass);
+  // サイクル二重ガード
+  const cn = [N('g1','NOT'),N('g2','NOT')];
+  const cw = [{id:'c1',from:'g1',to:{node:'g2',port:0}},{id:'c2',from:'g2',to:{node:'g1',port:0}}];
+  const cr = evaluate(cn, cw);
+  ok('サイクル検出(evaluate側)', cr.cyclic===true);
+  // 各チャレンジの目標関数が全行で0/1を返す
+  let fnOk = true;
+  for(const c of CHALLENGES){
+    for(let i=0;i<(1<<c.inputs.length);i++){
+      const v={};
+      c.inputs.forEach((lb,j)=>v[lb]=(i>>(c.inputs.length-1-j))&1);
+      const r=c.fn(v);
+      if(r.length!==c.outputs.length || r.some(x=>x!==0&&x!==1)) fnOk=false;
+    }
+  }
+  ok('チャレンジ目標関数の健全性', fnOk);
+  const fails = out.filter(o=>!o.pass);
+  console.table(out);
+  return {pass: fails.length===0, fails};
+};
+
+/* ---------- 起動 ---------- */
+(function init(){
+  const lastMode = store.get('lastMode', null);
+  if(lastMode==='ch'){
+    setMode('ch', store.get('lastCh', CHALLENGES[0].id));
+  }else{
+    setMode('free');
+  }
+  if(!store.get('visited', false)){
+    store.set('visited', true);
+    setTimeout(()=>$('helpbtn').click(), 350);
+  }
+  // 初回レイアウト確定後にfit（フォント読込等でサイズが変わる場合に備える）
+  requestAnimationFrame(()=>{ applyView(); fitView(); });
+})();
+</script>
+</body>
+</html>
