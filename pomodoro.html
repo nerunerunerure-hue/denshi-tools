@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ポモドーロ勉強タイマー</title>
+<meta name="description" content="勉強と休憩を自動で繰り返すシンプルなポモドーロタイマー。60目盛りのリングで残り時間がひと目でわかり、設定と記録はブラウザに保存されます。">
+<meta property="og:title" content="ポモドーロ勉強タイマー">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nerunerunerure-hue.github.io/denshi-tools/pomodoro.html">
+<meta property="og:description" content="勉強と休憩を自動で繰り返すシンプルなポモドーロタイマー。60目盛りのリングで残り時間がひと目でわかり、設定と記録はブラウザに保存されます。">
+<meta name="twitter:card" content="summary">
 <link rel="icon" id="favicon" href="data:,">
 <script>
 /* テーマはCSS読込前に確定させてフラッシュを防ぐ */
@@ -84,7 +90,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
   display:flex; align-items:center; justify-content:space-between;
   padding:14px 18px 0;
 }
-.stats{ font-size:13px; color:var(--muted); letter-spacing:.02em; }
+.stats{ font-size:13px; font-weight:400; color:var(--muted); letter-spacing:.02em; }
 .stats b{ color:var(--ink); font-weight:600; font-size:15px; }
 .stats .sep{ margin:0 .5em; opacity:.5; }
 .topbtns{ display:flex; gap:6px; align-items:center; }
@@ -248,7 +254,7 @@ footer kbd{
   padding:1px 6px; font-size:11px; margin:0 1px; background:var(--card);
 }
 footer .home{
-  display:block; margin-top:8px; color:var(--muted);
+  display:block; margin-top:8px; padding:5px 0; color:var(--muted);
   text-decoration:none; font-size:12px;
 }
 footer .home:hover{ color:var(--ink); text-decoration:underline; }
@@ -279,7 +285,7 @@ footer .home:hover{ color:var(--ink); text-decoration:underline; }
 <p id="srAlert" class="visually-hidden" role="alert" aria-atomic="true"></p>
 
 <header class="topbar">
-  <p class="stats">今日 <b id="doneN">0</b> ポモドーロ<span id="disWrap" hidden><span class="sep">·</span>気そらし <span id="disN">0</span></span></p>
+  <h1 class="stats">今日 <b id="doneN">0</b> ポモドーロ<span id="disWrap" hidden><span class="sep">·</span>気そらし <span id="disN">0</span></span></h1>
   <div class="topbtns">
     <button id="themeBtn" aria-label="ライト/ダーク切替" title="ライト/ダーク切替"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
     <button id="gearBtn" aria-expanded="false" aria-controls="panel">設定</button>

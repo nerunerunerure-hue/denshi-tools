@@ -5,14 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>論理回路ラボ</title>
 <meta name="description" content="論理ゲートをつないで動かすシミュレーター＋パズル。真理値表の自動生成つき。">
+<meta property="og:title" content="論理回路ラボ">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nerunerunerure-hue.github.io/denshi-tools/logic-lab.html">
+<meta property="og:description" content="論理ゲートをつないで動かすシミュレーター＋パズル。真理値表の自動生成つき。">
+<meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#F1EEE5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme:light;
     --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6;
-    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --accent:#BE5A38; --accent-ink:#A54E31; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
     --ink:#211F1A; --ink-dim:#716C61; --border:#E2DCCD;
     --ok:#5C7A4E; --ok-soft:#E4ECDE;
     --wire-off:#B4AC9C;
@@ -37,7 +43,7 @@
     padding:8px 12px;
   }
   header h1{font-size:1rem; font-weight:700; letter-spacing:.01em; white-space:nowrap;}
-  header h1 .dot{color:var(--accent);}
+  header h1 .dot{color:var(--accent-ink);}
   .tabs{display:flex; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:2px; margin-left:4px;}
   .tabs button{
     border:none; background:transparent; color:var(--ink-dim);
@@ -126,7 +132,7 @@
     transition:background .12s, color .12s;
   }
   #trash.show{display:flex;}
-  #trash.hot{background:var(--accent); border-color:var(--accent); border-style:solid; color:#fff;}
+  #trash.hot{background:var(--accent-ink); border-color:var(--accent-ink); border-style:solid; color:#fff;}
 
   /* ---- action bar ---- */
   #actionbar{
@@ -139,7 +145,7 @@
   }
   .act:not(:disabled):active{background:var(--surface2);}
   .act:disabled{opacity:.35;}
-  .act.warn{color:var(--accent);}
+  .act.warn{color:var(--accent-ink);}
 
   /* ---- bottom sheet ---- */
   #scrim{
@@ -176,7 +182,7 @@
   table.tt th{background:var(--surface2); font-weight:700;}
   table.tt th.outcol, table.tt td.outcol{border-left:2px solid var(--accent-dim);}
   table.tt tr.cur td{background:var(--accent-soft);}
-  table.tt td.ng{background:#F6DDD4; color:var(--accent); font-weight:700;}
+  table.tt td.ng{background:#F6DDD4; color:var(--accent-ink); font-weight:700;}
   table.tt td.okv{color:var(--ok);}
   .ttnote{font-size:.72rem; color:var(--ink-dim); margin-top:10px; line-height:1.6; text-align:center;}
 
@@ -196,12 +202,12 @@
   .chcard .m{flex:1; min-width:0;}
   .chcard .t{display:block; font-size:.85rem; font-weight:700;}
   .chcard .s{display:block; font-size:.7rem; color:var(--ink-dim); margin-top:1px;}
-  .chcard .st{flex:0 0 auto; font-size:.7rem; color:var(--accent-dim); letter-spacing:.05em;}
+  .chcard .st{flex:0 0 auto; font-size:.7rem; color:#936A58; letter-spacing:.05em;}
   .chcard.done .chk{color:var(--ok); font-weight:700; font-size:.9rem;}
 
   /* help / hint */
   .helpbody{font-size:.82rem; line-height:1.8; color:var(--ink);}
-  .helpbody h3{font-size:.85rem; margin:12px 0 4px; color:var(--accent);}
+  .helpbody h3{font-size:.85rem; margin:12px 0 4px; color:var(--accent-ink);}
   .helpbody ul{padding-left:1.2em;}
   .helpbody li{margin-bottom:2px;}
 
@@ -233,7 +239,7 @@
   #clearcard .btns button{
     border-radius:11px; padding:11px; font-size:.85rem; font-weight:700;
   }
-  #clearcard .primary{background:var(--accent); color:#fff; border:none;}
+  #clearcard .primary{background:var(--accent-ink); color:#fff; border:none;}
   #clearcard .ghost{background:var(--surface); color:var(--ink); border:1px solid var(--border);}
   .confetti{position:absolute; top:-8px; width:9px; height:9px; border-radius:50%; opacity:0; pointer-events:none;}
   @keyframes fall{
@@ -1492,7 +1498,7 @@ function ttHtml(withTarget){
   let h = '<table class="tt"><tr>';
   for(const s of tt.sws) h += `<th>${s.label}</th>`;
   leds.forEach((l,i)=>{ h += `<th class="${i===0?'outcol':''}">${l.label}</th>`; });
-  if(m) leds.forEach((l,i)=>{ h += `<th class="${i===0?'outcol':''}" style="color:var(--accent)">目標${l.label}</th>`; });
+  if(m) leds.forEach((l,i)=>{ h += `<th class="${i===0?'outcol':''}" style="color:var(--accent-ink)">目標${l.label}</th>`; });
   h += '</tr>';
   tt.rows.forEach((row,ri)=>{
     const isCur = row.inputs.every((b,i)=>b===curBits[i]);

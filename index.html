@@ -5,12 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電子工作ツール置き場</title>
 <meta name="description" content="自作の電子工作・学習ツール集。スマホからいつでもどうぞ。">
+<meta property="og:title" content="電子工作ツール置き場">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nerunerunerure-hue.github.io/denshi-tools/index.html">
+<meta property="og:description" content="自作の電子工作・学習ツール集。スマホからいつでもどうぞ。">
+<meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#F1EEE5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme:light;
     --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6;
     --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
     --ink:#211F1A; --ink-dim:#716C61; --border:#E2DCCD;
@@ -71,10 +77,14 @@
   .card:hover .arrow{ color:var(--accent); }
 
   .note{
-    margin-top:22px; font-size:.76rem; color:var(--ink-dim); line-height:1.7;
+    margin-top:22px; font-size:.76rem; color:#6C675D; line-height:1.7;
     background:var(--accent-soft); border:1px solid var(--accent-line); border-radius:12px; padding:12px 14px;
   }
   footer{ text-align:center; color:var(--ink-dim); font-size:.72rem; margin-top:22px; }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important;}
+  }
 </style>
 </head>
 <body>
@@ -99,7 +109,7 @@
         <span class="t">部屋環境モニター</span>
         <span class="d">CO₂・温湿度をリアルタイム表示（ESP32 + Cloudflare）</span>
       </span>
-      <span class="arrow">↗</span>
+      <span class="arrow" aria-hidden="true">↗</span>
     </a>
 
     <a class="card" href="logic-lab.html">
@@ -108,7 +118,7 @@
         <span class="t">論理回路ラボ</span>
         <span class="d">論理ゲートをつないで動かすシミュ＋パズル12問。真理値表つき</span>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow" aria-hidden="true">›</span>
     </a>
 
     <a class="card" href="breadboard-designer.html">
@@ -117,7 +127,7 @@
         <span class="t">ブレッドボード配置デザイナー</span>
         <span class="d">回路図 ↔ ブレッドボード配置を学ぶ</span>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow" aria-hidden="true">›</span>
     </a>
 
     <a class="card" href="resistor-calculator.html">
@@ -126,7 +136,7 @@
         <span class="t">抵抗値カラーコード計算機</span>
         <span class="d">カラーバンドから抵抗値を計算</span>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow" aria-hidden="true">›</span>
     </a>
   </nav>
 
@@ -138,7 +148,7 @@
         <span class="t">電子回路 学習ノート</span>
         <span class="d">訓練校の振り返り39項目を図解×クイズでおさらい</span>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow" aria-hidden="true">›</span>
     </a>
 
     <a class="card" href="fe-guide.html">
@@ -147,7 +157,7 @@
         <span class="t">基本情報 学習ノート</span>
         <span class="d">FE試験の頻出104項目を図解×チェック×クイズで攻略</span>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow" aria-hidden="true">›</span>
     </a>
 
     <a class="card" href="fe-cram.html">
@@ -156,7 +166,7 @@
         <span class="t">基本情報 直前対策ドリル</span>
         <span class="d">一問一答151問×計算ドリル14型で試験直前の総仕上げ</span>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow" aria-hidden="true">›</span>
     </a>
 
     <a class="card" href="pomodoro.html">
@@ -165,7 +175,7 @@
         <span class="t">ポモドーロ勉強タイマー</span>
         <span class="d">25分集中+5分休憩をワンボタンで。今日の完了数も見える</span>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow" aria-hidden="true">›</span>
     </a>
   </nav>
 

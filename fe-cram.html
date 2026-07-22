@@ -6,15 +6,21 @@
 <title>基本情報 直前対策ドリル｜一問一答×計算ドリル</title>
 <meta name="description" content="基本情報技術者試験（FE）の直前仕上げ用ドリル。全104項目の一問一答スピードランと、数値が毎回変わる計算ドリルで最後の詰めを。学習ノートのチェック・あやしいリストと連動。">
 <meta name="theme-color" content="#F1EEE5">
+<meta property="og:title" content="基本情報 直前対策ドリル｜一問一答×計算ドリル">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nerunerunerure-hue.github.io/denshi-tools/fe-cram.html">
+<meta property="og:description" content="基本情報技術者試験（FE）の直前仕上げ用ドリル。全104項目の一問一答スピードランと、数値が毎回変わる計算ドリルで最後の詰めを。学習ノートのチェック・あやしいリストと連動。">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme:light;
     --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
-    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0; --accent-ink:#A54E31;
     --ink:#211F1A; --ink-dim:#716C61;
-    --blue:#4A6FA5; --blue-soft:#E3EAF3;
+    --blue:#4A6FA5; --blue-soft:#E3EAF3; --blue-ink:#46699D;
     --green:#4f6b3a; --green-soft:#E7EDDC;
     --warn:#9a5a22; --warn-soft:#F5E8D4;
     --border:#E2DCCD;
@@ -29,19 +35,19 @@
   .wrap{max-width:780px;margin:0 auto}
   .topbar{position:sticky;top:0;z-index:50;background:rgba(241,238,229,.93);backdrop-filter:blur(8px);
     margin:0 -14px;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
-  .topbar a{color:var(--accent);text-decoration:none;font-weight:600;font-size:.86rem}
+  .topbar a{color:var(--accent-ink);text-decoration:none;font-weight:600;font-size:.86rem}
   .topbar .crumb{font-size:.86rem;color:var(--ink-dim)}
   .topbar .prog{margin-left:auto;font-size:.8rem;color:var(--ink-dim);background:var(--surface);
     border:1px solid var(--border);border-radius:99px;padding:2px 12px;font-weight:600;white-space:nowrap}
   .topbar .prog b{color:var(--warn)}
   .hero{padding:26px 4px 6px}
-  .hero .eyebrow{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+  .hero .eyebrow{color:var(--accent-ink);font-weight:700;font-size:.8rem;letter-spacing:.08em}
   .hero h1{font-size:1.5rem;font-weight:700;margin:4px 0 8px}
   .hero p.lead{color:var(--ink-dim);font-size:.9rem}
   .toc{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 8px;scroll-margin-top:56px}
   .toc a{font-size:.76rem;text-decoration:none;color:var(--ink);background:var(--surface);
     border:1px solid var(--border);border-radius:99px;padding:4px 11px;transition:.12s}
-  .toc a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .toc a:hover{border-color:var(--accent-dim);color:var(--accent-ink)}
   main{display:flex;flex-direction:column;gap:18px;margin-top:14px}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;
     padding:22px 20px;scroll-margin-top:64px;box-shadow:0 1px 2px rgba(50,38,24,.04)}
@@ -56,16 +62,17 @@
   /* ── コントロール ── */
   .ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
   .ctl select{font-family:var(--sans);font-size:.88rem;padding:8px 12px;border:1px solid var(--border);
-    border-radius:10px;background:var(--surface2);color:var(--ink);outline:none;max-width:100%}
+    border-radius:10px;background:var(--surface2);color:var(--ink);max-width:100%}
   .ctl select:focus{border-color:var(--accent-dim)}
+  .ctl select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .seg{display:flex;flex-wrap:wrap;gap:6px}
   .seg label{font-size:.8rem;font-weight:600;color:var(--ink-dim);background:var(--surface2);
     border:1px solid var(--border);border-radius:99px;padding:5px 13px;cursor:pointer;user-select:none;transition:.12s}
   .seg input{display:none}
-  .seg label:has(input:checked){background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+  .seg label:has(input:checked){background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent-ink)}
   .btn{border:none;border-radius:11px;padding:12px 18px;font-family:var(--sans);font-weight:700;
     font-size:.9rem;cursor:pointer;transition:.12s}
-  .btn-main{background:var(--accent);color:#fff}
+  .btn-main{background:var(--accent-ink);color:#fff}
   .btn-main:hover{background:#A84C2E}
   .btn-main:disabled{background:var(--accent-dim);cursor:not-allowed}
   .btn-sub{background:var(--surface2);color:var(--ink);border:1px solid var(--border)}
@@ -76,16 +83,16 @@
   /* ── 出題カード ── */
   .qcard{background:#FFFEFB;border:1px solid var(--border);border-radius:14px;padding:18px 16px;margin:12px 0}
   .qcard .tag{font-size:.72rem;color:var(--ink-dim);letter-spacing:.04em;font-weight:600}
-  .qcard .tag b{color:var(--accent)}
+  .qcard .tag b{color:var(--accent-ink)}
   .qcard .qt{font-size:1.06rem;font-weight:700;line-height:1.7;margin:8px 0 4px;white-space:pre-line}
   .qcard .ansbox{border-top:1px dashed var(--border);margin-top:12px;padding-top:12px}
-  .qcard .ansbox .a{font-size:1.02rem;font-weight:700;color:var(--accent)}
+  .qcard .ansbox .a{font-size:1.02rem;font-weight:700;color:var(--accent-ink)}
   .qcard .ansbox .note{font-size:.84rem;color:var(--ink-dim);margin-top:4px}
   .qcard .ansbox ol{font-size:.86rem;padding-left:1.5em;margin:8px 0 2px}
-  .qcard .ansbox .goref{display:inline-block;margin-top:8px;font-size:.8rem;color:var(--accent);
+  .qcard .ansbox .goref{display:inline-block;margin-top:8px;font-size:.8rem;color:var(--accent-ink);
     text-decoration:none;font-weight:700;border-bottom:1.5px solid var(--accent-line)}
   .statline{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.82rem;color:var(--ink-dim);font-weight:600;margin:6px 0}
-  .statline b{color:var(--accent)}
+  .statline b{color:var(--accent-ink)}
   .statline .g{color:var(--green)}
   .statline .w{color:var(--warn)}
   .gradebtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
@@ -102,9 +109,9 @@
   .topics{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
   .tp{font-size:.78rem;font-weight:600;color:var(--ink-dim);background:var(--surface2);
     border:1px solid var(--border);border-radius:99px;padding:4px 12px;cursor:pointer;user-select:none;transition:.12s}
-  .tp.on{background:var(--blue-soft);border-color:#B9CBE6;color:var(--blue)}
+  .tp.on{background:var(--blue-soft);border-color:#B9CBE6;color:var(--blue-ink)}
   .tp.on::before{content:'✓ ';font-weight:700}
-  .tpall{font-size:.74rem;color:var(--accent);background:none;border:none;font-family:var(--sans);
+  .tpall{font-size:.74rem;color:var(--accent-ink);background:none;border:none;font-family:var(--sans);
     font-weight:700;cursor:pointer;text-decoration:underline;padding:4px 6px}
   /* ── チェックリスト ── */
   .ck{display:flex;align-items:flex-start;gap:9px;padding:8px 4px;font-size:.9rem;cursor:pointer;user-select:none;
@@ -113,28 +120,28 @@
   .ck input{width:19px;height:19px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;margin-top:6px}
   .ck.done{color:var(--ink-dim);text-decoration:line-through;text-decoration-color:var(--accent-dim)}
   .ck b{font-weight:700}
-  .ckhead{font-size:.84rem;font-weight:700;color:var(--accent);margin:14px 0 2px}
+  .ckhead{font-size:.84rem;font-weight:700;color:var(--accent-ink);margin:14px 0 2px}
   .ckhead:first-of-type{margin-top:6px}
   .caution{background:var(--warn-soft);border:1px solid #E8D3B0;border-radius:12px;
     padding:12px 16px;margin:14px 0 2px;font-size:.88rem}
   .caution .tt{font-weight:700;color:var(--warn);font-size:.84rem;display:block;margin-bottom:4px}
   .reset{text-align:center;margin-top:10px}
   .reset button{background:none;border:none;color:var(--ink-dim);font-size:.74rem;font-family:var(--sans);
-    text-decoration:underline;cursor:pointer}
+    text-decoration:underline;cursor:pointer;padding:7px 10px;min-height:24px}
   /* ── リンク集 ── */
   .related{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
   .related a{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;
     background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;
     font-size:.84rem;font-weight:600;transition:.12s}
-  .related a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .related a:hover{border-color:var(--accent-dim);color:var(--accent-ink)}
   .seclinks{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 2px}
   .seclinks a{font-size:.78rem;text-decoration:none;color:var(--ink);background:var(--surface2);
     border:1px solid var(--border);border-radius:99px;padding:4px 12px;transition:.12s}
-  .seclinks a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .seclinks a:hover{border-color:var(--accent-dim);color:var(--accent-ink)}
   .pager{display:flex;justify-content:space-between;gap:12px;margin-top:6px}
   .pager a{flex:1;text-decoration:none;background:var(--surface);border:1px solid var(--border);
     border-radius:13px;padding:13px 16px;color:var(--ink);font-size:.86rem;font-weight:600;transition:.12s}
-  .pager a:hover{border-color:var(--accent-dim);color:var(--accent)}
+  .pager a:hover{border-color:var(--accent-dim);color:var(--accent-ink)}
   .pager a.next{text-align:right}
   .pager .dir{display:block;font-size:.7rem;color:var(--ink-dim);font-weight:500}
   footer{text-align:center;color:var(--ink-dim);font-size:.72rem;margin-top:26px}
@@ -277,7 +284,7 @@
   <label class="ck"><input type="checkbox" data-ck="p1">確認票の<b>受験番号・会場・開始時刻</b>を確認した（スクショか印刷も）</label>
   <label class="ck"><input type="checkbox" data-ck="p2"><b>顔写真付き本人確認書類</b>を用意した（有効期限も確認）</label>
   <label class="ck"><input type="checkbox" data-ck="p3">会場までの<b>経路と所要時間</b>を調べた</label>
-  <label class="ck"><input type="checkbox" data-ck="p4">🤔<a href="fe-guide.html" style="color:var(--accent)">あやしいリスト</a>を1周つぶした</label>
+  <label class="ck"><input type="checkbox" data-ck="p4">🤔<a href="fe-guide.html" style="color:var(--accent-ink)">あやしいリスト</a>を1周つぶした</label>
   <label class="ck"><input type="checkbox" data-ck="p5">前日の夜は新しい問題に手を出さず、<b>早めに寝る</b></label>
 
   <div class="ckhead">当日</div>

@@ -4,11 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ブレッドボード配置デザイナー</title>
+<meta name="description" content="回路図とブレッドボードを見比べながら学べる配置デザイナー。部品を選んで穴をクリックするだけで、実際の差し込み位置を確認できます。">
+<meta property="og:title" content="ブレッドボード配置デザイナー">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nerunerunerure-hue.github.io/denshi-tools/breadboard-designer.html">
+<meta property="og:description" content="回路図とブレッドボードを見比べながら学べる配置デザイナー。部品を選んで穴をクリックするだけで、実際の差し込み位置を確認できます。">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <style>
   :root {
+    color-scheme: light;
     /* — Anthropic調 ウォーム・ニュートラル — */
     --bg: #F1EEE5;          /* アプリ本体(温かいアイボリー) */
     --ground: #E6E1D4;      /* 外側の地 */
@@ -16,6 +23,7 @@
     --surface2: #F2EFE6;    /* 沈んだ面(サイドバー/リスト) */
     --surface3: #EAE4D5;    /* コード等 */
     --accent: #BE5A38;      /* クレイ/コーラル(署名色) */
+    --accent-ink: #A54E31;  /* 小さめテキスト用(AAコントラスト確保) */
     --accent-dim: #D69B81;  /* 薄いクレイ */
     --accent-soft: #F3E5DA; /* コーラルの淡い面 */
     --accent-line: #E6C3B0; /* コーラルのリング */
@@ -88,7 +96,7 @@
   .toolbar select:hover { border-color: var(--accent-dim); }
   #clearBtn { color: var(--text-dim); }
   #clearBtn:hover { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent); }
-  .toolbar select:focus-visible, .toolbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .toolbar select:focus-visible, .toolbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; background: var(--accent-soft); border-color: var(--accent-line); transition: none; }
 
   /* ── 本体 3カラム ── */
   main { display: flex; gap: 0; }
@@ -146,12 +154,12 @@
   .hint b { color: var(--text); font-weight: 600; }
   .hint code { font-family: var(--mono); background: var(--surface3); padding: 1px 5px; border-radius: 4px; font-size: .72rem; color: var(--text); }
   .status {
-    font-size: .8rem; color: var(--accent); min-height: 1.3em; font-weight: 500; line-height: 1.5;
+    font-size: .8rem; color: var(--accent-ink); min-height: 1.3em; font-weight: 500; line-height: 1.5;
     background: var(--accent-soft); border: 1px solid var(--accent-line); border-radius: 8px; padding: 9px 11px;
   }
 
   details { font-size: .75rem; }
-  details summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 4px 0; list-style: none; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--accent-ink); padding: 4px 0; list-style: none; }
   details summary::-webkit-details-marker { display: none; }
   details summary::before { content: '▸'; color: var(--accent-dim); margin-right: 5px; font-size: .7em; }
   details[open] summary::before { content: '▾'; }
@@ -176,6 +184,22 @@
   .placed.sel .body { stroke: var(--accent); stroke-width: 2.5; }
 
   footer { font-size: .72rem; color: var(--text-dim); text-align: center; padding: 14px; border-top: 1px solid var(--border); border-radius: 0 0 13px 13px; }
+
+  /* ── 狭幅(モバイル)対応: ページ骨格を画面幅に収め、サイドバーを縦積みにする ── */
+  @media (max-width: 820px) {
+    html { padding: 12px 10px 30px; }
+    body { min-width: 0; width: 100%; }
+    header { flex-wrap: wrap; }
+    .toolbar { width: 100%; flex-wrap: wrap; }
+    .toolbar select { flex: 1 1 auto; min-width: 0; }
+    main { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; }
+    .sidebar-right { border-left: none; border-top: 1px solid var(--border); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
 </style>
 </head>
 <body>
@@ -216,7 +240,7 @@
         <div class="hint">
           <b>① 部品を選ぶ</b> → <b>② 穴を2回クリック</b>で配置。<br>
           <b>ジャンパーワイヤ</b>で穴どうしをつなぎます。<br>
-          穴にカーソルを乗せると<b style="color:#b07d00">同じ列(導通する穴)</b>が黄色く光ります。
+          穴にカーソルを乗せると<b style="color:#976B00">同じ列(導通する穴)</b>が黄色く光ります。
         </div>
         <details>
           <summary>⚡ 導通のルール</summary>

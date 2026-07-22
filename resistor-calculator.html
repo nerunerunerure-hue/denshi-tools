@@ -4,14 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>抵抗値カラーコード計算機</title>
+<meta name="description" content="カラーバンドをドラッグ&ドロップして抵抗値を読み解く計算ツール。4本帯・5本帯に対応、許容差の範囲も表示します。">
+<meta property="og:title" content="抵抗値カラーコード計算機">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nerunerunerure-hue.github.io/denshi-tools/resistor-calculator.html">
+<meta property="og:description" content="カラーバンドをドラッグ&ドロップして抵抗値を読み解く計算ツール。4本帯・5本帯に対応、許容差の範囲も表示します。">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <style>
   :root {
+    color-scheme: light;
     /* — Anthropic調 ウォーム・ニュートラル — */
     --bg:#F1EEE5; --ground:#E6E1D4; --surface:#FCFBF7; --surface2:#F2EFE6; --surface3:#EAE4D5;
-    --accent:#BE5A38; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
+    --accent:#BE5A38; --accent-ink:#A54E31; --accent-dim:#D69B81; --accent-soft:#F3E5DA; --accent-line:#E6C3B0;
     --text:#211F1A; --text-dim:#716C61; --text-bright:#100F0B;
     --success:#4f6b3a; --warning:#9a5a22; --error:#b23a2e;
     --border:#E2DCCD;
@@ -32,8 +39,8 @@
     text-rendering: optimizeLegibility;
     display: flex;
     flex-direction: column;
-    width: 840px;
-    min-width: 840px;
+    width: 100%;
+    max-width: 840px;
     margin: 0 auto;
     border: 1px solid var(--border);
     border-radius: 14px;
@@ -67,7 +74,7 @@
     padding: 6px 16px; font-family: var(--sans); font-size: .82rem; font-weight: 600;
     border-radius: 7px; transition: .14s;
   }
-  .band-toggle button.active { background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-line); }
+  .band-toggle button.active { background: var(--accent-soft); color: var(--accent-ink); box-shadow: inset 0 0 0 1px var(--accent-line); }
   .band-toggle button:hover:not(.active) { color: var(--text); }
 
   /* ── メインエリア ── */
@@ -77,6 +84,7 @@
   .resistor-area {
     background: var(--surface); border: 1px solid var(--border); border-radius: 11px;
     padding: 30px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+    max-width: 100%; overflow-x: auto;
   }
   #resistor-svg { overflow: visible; }
   .band-label-row { position: relative; }
@@ -98,7 +106,7 @@
     padding-left: 1.3em; color: var(--text-dim); font-size: .86rem; line-height: 1.5;
   }
   .hint-panel ol li { padding: 3px 0; }
-  .hint-panel ol li span { color: var(--accent); font-weight: 600; }
+  .hint-panel ol li span { color: var(--accent-ink); font-weight: 600; }
 
   .result-value {
     font-family: var(--mono); font-size: 2.3rem; color: var(--text-bright); font-weight: 700;
@@ -107,7 +115,7 @@
   .result-value.placeholder { color: var(--text-dim); font-size: 1.9rem; }
 
   .result-tolerance {
-    margin-top: 8px; font-family: var(--mono); font-size: 1.02rem; color: var(--accent);
+    margin-top: 8px; font-family: var(--mono); font-size: 1.02rem; color: var(--accent-ink);
     font-weight: 700; min-height: 1.6rem;
   }
   .result-range {
@@ -121,7 +129,7 @@
     padding: 7px 18px; border-radius: 8px; cursor: pointer; font-family: var(--sans); font-size: .82rem;
     font-weight: 500; transition: .14s;
   }
-  .reset-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
+  .reset-btn:hover { background: var(--accent-soft); color: var(--accent-ink); border-color: var(--accent-line); }
 
   /* 単位トグル */
   .unit-toggle {
@@ -133,7 +141,7 @@
     padding: 5px 15px; font-family: var(--sans); font-size: .8rem; font-weight: 600;
     border-radius: 6px; transition: .14s;
   }
-  .unit-btn.active { background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-line); }
+  .unit-btn.active { background: var(--accent-soft); color: var(--accent-ink); box-shadow: inset 0 0 0 1px var(--accent-line); }
   .unit-btn:hover:not(.active) { color: var(--text); }
 
   /* ── 色パレット ── */
@@ -176,6 +184,10 @@
   footer {
     font-size: .72rem; color: var(--text-dim); text-align: center;
     padding: 14px; border-top: 1px solid var(--border); border-radius: 0 0 13px 13px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   }
 </style>
 </head>
